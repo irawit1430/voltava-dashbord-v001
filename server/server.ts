@@ -47,7 +47,8 @@ import {
   toggleGateway,
   pingGateway,
   scanGatewayBus,
-  addOrUpdateExternalDevice
+  addOrUpdateExternalDevice,
+  generateDiagnosticPacket
 } from './simulator';
 
 // Initialize history
@@ -115,6 +116,7 @@ app.post('/api/devices/:id/ota', (req, res) => {
     });
   }
   triggerOtaUpdate(req.params.id);
+  broadcastTelemetry();
   res.json({ success: true, message: 'OTA update initiated' });
 });
 
@@ -137,6 +139,7 @@ app.post('/api/devices/:id/toggle-mosfet', (req, res) => {
     });
   }
   const status = toggleMosfet(req.params.id);
+  broadcastTelemetry();
   res.json({ success: true, mosfetStatus: status });
 });
 
@@ -208,11 +211,43 @@ wss.on('error', (err) => {
   console.error('WebSocketServer error:', err);
 });
 
+
 // WS Connection handler
 wss.on('connection', (ws, request) => {
   const reqUrl = request.url || '';
   const pathname = new URL(reqUrl, 'http://localhost').pathname;
   
+  if (pathname === '/ws/packets') {
+    const urlParams = new URL(reqUrl, 'http://localhost').searchParams;
+    const gatewayId = urlParams.get('gatewayId');
+
+    if (!gatewayId) {
+      ws.close(1008, 'Missing gatewayId');
+      return;
+    }
+
+    console.log(`WS Packets Client connected for gateway ${gatewayId}`);
+
+    const sendPacket = () => {
+      const pkt = generateDiagnosticPacket(gatewayId);
+      if (pkt) {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'PACKET', data: pkt }));
+        }
+      }
+    };
+
+    // Send one immediately if wanted, or just wait for interval
+
+    const interval = setInterval(sendPacket, 2500);
+
+    ws.on('close', () => {
+      console.log(`WS Packets Client disconnected for gateway ${gatewayId}`);
+      clearInterval(interval);
+    });
+    return;
+  }
+
   if (pathname !== '/ws' && pathname !== '/') {
     console.log(`Closing connection for unmatched path: ${pathname}`);
     ws.close(1008, 'Unsupported path');

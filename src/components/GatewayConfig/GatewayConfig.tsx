@@ -100,7 +100,7 @@ export default function GatewayConfig({
     }
   }, [selectedGateway, isEditing]);
 
-  // Simulate hex packets generator
+  // Real-time packet generator via WebSocket
   useEffect(() => {
     if (!selectedGateway || selectedGateway.status !== 'online' || activeDiagnosticTab !== 'packets') {
       setPacketLog([]);
@@ -109,52 +109,50 @@ export default function GatewayConfig({
 
     setPacketLog([`[SYS] Packet Analyzer session started for ${selectedGateway.name} (${selectedGateway.id})`]);
 
-    const generatePacket = () => {
-      const now = new Date().toLocaleTimeString();
-      let pkt = '';
-      if (selectedGateway.protocol === 'modbus-rtu' || selectedGateway.protocol === 'modbus-tcp') {
-        const isTx = Math.random() > 0.5;
-        if (isTx) {
-          pkt = `[${now}] TX -> [Unit ID 01] Read Holding Registers: Start=40001, Count=6\n` +
-                `Hex: 01 03 00 00 00 06 C5 C8`;
-        } else {
-          const v = (48 + Math.random() * 5).toFixed(1);
-          const c = (10 + Math.random() * 10).toFixed(1);
-          pkt = `[${now}] RX <- [Unit ID 01] Response (12 bytes):\n` +
-                `Hex: 01 03 0C 01 E0 00 64 00 00 00 00 A4\n` +
-                `Parsed: Voltage=${v}V, Current=${c}A`;
+    let ws: WebSocket;
+    let active = true;
+
+    const connectWs = () => {
+      if (!active) return;
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = window.location.port !== '' && window.location.port !== '5000'
+        ? `${wsProtocol}//${window.location.hostname}:5000/ws/packets?gatewayId=${selectedGateway.id}`
+        : `${wsProtocol}//${window.location.host}/ws/packets?gatewayId=${selectedGateway.id}`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'PACKET' && message.data) {
+            setPacketLog(prev => [message.data, ...prev].slice(0, 25));
+          }
+        } catch (err) {
+          console.error('Error parsing packet message:', err);
         }
-      } else if (selectedGateway.protocol === 'dlms') {
-        const isTx = Math.random() > 0.5;
-        if (isTx) {
-          pkt = `[${now}] TX -> DLMS GET Request (OBIS: 1.0.32.7.0.255 - Phase 1 Voltage)\n` +
-                `Hex: 7E A0 19 03 21 54 12 00 ...`;
-        } else {
-          const v = (238 + Math.random() * 8).toFixed(1);
-          pkt = `[${now}] RX <- DLMS GET Response (Phase 1 Voltage):\n` +
-                `Hex: 7E A0 25 21 03 98 01 02 04 05 ${Math.floor(Math.random()*256).toString(16).toUpperCase()}\n` +
-                `Parsed: Value=${v} V`;
+      };
+
+      ws.onerror = (err) => {
+        console.error('Packet WS error:', err);
+      };
+
+      ws.onclose = () => {
+        if (active) {
+          // Reconnect logic if needed, but for diagnostics we might just let it die or retry
+          setTimeout(connectWs, 3000);
         }
-      } else if (selectedGateway.protocol === 'ocpp') {
-        const isTx = Math.random() > 0.5;
-        if (isTx) {
-          pkt = `[${now}] TX -> OCPP Call: MeterValuesReq (Connector=1, EnergyActiveImportRegister=${(320 + Math.random() * 10).toFixed(2)} kWh)`;
-        } else {
-          pkt = `[${now}] RX <- OCPP CallResult: MeterValuesConf()`;
-        }
-      } else if (selectedGateway.protocol === 'can') {
-        const pgn = Math.random() > 0.5 ? 'FEE6' : 'F004';
-        const sa = '17';
-        pkt = `[${now}] CAN Frame: ID 0x18${pgn}${sa} [Prio=6, PGN=${pgn}, Src=${sa}]\n` +
-              `Data: ` + Array.from({length: 8}, () => Math.floor(Math.random()*256).toString(16).padStart(2, '0').toUpperCase()).join(' ');
-      }
-      
-      setPacketLog(prev => [pkt, ...prev].slice(0, 25));
+      };
     };
 
-    const interval = setInterval(generatePacket, 2500);
-    return () => clearInterval(interval);
-  }, [selectedGatewayId, selectedGateway?.status, activeDiagnosticTab]);
+    connectWs();
+
+    return () => {
+      active = false;
+      if (ws) {
+        ws.close();
+      }
+    };
+  }, [selectedGatewayId, selectedGateway, activeDiagnosticTab]);
 
   // Scroll to bottom of terminal logs
   useEffect(() => {

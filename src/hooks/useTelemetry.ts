@@ -158,21 +158,6 @@ export function useTelemetry() {
 
   // Remote Actions
   const triggerOtaUpdate = (id: string) => {
-    // Optimistic frontend update
-    setDevices(prev => prev.map(d => {
-      if (d.id === id) {
-        return {
-          ...d,
-          firmware: d.firmware + ' (Installing OTA...)',
-          telemetry: {
-            ...d.telemetry,
-            faults: [...d.telemetry.faults, 'OTA Update Initiated']
-          }
-        };
-      }
-      return d;
-    }));
-
     // Trigger on server
     fetch(`/api/devices/${id}/ota`, {
       method: 'POST',
@@ -186,36 +171,10 @@ export function useTelemetry() {
       })
       .catch(err => {
         console.error('Error triggering OTA update:', err);
-        // Revert UI changes on error by fetching current devices list
-        fetch('/api/devices')
-          .then(res => res.json())
-          .then(data => setDevices(data));
       });
   };
 
   const toggleMosfet = (id: string) => {
-    // Optimistic UI update
-    setDevices(prev => prev.map(d => {
-      if (d.id === id && d.telemetry.mosfetStatus) {
-        const nextState = d.telemetry.mosfetStatus === 'on' ? 'off' : 'on';
-        const nextStatus = nextState === 'off' ? 'offline' : 'online';
-        const nextFaults = nextState === 'off' 
-          ? [...d.telemetry.faults, 'MOSFET Forced Shutoff'] 
-          : d.telemetry.faults.filter(f => f !== 'MOSFET Forced Shutoff' && f !== 'BMS Thermal Cut-off' && f !== 'Over-temperature Warning');
-        return {
-          ...d,
-          status: nextStatus,
-          telemetry: {
-            ...d.telemetry,
-            mosfetStatus: nextState,
-            faults: nextFaults,
-            temp: nextState === 'off' ? 32.0 : d.telemetry.temp
-          }
-        };
-      }
-      return d;
-    }));
-
     // Trigger on server
     fetch(`/api/devices/${id}/toggle-mosfet`, {
       method: 'POST',
@@ -229,10 +188,6 @@ export function useTelemetry() {
       })
       .catch(err => {
         console.error('Error toggling MOSFET:', err);
-        // Revert UI changes on error by fetching current devices list
-        fetch('/api/devices')
-          .then(res => res.json())
-          .then(data => setDevices(data));
       });
   };
 
@@ -241,17 +196,6 @@ export function useTelemetry() {
   };
 
   const toggleGateway = (id: string) => {
-    // Optimistic state update
-    setGateways(prev => prev.map(g => {
-      if (g.id === id) {
-        let nextStatus = g.status;
-        if (g.status === 'online') nextStatus = 'offline';
-        else if (g.status === 'offline') nextStatus = 'connecting';
-        return { ...g, status: nextStatus };
-      }
-      return g;
-    }));
-
     return fetch(`/api/gateways/${id}/toggle`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
@@ -262,22 +206,10 @@ export function useTelemetry() {
       })
       .catch(err => {
         console.error('Error toggling gateway:', err);
-        // revert by refetching
-        fetch('/api/gateways')
-          .then(res => res.json())
-          .then(data => setGateways(data));
       });
   };
 
   const updateGatewayConfig = (id: string, updatedData: any) => {
-    // Optimistic update
-    setGateways(prev => prev.map(g => {
-      if (g.id === id) {
-        return { ...g, ...updatedData };
-      }
-      return g;
-    }));
-
     return fetch(`/api/gateways/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -289,10 +221,6 @@ export function useTelemetry() {
       })
       .catch(err => {
         console.error('Error updating gateway config:', err);
-        // revert
-        fetch('/api/gateways')
-          .then(res => res.json())
-          .then(data => setGateways(data));
       });
   };
 
