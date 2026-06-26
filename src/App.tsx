@@ -13,6 +13,7 @@ import { useTelemetry } from './hooks/useTelemetry';
 import type { Device } from './types';
 
 function App() {
+  // Force new build hash to bypass CDN cache
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
 
