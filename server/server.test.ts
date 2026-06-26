@@ -5,6 +5,30 @@ import { devices } from './simulator';
 import type { Device } from './types';
 
 describe('Server API', () => {
+  describe('Authentication Middleware', () => {
+    it('should return 401 UNAUTHORIZED when Authorization header is missing', async () => {
+      const response = await request(app)
+        .post('/api/devices/test-id/toggle-mosfet');
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({
+        error: { code: 'UNAUTHORIZED', message: 'Missing or invalid Authorization header' }
+      });
+    });
+
+    it('should return 401 UNAUTHORIZED when Authorization token is invalid', async () => {
+      const response = await request(app)
+        .post('/api/devices/test-id/toggle-mosfet')
+        .set('Authorization', 'Bearer invalid-token');
+
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({
+        error: { code: 'UNAUTHORIZED', message: 'Invalid API Key' }
+      });
+    });
+  });
+
+
   describe('POST /api/devices/:id/toggle-mosfet', () => {
     let originalDevices: Device[];
 
@@ -22,7 +46,7 @@ describe('Server API', () => {
     it('should return 404 NOT_FOUND for a non-existent device ID', async () => {
       const nonExistentId = 'non-existent-device-id-123';
       const response = await request(app)
-        .post(`/api/devices/${nonExistentId}/toggle-mosfet`);
+        .post(`/api/devices/${nonExistentId}/toggle-mosfet`).set('Authorization', 'Bearer default-dev-key');
 
       expect(response.status).toBe(404);
       expect(response.body).toEqual({
@@ -55,7 +79,7 @@ describe('Server API', () => {
       } as Device);
 
       const response = await request(app)
-        .post(`/api/devices/${mockDeviceId}/toggle-mosfet`);
+        .post(`/api/devices/${mockDeviceId}/toggle-mosfet`).set('Authorization', 'Bearer default-dev-key');
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
@@ -70,7 +94,7 @@ describe('Server API', () => {
   describe('POST /api/devices/ingest', () => {
     it('should return 400 BAD_REQUEST for missing device id', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           payload: {
             voltage: 230,
@@ -86,7 +110,7 @@ describe('Server API', () => {
 
     it('should return 400 BAD_REQUEST for missing payload', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           id: 'mock-device-id'
         });
@@ -99,7 +123,7 @@ describe('Server API', () => {
 
     it('should return 400 BAD_REQUEST for invalid id type', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           id: 123,
           payload: {
@@ -115,7 +139,7 @@ describe('Server API', () => {
 
     it('should return 400 BAD_REQUEST for invalid payload type (not an object)', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           id: 'mock-device-id',
           payload: 'invalid-payload'
@@ -129,7 +153,7 @@ describe('Server API', () => {
 
     it('should return 400 BAD_REQUEST for invalid field type in payload', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           id: 'mock-device-id',
           payload: {
@@ -145,7 +169,7 @@ describe('Server API', () => {
 
     it('should return 400 BAD_REQUEST for invalid faults array', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           id: 'mock-device-id',
           payload: {
@@ -161,7 +185,7 @@ describe('Server API', () => {
 
     it('should return 200 SUCCESS for valid request', async () => {
       const response = await request(app)
-        .post('/api/devices/ingest')
+        .post('/api/devices/ingest').set('Authorization', 'Bearer default-dev-key')
         .send({
           id: 'mock-device-id',
           payload: {

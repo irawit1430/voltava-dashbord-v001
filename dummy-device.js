@@ -1,4 +1,4 @@
-import http from 'http';
+
 
 const API_URL = 'https://voltava-dashboard.onrender.com/api/devices/ingest';
 const DEVICE_ID = 'TEST-DUMMY-01';
@@ -65,7 +65,8 @@ async function sendTelemetry() {
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer default-dev-key'
       },
       body: JSON.stringify(payload)
     });
