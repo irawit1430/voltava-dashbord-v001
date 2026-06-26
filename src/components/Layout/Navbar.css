@@ -292,3 +292,78 @@
   border-top: 1px solid var(--border-color);
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+/* Notification Styles Enhancements */
+.notification-popover {
+  width: 380px;
+}
+
+.popover-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.2rem;
+  transition: color 0.2s ease;
+}
+
+.text-btn:hover {
+  color: var(--accent-blue);
+  text-decoration: underline;
+}
+
+.notification-item {
+  position: relative;
+  align-items: flex-start;
+}
+
+.notification-unread {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.notification-item-resolved {
+  border-left: 3px solid var(--accent-green);
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-blue);
+}
+
+.notification-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+}
+
+.dismiss-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.notification-item:hover .dismiss-btn {
+  opacity: 1;
+}
+
+.dismiss-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}

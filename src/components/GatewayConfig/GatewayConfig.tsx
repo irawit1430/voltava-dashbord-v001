@@ -187,7 +187,15 @@ export default function GatewayConfig({
 
     const interval = setInterval(generatePacket, 2500);
     return () => clearInterval(interval);
-  }, [selectedGatewayId, selectedGateway, activeDiagnosticTab]);
+  }, [
+    selectedGatewayId,
+    selectedGateway?.status,
+    activeDiagnosticTab,
+    selectedGateway,
+    selectedGateway?.id,
+    selectedGateway?.protocol,
+    selectedGateway?.name,
+  ]);
 
   // Scroll to bottom of terminal logs
   useEffect(() => {
