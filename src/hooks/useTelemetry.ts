@@ -215,8 +215,11 @@ export function useTelemetry() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData)
     })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to update gateway config');
+      .then(async res => {
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => null);
+          throw new Error((errorData && errorData.error) || 'Failed to update gateway config');
+        }
         return res.json();
       })
       .catch(err => {
@@ -230,8 +233,11 @@ export function useTelemetry() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newGwData)
     })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to add gateway');
+      .then(async res => {
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => null);
+          throw new Error((errorData && errorData.error) || 'Failed to add gateway');
+        }
         return res.json();
       })
       .then(newGw => {

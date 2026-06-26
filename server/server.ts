@@ -153,18 +153,26 @@ app.get('/api/gateways', (req, res) => {
 });
 
 app.post('/api/gateways', (req, res) => {
-  const newGw = addGateway(req.body);
-  broadcastTelemetry();
-  res.status(201).json(newGw);
+  try {
+    const newGw = addGateway(req.body);
+    broadcastTelemetry();
+    res.status(201).json(newGw);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 app.put('/api/gateways/:id', (req, res) => {
-  const updated = updateGateway(req.params.id, req.body);
-  if (!updated) {
-    return res.status(404).json({ error: 'Gateway not found' });
+  try {
+    const updated = updateGateway(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ error: 'Gateway not found' });
+    }
+    broadcastTelemetry();
+    res.json(updated);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
-  broadcastTelemetry();
-  res.json(updated);
 });
 
 app.post('/api/gateways/:id/toggle', (req, res) => {
@@ -225,15 +233,8 @@ wss.on('connection', (ws, request) => {
       ws.close(1008, 'Missing gatewayId');
       return;
     }
-<<<<<<< HEAD
-
     console.log(`WS Packets Client connected for gateway ${gatewayId}`);
 
-=======
-
-    console.log(`WS Packets Client connected for gateway ${gatewayId}`);
-
->>>>>>> origin/jules-8102163959018657623-38a73288
     const sendPacket = () => {
       const pkt = generateDiagnosticPacket(gatewayId);
       if (pkt) {
