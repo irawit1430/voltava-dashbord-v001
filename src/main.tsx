@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
+console.log("Dashboard version 2.1 - Cache Bust");
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
