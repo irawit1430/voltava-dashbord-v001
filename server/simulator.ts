@@ -895,12 +895,6 @@ export function scanGatewayBus(id: string): string {
     output += `Starting Modbus Unit ID Scan (IDs 1 to 16)...\n`;
     for (let i = 1; i <= 8; i++) {
       /* const isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
->>>>>>> origin/master
-=======
-      /* const _isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
-=======
-      /* const isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
->>>>>>> origin/master
         const d = devices.find(dev => dev.id === dId);
         return d && (d.status === "fault" || d.status === "warning");
       }); */
