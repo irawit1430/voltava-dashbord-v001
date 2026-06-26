@@ -639,30 +639,33 @@ export default function GatewayConfig({
                     <div style={{ marginTop: '1rem' }}>
                       <label className="gw-label">Linked Monitored Assets</label>
                       <div className="gw-assets-checklist">
-                        {devices.map(d => {
-                          const isCurrentlySelected = editGw.connectedDevices.includes(d.id);
-                          const isLinkedElsewhere = d.gatewayId && d.gatewayId !== selectedGateway.id;
-                          
-                          if (isLinkedElsewhere) return null; // hide devices already bound to other gateways
-                          
-                          return (
-                            <label key={d.id} className="gw-check-label">
-                              <input 
-                                type="checkbox"
-                                checked={isCurrentlySelected}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setEditGw(prev => ({ ...prev, connectedDevices: [...prev.connectedDevices, d.id] }));
-                                  } else {
-                                    setEditGw(prev => ({ ...prev, connectedDevices: prev.connectedDevices.filter(id => id !== d.id) }));
-                                  }
-                                }}
-                                style={{ marginRight: 8 }}
-                              />
-                              <span>{d.name} ({d.id})</span>
-                            </label>
-                          );
-                        })}
+                        {(() => {
+                          const connectedDevicesSet = new Set(editGw.connectedDevices);
+                          return devices.map(d => {
+                            const isCurrentlySelected = connectedDevicesSet.has(d.id);
+                            const isLinkedElsewhere = d.gatewayId && d.gatewayId !== selectedGateway.id;
+
+                            if (isLinkedElsewhere) return null; // hide devices already bound to other gateways
+
+                            return (
+                              <label key={d.id} className="gw-check-label">
+                                <input
+                                  type="checkbox"
+                                  checked={isCurrentlySelected}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setEditGw(prev => ({ ...prev, connectedDevices: [...prev.connectedDevices, d.id] }));
+                                    } else {
+                                      setEditGw(prev => ({ ...prev, connectedDevices: prev.connectedDevices.filter(id => id !== d.id) }));
+                                    }
+                                  }}
+                                  style={{ marginRight: 8 }}
+                                />
+                                <span>{d.name} ({d.id})</span>
+                              </label>
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
 
