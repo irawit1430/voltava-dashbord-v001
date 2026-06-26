@@ -180,3 +180,50 @@ describe('Server API', () => {
     });
   });
 });
+
+  describe('CORS Configuration', () => {
+    let originalOrigins: string | undefined;
+
+    beforeEach(() => {
+      originalOrigins = process.env.ALLOWED_ORIGINS;
+    });
+
+    afterEach(() => {
+      if (originalOrigins === undefined) {
+        delete process.env.ALLOWED_ORIGINS;
+      } else {
+        process.env.ALLOWED_ORIGINS = originalOrigins;
+      }
+    });
+
+    it('should allow requests from default allowed origins', async () => {
+      delete process.env.ALLOWED_ORIGINS;
+
+      const response = await request(app)
+        .get('/api/devices')
+        .set('Origin', 'http://localhost:5173');
+
+      expect(response.status).not.toBe(500);
+      expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+    });
+
+    it('should allow requests from custom allowed origins via env', async () => {
+      process.env.ALLOWED_ORIGINS = 'https://myapp.com,https://test.com';
+
+      const response = await request(app)
+        .get('/api/devices')
+        .set('Origin', 'https://test.com');
+
+      expect(response.status).not.toBe(500);
+      expect(response.headers['access-control-allow-origin']).toBe('https://test.com');
+    });
+
+    it('should reject requests from disallowed origins', async () => {
+      const response = await request(app)
+        .get('/api/devices')
+        .set('Origin', 'http://evil.com');
+
+      expect(response.status).toBe(500);
+      expect(response.text).toContain('Not allowed by CORS');
+    });
+  });
