@@ -813,7 +813,7 @@ export function addGateway(data: any): Gateway {
   return newGw;
 }
 
-export function updateGateway(id: string, data: any): Gateway | null {
+export function updateGateway(id: string, data: Partial<Gateway>): Gateway | null {
   const idx = gateways.findIndex(g => g.id === id);
   if (idx === -1) return null;
   
