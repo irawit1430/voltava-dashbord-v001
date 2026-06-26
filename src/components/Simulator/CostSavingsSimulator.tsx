@@ -4,6 +4,7 @@ import {
   Sparkles 
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { formatINR } from '../../utils/formatters';
 
 interface DiscomOption {
   name: string;
@@ -68,13 +69,6 @@ export default function CostSavingsSimulator() {
   ];
 
   // Format Indian Currency
-  const formatINR = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(value);
-  };
 
   return (
     <div style={styles.container}>

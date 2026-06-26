@@ -100,6 +100,12 @@ export interface TelemetryHistoryPoint {
 }
 
 export interface ExternalDevicePayload {
+  name?: string;
+  type?: DeviceType;
+  model?: string;
+  firmware?: string;
+  location?: { lat: number; lng: number; city: string; };
+  owner?: string;
   voltage?: number;
   current?: number;
   soc?: number;

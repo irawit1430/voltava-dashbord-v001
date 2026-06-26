@@ -1,0 +1,6 @@
+🧹 [Code Health] Remove explicit any cast in addOrUpdateExternalDevice
+
+🎯 What: Replaced the explicit `any` type for the `payload` parameter when pushing to devices array in `addOrUpdateExternalDevice` by explicitly typing the object as `Device`. Added missing optional fields to `ExternalDevicePayload` in `server/types.ts` to satisfy compiler.
+💡 Why: Explicit `any` casts defeat the purpose of TypeScript and hide potential typing issues. Typing it strictly via `Device` ensures safety and consistency.
+✅ Verification: Ran `npm run lint` and `npm run test` successfully. Verified types work.
+✨ Result: Improved static typing in simulator service.

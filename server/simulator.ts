@@ -385,8 +385,7 @@ export function initHistory() {
     historyMap[d.id] = hist;
   });
 }
-export function simulateStep() {
-  // 1. Simulate gateways
+function simulateGateways() {
   gateways = gateways.map(g => {
     if (g.status === 'offline' || g.status === 'error') {
       return g;
@@ -416,8 +415,9 @@ export function simulateStep() {
       lastSync: new Date().toISOString()
     };
   });
+}
 
-  // 2. Simulate devices
+function simulateDevices() {
   const gatewayMap = new Map(gateways.map(g => [g.id, g]));
   devices = devices.map(d => {
     const gw = d.gatewayId ? gatewayMap.get(d.gatewayId) : undefined;
@@ -668,8 +668,9 @@ export function simulateStep() {
       aiPredictions: updatedAi
     };
   });
+}
 
-  // Update grid metrics based on simulator values
+function simulateGrid() {
   const solarCurrent = devices.find(d => d.id === 'SLR-RAJ-01')?.telemetry.activePower || 0;
   const bessCurrent = devices.find(d => d.id === 'BES-IND-01')?.telemetry.activePower || 0;
   const factoryMeterCurrent = devices.find(d => d.id === 'MTR-IND-01')?.telemetry.activePower || 168.4;
@@ -688,6 +689,12 @@ export function simulateStep() {
     gridFrequency: Number((49.95 + Math.random() * 0.1).toFixed(2)),
     gridVoltage: Number((415 + (Math.random() - 0.5) * 5).toFixed(1))
   };
+}
+
+export function simulateStep() {
+  simulateGateways();
+  simulateDevices();
+  simulateGrid();
 }
 
 export function triggerOtaUpdate(id: string) {
@@ -751,7 +758,7 @@ export function toggleMosfet(id: string) {
   return resultingMosfet;
 }
 
-export function addGateway(data: any): Gateway {
+export function addGateway(data: Omit<Gateway, 'id' | 'status' | 'lastSync' | 'packetsTransmitted' | 'packetsFailed'>): Gateway {
   if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
     throw new Error('Gateway name is required');
   }
@@ -1037,7 +1044,7 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
     };
   } else {
     // Create new device dynamically
-    const newDevice = {
+    const newDevice: Device = {
       id,
       name: payload.name || `External Device ${id}`,
       type: payload.type || 'bms', // default type
@@ -1048,7 +1055,7 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
       owner: payload.owner || 'Testing Team',
       telemetry: updatedTelemetry
     };
-    devices.push(newDevice as any);
+    devices.push(newDevice);
   }
 
   // Also update history
