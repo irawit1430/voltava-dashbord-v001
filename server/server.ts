@@ -238,7 +238,7 @@ app.post('/api/gateways/:id/scan', (req, res) => {
 });
 
 // Serve static assets in production if built
-const distPath = path.join(process.cwd(), 'dist');
+const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get('*', (req, res) => {

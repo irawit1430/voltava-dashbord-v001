@@ -1,6 +1,6 @@
 import http from 'http';
 
-const API_URL = 'http://localhost:5000/api/devices/ingest';
+const API_URL = 'https://voltava-dashboard.onrender.com/api/devices/ingest';
 const DEVICE_ID = 'TEST-DUMMY-01';
 
 // Base initial state for the dummy device
@@ -35,7 +35,7 @@ function simulateTelemetry() {
 }
 
 // Function to send data to the dashboard
-function sendTelemetry() {
+async function sendTelemetry() {
   simulateTelemetry();
 
   const payload = {
@@ -60,33 +60,19 @@ function sendTelemetry() {
     }
   };
 
-  const data = JSON.stringify(payload);
-
-  const options = {
-    hostname: 'localhost',
-    port: 5000,
-    path: '/api/devices/ingest',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(data)
-    }
-  };
-
-  const req = http.request(options, (res) => {
-    let responseData = '';
-    res.on('data', (chunk) => { responseData += chunk; });
-    res.on('end', () => {
-      console.log(`[${new Date().toISOString()}] Data sent. Status: ${res.statusCode}, Response: ${responseData}`);
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
-  });
-
-  req.on('error', (error) => {
+    const responseData = await res.text();
+    console.log(`[${new Date().toISOString()}] Data sent. Status: ${res.status}, Response: ${responseData}`);
+  } catch (error) {
     console.error(`[${new Date().toISOString()}] Error sending telemetry:`, error.message);
-  });
-
-  req.write(data);
-  req.end();
+  }
 }
 
 console.log(`Starting Dummy Device (${DEVICE_ID})...`);
