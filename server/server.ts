@@ -225,9 +225,15 @@ wss.on('connection', (ws, request) => {
       ws.close(1008, 'Missing gatewayId');
       return;
     }
+<<<<<<< HEAD
 
     console.log(`WS Packets Client connected for gateway ${gatewayId}`);
 
+=======
+
+    console.log(`WS Packets Client connected for gateway ${gatewayId}`);
+
+>>>>>>> origin/jules-8102163959018657623-38a73288
     const sendPacket = () => {
       const pkt = generateDiagnosticPacket(gatewayId);
       if (pkt) {
