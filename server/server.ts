@@ -11,12 +11,12 @@ const __dirname = path.dirname(__filename);
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION:', err);
-  // Don't exit — keep the server alive
+  process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('UNHANDLED REJECTION at:', promise, 'reason:', reason);
-  // Don't exit — keep the server alive
+  process.exit(1);
 });
 
 process.on('SIGTERM', () => {
@@ -56,14 +56,60 @@ initHistory();
 export const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    // Dynamically check so tests can override if needed
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(express.json());
+
+function isValidPayload(payload: any): boolean {
+  if (typeof payload !== 'object' || payload === null) return false;
+
+  if (payload.voltage !== undefined && typeof payload.voltage !== 'number') return false;
+  if (payload.current !== undefined && typeof payload.current !== 'number') return false;
+  if (payload.soc !== undefined && typeof payload.soc !== 'number') return false;
+  if (payload.soh !== undefined && typeof payload.soh !== 'number') return false;
+  if (payload.temp !== undefined && typeof payload.temp !== 'number') return false;
+  if (payload.power !== undefined && typeof payload.power !== 'number') return false;
+
+  if (payload.faults !== undefined) {
+    if (!Array.isArray(payload.faults)) return false;
+    if (!payload.faults.every((f: any) => typeof f === 'string')) return false;
+  }
+
+  if (payload.cellVoltages !== undefined) {
+    if (!Array.isArray(payload.cellVoltages)) return false;
+    if (!payload.cellVoltages.every((v: any) => typeof v === 'number')) return false;
+  }
+
+  if (payload.cellTemps !== undefined) {
+    if (!Array.isArray(payload.cellTemps)) return false;
+    if (!payload.cellTemps.every((t: any) => typeof t === 'number')) return false;
+  }
+
+  if (payload.mosfetStatus !== undefined) {
+    if (payload.mosfetStatus !== 'on' && payload.mosfetStatus !== 'off') return false;
+  }
+
+  return true;
+}
 
 // API Endpoints
 app.post('/api/devices/ingest', (req, res) => {
   const { id, payload } = req.body;
-  if (!id || !payload) {
-    return res.status(400).json({ error: 'Missing device id or payload' });
+  if (typeof id !== 'string' || !id || !payload || !isValidPayload(payload)) {
+    return res.status(400).json({ error: 'Invalid or missing device id or payload' });
   }
   addOrUpdateExternalDevice(id, payload);
   broadcastTelemetry();
