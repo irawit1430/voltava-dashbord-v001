@@ -60,8 +60,8 @@ export default function DeviceDetailModal({
     try {
       const output = await onPingGateway(device.gatewayId);
       setPingLog(output);
-    } catch (err: any) {
-      setPingLog(`Error connecting to gateway: ${err.message || err}`);
+    } catch (err: unknown) {
+      setPingLog(`Error connecting to gateway: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsPinging(false);
     }
