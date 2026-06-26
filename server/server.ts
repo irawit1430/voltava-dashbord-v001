@@ -150,18 +150,26 @@ app.get('/api/gateways', (req, res) => {
 });
 
 app.post('/api/gateways', (req, res) => {
-  const newGw = addGateway(req.body);
-  broadcastTelemetry();
-  res.status(201).json(newGw);
+  try {
+    const newGw = addGateway(req.body);
+    broadcastTelemetry();
+    res.status(201).json(newGw);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 app.put('/api/gateways/:id', (req, res) => {
-  const updated = updateGateway(req.params.id, req.body);
-  if (!updated) {
-    return res.status(404).json({ error: 'Gateway not found' });
+  try {
+    const updated = updateGateway(req.params.id, req.body);
+    if (!updated) {
+      return res.status(404).json({ error: 'Gateway not found' });
+    }
+    broadcastTelemetry();
+    res.json(updated);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
-  broadcastTelemetry();
-  res.json(updated);
 });
 
 app.post('/api/gateways/:id/toggle', (req, res) => {

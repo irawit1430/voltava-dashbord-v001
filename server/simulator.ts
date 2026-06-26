@@ -964,6 +964,45 @@ export function toggleMosfet(id: string) {
 }
 
 export function addGateway(data: any): Gateway {
+  if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
+    throw new Error('Gateway name is required');
+  }
+
+  if (data.connectionType === 'tcp') {
+    if (!data.ipAddress || typeof data.ipAddress !== 'string') {
+      throw new Error('IP Address is required for TCP connection');
+    }
+    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+    if (!ipRegex.test(data.ipAddress)) {
+      throw new Error('Invalid IP address format');
+    }
+    if (!data.port) {
+      throw new Error('Port is required for TCP connection');
+    }
+    const duplicate = gateways.find(
+      (g) =>
+        g.connectionType === 'tcp' &&
+        g.ipAddress === data.ipAddress &&
+        g.port === Number(data.port)
+    );
+    if (duplicate) {
+      throw new Error(
+        `Port ${data.port} on IP ${data.ipAddress} is already assigned to another gateway`
+      );
+    }
+  } else if (data.connectionType === 'serial') {
+    if (
+      !data.serialPort ||
+      typeof data.serialPort !== 'string' ||
+      data.serialPort.trim() === ''
+    ) {
+      throw new Error('Serial Port is required for Serial connection');
+    }
+    if (!data.baudRate) {
+      throw new Error('Baud Rate is required for Serial connection');
+    }
+  }
+
   const nextId = `GW-${data.protocol.toUpperCase()}-${Math.floor(10 + Math.random() * 90)}`;
   const newGw: Gateway = {
     id: nextId,
@@ -1003,6 +1042,60 @@ export function updateGateway(id: string, data: any): Gateway | null {
   if (idx === -1) return null;
 
   const existing = gateways[idx];
+
+  const newName = data.name !== undefined ? data.name : existing.name;
+  if (!newName || typeof newName !== 'string' || newName.trim() === '') {
+    throw new Error('Gateway name is required');
+  }
+
+  const newConnectionType =
+    data.connectionType !== undefined
+      ? data.connectionType
+      : existing.connectionType;
+  const newIpAddress =
+    data.ipAddress !== undefined ? data.ipAddress : existing.ipAddress;
+  const newPort = data.port !== undefined ? Number(data.port) : existing.port;
+  const newSerialPort =
+    data.serialPort !== undefined ? data.serialPort : existing.serialPort;
+  const newBaudRate =
+    data.baudRate !== undefined ? Number(data.baudRate) : existing.baudRate;
+
+  if (newConnectionType === 'tcp') {
+    if (!newIpAddress || typeof newIpAddress !== 'string') {
+      throw new Error('IP Address is required for TCP connection');
+    }
+    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+    if (!ipRegex.test(newIpAddress)) {
+      throw new Error('Invalid IP address format');
+    }
+    if (!newPort) {
+      throw new Error('Port is required for TCP connection');
+    }
+    const duplicate = gateways.find(
+      (g) =>
+        g.id !== id &&
+        g.connectionType === 'tcp' &&
+        g.ipAddress === newIpAddress &&
+        g.port === newPort
+    );
+    if (duplicate) {
+      throw new Error(
+        `Port ${newPort} on IP ${newIpAddress} is already assigned to another gateway`
+      );
+    }
+  } else if (newConnectionType === 'serial') {
+    if (
+      !newSerialPort ||
+      typeof newSerialPort !== 'string' ||
+      newSerialPort.trim() === ''
+    ) {
+      throw new Error('Serial Port is required for Serial connection');
+    }
+    if (!newBaudRate) {
+      throw new Error('Baud Rate is required for Serial connection');
+    }
+  }
+
   const updated: Gateway = {
     ...existing,
     name: data.name !== undefined ? data.name : existing.name,

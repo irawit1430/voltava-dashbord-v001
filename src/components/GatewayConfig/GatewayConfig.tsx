@@ -251,8 +251,8 @@ export default function GatewayConfig({
         pollingInterval: 5,
         connectedDevices: [],
       });
-    } catch {
-      setError('Failed to add gateway');
+    } catch (err: any) {
+      setError(err.message || 'Failed to add gateway');
     }
   };
 
@@ -263,8 +263,8 @@ export default function GatewayConfig({
       setError(null);
       await updateGatewayConfig(selectedGatewayId, editGw);
       setIsEditing(false);
-    } catch {
-      setError('Failed to update config');
+    } catch (err: any) {
+      setError(err.message || 'Failed to update config');
     }
   };
 
