@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { app } from './server';
-import { devices, toggleMosfet } from './simulator';
+import { devices } from './simulator';
 import type { Device } from './types';
 
 describe('Server API', () => {
