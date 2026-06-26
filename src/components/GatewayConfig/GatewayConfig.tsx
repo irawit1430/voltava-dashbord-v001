@@ -19,7 +19,7 @@ interface GatewayConfigProps {
   gateways: Gateway[];
   devices: Device[];
   toggleGateway: (id: string) => Promise<any>;
-  updateGatewayConfig: (id: string, data: any) => Promise<any>;
+  updateGatewayConfig: (id: string, data: Partial<Gateway>) => Promise<any>;
   addGateway: (data: any) => Promise<Gateway>;
   pingGateway: (id: string) => Promise<string>;
   scanGatewayBus: (id: string) => Promise<string>;
