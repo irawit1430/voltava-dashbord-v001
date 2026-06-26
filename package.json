@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "start": "npx tsx server/server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -33,13 +33,13 @@ process.on('exit', (code) => {
   console.log(`Process exiting with code: ${code}`);
 });
 
-import { 
-  devices, 
-  gridMetrics, 
-  historyMap, 
-  initHistory, 
-  simulateStep, 
-  triggerOtaUpdate, 
+import {
+  devices,
+  gridMetrics,
+  historyMap,
+  initHistory,
+  simulateStep,
+  triggerOtaUpdate,
   toggleMosfet,
   gateways,
   addGateway,
@@ -192,7 +192,7 @@ app.post('/api/gateways/:id/scan', (req, res) => {
 });
 
 // Serve static assets in production if built
-const distPath = path.join(process.cwd(), 'dist');
+const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get('*', (req, res) => {
@@ -220,7 +220,7 @@ wss.on('error', (err) => {
 wss.on('connection', (ws, request) => {
   const reqUrl = request.url || '';
   const pathname = new URL(reqUrl, 'http://localhost').pathname;
-  
+
   if (pathname !== '/ws' && pathname !== '/') {
     console.log(`Closing connection for unmatched path: ${pathname}`);
     ws.close(1008, 'Unsupported path');
@@ -228,7 +228,7 @@ wss.on('connection', (ws, request) => {
   }
 
   console.log('WS Client connected');
-  
+
   // Send immediate initial data state
   ws.send(JSON.stringify({
     type: 'TELEMETRY_UPDATE',
