@@ -420,6 +420,7 @@ function simulateGateways() {
 function simulateDevices() {
   const gatewayMap = new Map(gateways.map(g => [g.id, g]));
   devices = devices.map(d => {
+    if (d.isExternal) return d;
     const gw = d.gatewayId ? gatewayMap.get(d.gatewayId) : undefined;
     const isGwDown = gw && (gw.status === 'offline' || gw.status === 'error');
     
@@ -1079,6 +1080,7 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
       location: payload.location || { lat: 0, lng: 0, city: 'Testing Lab' },
       owner: payload.owner || 'Testing Team',
       gatewayId: payload.gatewayId,
+      isExternal: true,
       telemetry: updatedTelemetry
     };
     devices.push(newDevice);

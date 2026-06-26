@@ -50,6 +50,7 @@ export interface Device {
   telemetry: TelemetryData;
   aiPredictions?: AIPredictions;
   gatewayId?: string;
+  isExternal?: boolean;
 }
 
 export type GatewayProtocol = 'modbus-tcp' | 'modbus-rtu' | 'dlms' | 'ocpp' | 'can';
