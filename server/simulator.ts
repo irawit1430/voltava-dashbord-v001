@@ -1,4 +1,4 @@
-import { Device, GridMetrics, TelemetryHistoryPoint, Gateway } from './types';
+import { Device, GridMetrics, TelemetryHistoryPoint, Gateway, ExternalDevicePayload } from './types';
 
 // Coordinates for Delhi-NCR e-rickshaw route simulation
 const NCR_ROUTE: [number, number][] = [
@@ -1005,7 +1005,7 @@ export function scanGatewayBus(id: string): string {
   return output;
 }
 
-export function addOrUpdateExternalDevice(id: string, payload: any): void {
+export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePayload): void {
   const existingIdx = devices.findIndex(d => d.id === id);
 
   const updatedTelemetry = {
