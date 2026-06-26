@@ -943,10 +943,10 @@ export function scanGatewayBus(id: string): string {
   if (gw.protocol === 'modbus-rtu' || gw.protocol === 'modbus-tcp') {
     output += `Starting Modbus Unit ID Scan (IDs 1 to 16)...\n`;
     for (let i = 1; i <= 8; i++) {
-      const _isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
+      /* const _isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
         const d = devices.find(dev => dev.id === dId);
-        return d && (d.id.includes(`0${i}`) || d.id.includes(`01`) || d.id.includes(`02`) || d.id.includes(`03`));
-      });
+        return d && (d.status === "fault" || d.status === "warning");
+      }); */
       const matchingDev = gw.connectedDevices.map(dId => devices.find(dev => dev.id === dId)).find(dev => dev && dev.id);
       
       if (matchingDev && i === 1) {
