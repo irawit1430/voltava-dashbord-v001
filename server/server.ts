@@ -53,7 +53,7 @@ import {
 // Initialize history
 initHistory();
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -281,20 +281,22 @@ function broadcastTelemetry() {
 }
 
 // Start simulation loop (every 2 seconds)
-setInterval(() => {
-  try {
-    simulateStep();
-  } catch (err) {
-    console.error('simulateStep() threw:', err);
-  }
-  try {
-    broadcastTelemetry();
-  } catch (err) {
-    console.error('broadcastTelemetry() threw:', err);
-  }
-}, 2000);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    try {
+      simulateStep();
+    } catch (err) {
+      console.error('simulateStep() threw:', err);
+    }
+    try {
+      broadcastTelemetry();
+    } catch (err) {
+      console.error('broadcastTelemetry() threw:', err);
+    }
+  }, 2000);
 
-// Boot server
-server.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+  // Boot server
+  server.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+}
