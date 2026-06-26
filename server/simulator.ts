@@ -946,6 +946,11 @@ export function pingGateway(id: string): string {
 export function scanGatewayBus(id: string): string {
   const gw = gateways.find(g => g.id === id);
   if (!gw) return 'Error: Gateway not found';
+
+  const deviceMap = new Map();
+  for (const dev of devices) {
+    deviceMap.set(dev.id, dev);
+  }
   
   let output = `Voltava Serial/Network Bus Scanner v1.2.0\n`;
   output += `Scanning bus on ${gw.name} [Protocol: ${gw.protocol.toUpperCase()}]...\n`;
@@ -962,7 +967,7 @@ export function scanGatewayBus(id: string): string {
         const d = devices.find(dev => dev.id === dId);
         return d && (d.status === "fault" || d.status === "warning");
       }); */
-      const matchingDev = gw.connectedDevices.map(dId => devices.find(dev => dev.id === dId)).find(dev => dev && dev.id);
+      const matchingDev = gw.connectedDevices.map(dId => deviceMap.get(dId)).find(dev => dev && dev.id);
       
       if (matchingDev && i === 1) {
         output += `[Unit ID ${i}]: Device RESPONDED (Model: ${matchingDev.model}, ID: ${matchingDev.id})\n`;
@@ -975,7 +980,7 @@ export function scanGatewayBus(id: string): string {
     output += `Scanning DLMS/COSEM HDLC Address space...\n`;
     output += `Opening Logical Device Association LN (Logical Name) Referencing...\n`;
     gw.connectedDevices.forEach(dId => {
-      const dev = devices.find(d => d.id === dId);
+      const dev = deviceMap.get(dId);
       if (dev) {
         output += `[SAP Address 0x01/0x10]: Connected to ${dev.model} (${dev.id}) OBIS profile active.\n`;
       }
@@ -984,7 +989,7 @@ export function scanGatewayBus(id: string): string {
   } else if (gw.protocol === 'ocpp') {
     output += `Listening for OCPP Chargepoint handshakes...\n`;
     gw.connectedDevices.forEach(dId => {
-      const dev = devices.find(d => d.id === dId);
+      const dev = deviceMap.get(dId);
       if (dev) {
         output += `[WebSocket OCPP 1.6J]: Connection active for Charge Station ${dev.id}\n`;
       }
@@ -994,7 +999,7 @@ export function scanGatewayBus(id: string): string {
     output += `Scanning J1939 CAN network identifier space...\n`;
     output += `PGN Filter active: 61444 (EEC1), 65263 (IC1)\n`;
     gw.connectedDevices.forEach(dId => {
-      const dev = devices.find(d => d.id === dId);
+      const dev = deviceMap.get(dId);
       if (dev) {
         output += `[Source Addr 0x${(10 + Math.floor(Math.random() * 20)).toString(16).toUpperCase()}]: Broadcast detected. Name: ${dev.name}\n`;
       }
