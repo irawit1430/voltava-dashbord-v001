@@ -751,7 +751,7 @@ export function toggleMosfet(id: string) {
   return resultingMosfet;
 }
 
-export function addGateway(data: any): Gateway {
+export function addGateway(data: Omit<Gateway, 'id' | 'status' | 'lastSync' | 'packetsTransmitted' | 'packetsFailed'>): Gateway {
   if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
     throw new Error('Gateway name is required');
   }
