@@ -418,8 +418,9 @@ export function simulateStep() {
   });
 
   // 2. Simulate devices
+  const gatewayMap = new Map(gateways.map(g => [g.id, g]));
   devices = devices.map(d => {
-    const gw = gateways.find(g => g.id === d.gatewayId);
+    const gw = d.gatewayId ? gatewayMap.get(d.gatewayId) : undefined;
     const isGwDown = gw && (gw.status === 'offline' || gw.status === 'error');
     
     if (isGwDown) {
