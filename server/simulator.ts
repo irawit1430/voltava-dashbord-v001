@@ -1044,7 +1044,7 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
     };
   } else {
     // Create new device dynamically
-    const newDevice = {
+    const newDevice: Device = {
       id,
       name: payload.name || `External Device ${id}`,
       type: payload.type || 'bms', // default type
@@ -1055,7 +1055,7 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
       owner: payload.owner || 'Testing Team',
       telemetry: updatedTelemetry
     };
-    devices.push(newDevice as any);
+    devices.push(newDevice);
   }
 
   // Also update history
