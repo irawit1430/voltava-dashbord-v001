@@ -47,6 +47,7 @@ async function sendTelemetry() {
       firmware: 'v1.0.0-test',
       location: { lat: 28.5355, lng: 77.3910, city: 'Testing Lab' },
       owner: 'Test Engineer',
+      gatewayId: 'GW-DEL-TLM-01',
       voltage: Number(telemetry.voltage.toFixed(2)),
       current: Number(telemetry.current.toFixed(2)),
       soc: Math.round(telemetry.soc),

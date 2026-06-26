@@ -116,4 +116,5 @@ export interface ExternalDevicePayload {
   cellTemps?: number[];
   mosfetStatus?: 'on' | 'off';
   power?: number;
+  gatewayId?: string;
 }

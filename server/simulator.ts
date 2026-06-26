@@ -1034,14 +1034,33 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
 
   if (existingIdx >= 0) {
     // Update existing device
+    const oldGatewayId = devices[existingIdx].gatewayId;
     devices[existingIdx] = {
       ...devices[existingIdx],
+      gatewayId: payload.gatewayId !== undefined ? payload.gatewayId : devices[existingIdx].gatewayId,
       telemetry: {
         ...devices[existingIdx].telemetry,
         ...updatedTelemetry
       },
       status: payload.faults && payload.faults.length > 0 ? 'fault' : 'online'
     };
+
+    // Manage gateway links
+    const newGatewayId = devices[existingIdx].gatewayId;
+    if (newGatewayId !== oldGatewayId) {
+      if (oldGatewayId) {
+        const oldGw = gateways.find(g => g.id === oldGatewayId);
+        if (oldGw) {
+          oldGw.connectedDevices = oldGw.connectedDevices.filter(dId => dId !== id);
+        }
+      }
+      if (newGatewayId) {
+        const newGw = gateways.find(g => g.id === newGatewayId);
+        if (newGw && !newGw.connectedDevices.includes(id)) {
+          newGw.connectedDevices.push(id);
+        }
+      }
+    }
   } else {
     // Create new device dynamically
     const newDevice: Device = {
@@ -1053,9 +1072,17 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
       firmware: payload.firmware || 'v1.0.0',
       location: payload.location || { lat: 0, lng: 0, city: 'Testing Lab' },
       owner: payload.owner || 'Testing Team',
+      gatewayId: payload.gatewayId,
       telemetry: updatedTelemetry
     };
     devices.push(newDevice);
+
+    if (payload.gatewayId) {
+      const gw = gateways.find(g => g.id === payload.gatewayId);
+      if (gw && !gw.connectedDevices.includes(id)) {
+        gw.connectedDevices.push(id);
+      }
+    }
   }
 
   // Also update history
