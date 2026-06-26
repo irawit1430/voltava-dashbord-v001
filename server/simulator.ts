@@ -1,4 +1,4 @@
-import { Device, GridMetrics, TelemetryHistoryPoint, Gateway } from './types';
+import { Device, GridMetrics, TelemetryHistoryPoint, Gateway, ExternalDevicePayload } from './types';
 
 // Coordinates for Delhi-NCR e-rickshaw route simulation
 const NCR_ROUTE: [number, number][] = [
@@ -418,8 +418,9 @@ export function simulateStep() {
   });
 
   // 2. Simulate devices
+  const gatewayMap = new Map(gateways.map(g => [g.id, g]));
   devices = devices.map(d => {
-    const gw = gateways.find(g => g.id === d.gatewayId);
+    const gw = d.gatewayId ? gatewayMap.get(d.gatewayId) : undefined;
     const isGwDown = gw && (gw.status === 'offline' || gw.status === 'error');
     
     if (isGwDown) {
@@ -813,7 +814,7 @@ export function addGateway(data: any): Gateway {
   return newGw;
 }
 
-export function updateGateway(id: string, data: any): Gateway | null {
+export function updateGateway(id: string, data: Partial<Gateway>): Gateway | null {
   const idx = gateways.findIndex(g => g.id === id);
   if (idx === -1) return null;
   
@@ -957,12 +958,14 @@ export function scanGatewayBus(id: string): string {
   
   if (gw.protocol === 'modbus-rtu' || gw.protocol === 'modbus-tcp') {
     output += `Starting Modbus Unit ID Scan (IDs 1 to 16)...\n`;
+
+    const matchingDev = gw.connectedDevices.map(dId => devices.find(dev => dev.id === dId)).find(dev => dev && dev.id);
+
     for (let i = 1; i <= 8; i++) {
       /* const isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
         const d = devices.find(dev => dev.id === dId);
         return d && (d.status === "fault" || d.status === "warning");
       }); */
-      const matchingDev = gw.connectedDevices.map(dId => devices.find(dev => dev.id === dId)).find(dev => dev && dev.id);
       
       if (matchingDev && i === 1) {
         output += `[Unit ID ${i}]: Device RESPONDED (Model: ${matchingDev.model}, ID: ${matchingDev.id})\n`;
@@ -1005,7 +1008,7 @@ export function scanGatewayBus(id: string): string {
   return output;
 }
 
-export function addOrUpdateExternalDevice(id: string, payload: any): void {
+export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePayload): void {
   const existingIdx = devices.findIndex(d => d.id === id);
 
   const updatedTelemetry = {

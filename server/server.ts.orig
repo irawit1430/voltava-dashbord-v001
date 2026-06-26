@@ -33,13 +33,13 @@ process.on('exit', (code) => {
   console.log(`Process exiting with code: ${code}`);
 });
 
-import { 
-  devices, 
-  gridMetrics, 
-  historyMap, 
-  initHistory, 
-  simulateStep, 
-  triggerOtaUpdate, 
+import {
+  devices,
+  gridMetrics,
+  historyMap,
+  initHistory,
+  simulateStep,
+  triggerOtaUpdate,
   toggleMosfet,
   gateways,
   addGateway,
@@ -47,14 +47,13 @@ import {
   toggleGateway,
   pingGateway,
   scanGatewayBus,
-  addOrUpdateExternalDevice,
-  generateDiagnosticPacket
+  addOrUpdateExternalDevice
 } from './simulator';
 
 // Initialize history
 initHistory();
 
-export const app = express();
+const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -116,7 +115,6 @@ app.post('/api/devices/:id/ota', (req, res) => {
     });
   }
   triggerOtaUpdate(req.params.id);
-  broadcastTelemetry();
   res.json({ success: true, message: 'OTA update initiated' });
 });
 
@@ -139,7 +137,6 @@ app.post('/api/devices/:id/toggle-mosfet', (req, res) => {
     });
   }
   const status = toggleMosfet(req.params.id);
-  broadcastTelemetry();
   res.json({ success: true, mosfetStatus: status });
 });
 
@@ -195,7 +192,7 @@ app.post('/api/gateways/:id/scan', (req, res) => {
 });
 
 // Serve static assets in production if built
-const distPath = path.join(process.cwd(), 'dist');
+const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get('*', (req, res) => {
@@ -219,42 +216,10 @@ wss.on('error', (err) => {
   console.error('WebSocketServer error:', err);
 });
 
-
 // WS Connection handler
 wss.on('connection', (ws, request) => {
   const reqUrl = request.url || '';
   const pathname = new URL(reqUrl, 'http://localhost').pathname;
-  
-  if (pathname === '/ws/packets') {
-    const urlParams = new URL(reqUrl, 'http://localhost').searchParams;
-    const gatewayId = urlParams.get('gatewayId');
-
-    if (!gatewayId) {
-      ws.close(1008, 'Missing gatewayId');
-      return;
-    }
-
-    console.log(`WS Packets Client connected for gateway ${gatewayId}`);
-
-    const sendPacket = () => {
-      const pkt = generateDiagnosticPacket(gatewayId);
-      if (pkt) {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'PACKET', data: pkt }));
-        }
-      }
-    };
-
-    // Send one immediately if wanted, or just wait for interval
-
-    const interval = setInterval(sendPacket, 2500);
-
-    ws.on('close', () => {
-      console.log(`WS Packets Client disconnected for gateway ${gatewayId}`);
-      clearInterval(interval);
-    });
-    return;
-  }
 
   if (pathname !== '/ws' && pathname !== '/') {
     console.log(`Closing connection for unmatched path: ${pathname}`);
@@ -263,7 +228,7 @@ wss.on('connection', (ws, request) => {
   }
 
   console.log('WS Client connected');
-  
+
   // Send immediate initial data state
   ws.send(JSON.stringify({
     type: 'TELEMETRY_UPDATE',
@@ -316,22 +281,20 @@ function broadcastTelemetry() {
 }
 
 // Start simulation loop (every 2 seconds)
-if (process.env.NODE_ENV !== 'test') {
-  setInterval(() => {
-    try {
-      simulateStep();
-    } catch (err) {
-      console.error('simulateStep() threw:', err);
-    }
-    try {
-      broadcastTelemetry();
-    } catch (err) {
-      console.error('broadcastTelemetry() threw:', err);
-    }
-  }, 2000);
+setInterval(() => {
+  try {
+    simulateStep();
+  } catch (err) {
+    console.error('simulateStep() threw:', err);
+  }
+  try {
+    broadcastTelemetry();
+  } catch (err) {
+    console.error('broadcastTelemetry() threw:', err);
+  }
+}, 2000);
 
-  // Boot server
-  server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-}
+// Boot server
+server.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
