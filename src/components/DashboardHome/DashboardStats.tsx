@@ -2,6 +2,7 @@
 import { Cpu, Sun, TrendingUp, Leaf, ArrowUpRight } from 'lucide-react';
 import type { GridMetrics } from '../../types';
 import './DashboardHome.css';
+import { formatINR } from '../../utils/formatters';
 
 interface DashboardStatsProps {
   totalDevices: number;
@@ -9,14 +10,6 @@ interface DashboardStatsProps {
 }
 
 export default function DashboardStats({ totalDevices, gridMetrics }: DashboardStatsProps) {
-  // Format Indian Currency
-  const formatINR = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 2
-    }).format(value);
-  };
 
   return (
     <div className="stats-grid">
@@ -90,7 +83,7 @@ export default function DashboardStats({ totalDevices, gridMetrics }: DashboardS
           </div>
         </div>
         <div className="stat-value stat-value-green">
-          {formatINR(gridMetrics.savingsINR)}
+          {formatINR(gridMetrics.savingsINR, 2)}
         </div>
         <div className="stat-footer">
           <span className="stat-trend-up">
