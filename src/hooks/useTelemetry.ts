@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import type { Device, GridMetrics, TelemetryHistoryPoint, Gateway } from '../types';
 
 export function useTelemetry() {
+const API_KEY = import.meta.env.VITE_API_KEY || 'default-dev-key';
+
   const [devices, setDevices] = useState<Device[]>([]);
   const [gateways, setGateways] = useState<Gateway[]>([]);
   const [gridMetrics, setGridMetrics] = useState<GridMetrics>({
@@ -177,7 +179,8 @@ export function useTelemetry() {
     fetch(`/api/devices/${id}/ota`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
       }
     })
       .then(res => {
@@ -220,7 +223,8 @@ export function useTelemetry() {
     fetch(`/api/devices/${id}/toggle-mosfet`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
       }
     })
       .then(res => {
@@ -254,7 +258,7 @@ export function useTelemetry() {
 
     return fetch(`/api/gateways/${id}/toggle`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }
     })
       .then(res => {
         if (!res.ok) throw new Error('Failed to toggle gateway');
@@ -280,7 +284,7 @@ export function useTelemetry() {
 
     return fetch(`/api/gateways/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
       body: JSON.stringify(updatedData)
     })
       .then(async res => {
@@ -303,7 +307,7 @@ export function useTelemetry() {
   const addGateway = (newGwData: any) => {
     return fetch('/api/gateways', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
       body: JSON.stringify(newGwData)
     })
       .then(async res => {
@@ -326,7 +330,7 @@ export function useTelemetry() {
   const pingGateway = (id: string): Promise<string> => {
     return fetch(`/api/gateways/${id}/ping`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }
     })
       .then(res => {
         if (!res.ok) throw new Error('Failed to ping gateway');
@@ -342,7 +346,7 @@ export function useTelemetry() {
   const scanGatewayBus = (id: string): Promise<string> => {
     return fetch(`/api/gateways/${id}/scan`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` }
     })
       .then(res => {
         if (!res.ok) throw new Error('Failed to scan gateway bus');

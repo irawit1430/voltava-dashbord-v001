@@ -78,6 +78,25 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Authentication Middleware
+export const requireAuth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const authHeader = req.headers.authorization;
+  const expectedKey = process.env.API_KEY || 'default-dev-key';
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing or invalid Authorization header' } });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (token !== expectedKey) {
+    return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Invalid API Key' } });
+  }
+
+  next();
+};
+
+
+
 function isValidPayload(payload: any): boolean {
   if (typeof payload !== 'object' || payload === null) return false;
 
@@ -111,7 +130,7 @@ function isValidPayload(payload: any): boolean {
 }
 
 // API Endpoints
-app.post('/api/devices/ingest', (req, res) => {
+app.post('/api/devices/ingest', requireAuth, (req, res) => {
   const { id, payload } = req.body;
   if (typeof id !== 'string' || !id || !payload || !isValidPayload(payload)) {
     return res.status(400).json({ error: 'Invalid or missing device id or payload' });
@@ -155,7 +174,7 @@ app.get('/api/devices/:id/history', (req, res) => {
   res.json(history);
 });
 
-app.post('/api/devices/:id/ota', (req, res) => {
+app.post('/api/devices/:id/ota', requireAuth, (req, res) => {
   const device = devices.find(d => d.id === req.params.id);
   if (!device) {
     return res.status(404).json({
@@ -169,7 +188,7 @@ app.post('/api/devices/:id/ota', (req, res) => {
   res.json({ success: true, message: 'OTA update initiated' });
 });
 
-app.post('/api/devices/:id/toggle-mosfet', (req, res) => {
+app.post('/api/devices/:id/toggle-mosfet', requireAuth, (req, res) => {
   const device = devices.find(d => d.id === req.params.id);
   if (!device) {
     return res.status(404).json({
@@ -200,7 +219,7 @@ app.get('/api/gateways', (req, res) => {
   res.json(gateways);
 });
 
-app.post('/api/gateways', (req, res) => {
+app.post('/api/gateways', requireAuth, (req, res) => {
   try {
     const newGw = addGateway(req.body);
     broadcastTelemetry();
@@ -210,7 +229,7 @@ app.post('/api/gateways', (req, res) => {
   }
 });
 
-app.put('/api/gateways/:id', (req, res) => {
+app.put('/api/gateways/:id', requireAuth, (req, res) => {
   try {
     const updated = updateGateway(req.params.id, req.body);
     if (!updated) {
@@ -223,7 +242,7 @@ app.put('/api/gateways/:id', (req, res) => {
   }
 });
 
-app.post('/api/gateways/:id/toggle', (req, res) => {
+app.post('/api/gateways/:id/toggle', requireAuth, (req, res) => {
   const updated = toggleGateway(req.params.id);
   if (!updated) {
     return res.status(404).json({ error: 'Gateway not found' });
@@ -232,12 +251,12 @@ app.post('/api/gateways/:id/toggle', (req, res) => {
   res.json(updated);
 });
 
-app.post('/api/gateways/:id/ping', (req, res) => {
+app.post('/api/gateways/:id/ping', requireAuth, (req, res) => {
   const output = pingGateway(req.params.id);
   res.json({ output });
 });
 
-app.post('/api/gateways/:id/scan', (req, res) => {
+app.post('/api/gateways/:id/scan', requireAuth, (req, res) => {
   const output = scanGatewayBus(req.params.id);
   res.json({ output });
 });
