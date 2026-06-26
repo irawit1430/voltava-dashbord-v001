@@ -64,7 +64,12 @@ app.use(cors({
       : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    
+    const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                      origin.endsWith('.onrender.com') ||
+                      origin === 'https://voltava-dashboard.onrender.com';
+
+    if (isAllowed) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
