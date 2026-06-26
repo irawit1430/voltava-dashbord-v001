@@ -19,7 +19,7 @@ interface GatewayConfigProps {
   gateways: Gateway[];
   devices: Device[];
   toggleGateway: (id: string) => Promise<any>;
-  updateGatewayConfig: (id: string, data: any) => Promise<any>;
+  updateGatewayConfig: (id: string, data: Partial<Gateway>) => Promise<any>;
   addGateway: (data: any) => Promise<Gateway>;
   pingGateway: (id: string) => Promise<string>;
   scanGatewayBus: (id: string) => Promise<string>;
@@ -624,39 +624,42 @@ export default function GatewayConfig({
                 <div style={{ marginTop: '1rem' }}>
                   <label className="gw-label">Link Monitored Assets</label>
                   <div className="gw-assets-checklist">
-                    {devices
-                      .filter((d) => !d.gatewayId)
-                      .map((d) => (
-                        <label key={d.id} className="gw-check-label">
-                          <input
-                            type="checkbox"
-                            checked={newGw.connectedDevices.includes(d.id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setNewGw((prev) => ({
-                                  ...prev,
-                                  connectedDevices: [
-                                    ...prev.connectedDevices,
-                                    d.id,
-                                  ],
-                                }));
-                              } else {
-                                setNewGw((prev) => ({
-                                  ...prev,
-                                  connectedDevices:
-                                    prev.connectedDevices.filter(
-                                      (id) => id !== d.id
-                                    ),
-                                }));
-                              }
-                            }}
-                            style={{ marginRight: 8 }}
-                          />
-                          <span>
-                            {d.name} ({d.id})
-                          </span>
-                        </label>
-                      ))}
+                    {(() => {
+                      const connectedSet = new Set(newGw.connectedDevices);
+                      return devices
+                        .filter((d) => !d.gatewayId)
+                        .map((d) => (
+                          <label key={d.id} className="gw-check-label">
+                            <input
+                              type="checkbox"
+                              checked={connectedSet.has(d.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setNewGw((prev) => ({
+                                    ...prev,
+                                    connectedDevices: [
+                                      ...prev.connectedDevices,
+                                      d.id,
+                                    ],
+                                  }));
+                                } else {
+                                  setNewGw((prev) => ({
+                                    ...prev,
+                                    connectedDevices:
+                                      prev.connectedDevices.filter(
+                                        (id) => id !== d.id
+                                      ),
+                                  }));
+                                }
+                              }}
+                              style={{ marginRight: 8 }}
+                            />
+                            <span>
+                              {d.name} ({d.id})
+                            </span>
+                          </label>
+                        ));
+                    })()}
                     {devices.filter((d) => !d.gatewayId).length === 0 && (
                       <span
                         style={{
@@ -869,46 +872,48 @@ export default function GatewayConfig({
                         Linked Monitored Assets
                       </label>
                       <div className="gw-assets-checklist">
-                        {devices.map((d) => {
-                          const isCurrentlySelected =
-                            editGw.connectedDevices.includes(d.id);
-                          const isLinkedElsewhere =
-                            d.gatewayId && d.gatewayId !== selectedGateway.id;
+                        {(() => {
+                          const connectedSet = new Set(editGw.connectedDevices);
+                          return devices.map((d) => {
+                            const isCurrentlySelected = connectedSet.has(d.id);
+                            const isLinkedElsewhere =
+                              d.gatewayId && d.gatewayId !== selectedGateway.id;
 
-                          if (isLinkedElsewhere) return null; // hide devices already bound to other gateways
+                            if (isLinkedElsewhere) return null; // hide devices already bound to other gateways
 
-                          return (
-                            <label key={d.id} className="gw-check-label">
-                              <input
-                                type="checkbox"
-                                checked={isCurrentlySelected}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setEditGw((prev) => ({
-                                      ...prev,
-                                      connectedDevices: [
-                                        ...prev.connectedDevices,
-                                        d.id,
-                                      ],
-                                    }));
-                                  } else {
-                                    setEditGw((prev) => ({
-                                      ...prev,
-                                      connectedDevices:
-                                        prev.connectedDevices.filter(
-                                          (id) => id !== d.id
-                                        ),
-                                    }));
-                                  }
-                                }}
-                                style={{ marginRight: 8 }}
-                              />
-                              <span>
-                                {d.name} ({d.id})
-                              </span>
-                            </label>
-                          );
-                        })}
+                            return (
+                              <label key={d.id} className="gw-check-label">
+                                <input
+                                  type="checkbox"
+                                  checked={isCurrentlySelected}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setEditGw((prev) => ({
+                                        ...prev,
+                                        connectedDevices: [
+                                          ...prev.connectedDevices,
+                                          d.id,
+                                        ],
+                                      }));
+                                    } else {
+                                      setEditGw((prev) => ({
+                                        ...prev,
+                                        connectedDevices:
+                                          prev.connectedDevices.filter(
+                                            (id) => id !== d.id
+                                          ),
+                                      }));
+                                    }
+                                  }}
+                                  style={{ marginRight: 8 }}
+                                />
+                                <span>
+                                  {d.name} ({d.id})
+                                </span>
+                              </label>
+                            );
+                          });
+                        })()}
                       </div>
                     </div>
 

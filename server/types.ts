@@ -108,3 +108,16 @@ export interface TelemetryHistoryPoint {
   temp: number;
   power?: number;
 }
+
+export interface ExternalDevicePayload {
+  voltage?: number;
+  current?: number;
+  soc?: number;
+  soh?: number;
+  temp?: number;
+  faults?: string[];
+  cellVoltages?: number[];
+  cellTemps?: number[];
+  mosfetStatus?: 'on' | 'off';
+  power?: number;
+}

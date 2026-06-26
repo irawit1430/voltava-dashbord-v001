@@ -29,9 +29,11 @@ export default function FleetOverview({
   const bmsDevices = devices.filter((d) => d.type === 'bms');
 
   // Filter based on city
+  const cityFilterPrefix =
+    selectedCityFilter === 'all' ? '' : selectedCityFilter.split(',')[0];
   const filteredVehicles = bmsDevices.filter((d) => {
     if (selectedCityFilter === 'all') return true;
-    return d.location.city.includes(selectedCityFilter.split(',')[0]);
+    return d.location.city.includes(cityFilterPrefix);
   });
 
   // Calculate fleet stats
