@@ -270,22 +270,26 @@ export function useTelemetry() {
   };
 
   const updateGatewayConfig = (id: string, updatedData: any) => {
-    // Optimistic update
-    setGateways(prev => prev.map(g => {
-      if (g.id === id) {
-        return { ...g, ...updatedData };
-      }
-      return g;
-    }));
-
     return fetch(`/api/gateways/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData)
     })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to update gateway config');
+      .then(async res => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Failed to update gateway config');
+        }
         return res.json();
+      })
+      .then(updatedGw => {
+        setGateways(prev => prev.map(g => {
+          if (g.id === id) {
+            return updatedGw;
+          }
+          return g;
+        }));
+        return updatedGw;
       })
       .catch(err => {
         console.error('Error updating gateway config:', err);
@@ -302,8 +306,11 @@ export function useTelemetry() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newGwData)
     })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to add gateway');
+      .then(async res => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Failed to add gateway');
+        }
         return res.json();
       })
       .then(newGw => {

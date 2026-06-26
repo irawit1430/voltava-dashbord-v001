@@ -750,7 +750,54 @@ export function toggleMosfet(id: string) {
   return resultingMosfet;
 }
 
+
+export function validateGatewayData(data: any, currentId?: string) {
+  if (!data.name) throw new Error("Gateway Name is required.");
+  if (!data.protocol) throw new Error("Protocol Type is required.");
+  if (!data.connectionType) throw new Error("Connection Medium is required.");
+  if (!data.pollingInterval || data.pollingInterval < 1) throw new Error("A valid Polling Interval is required.");
+
+  if (data.connectionType === 'tcp') {
+    if (!data.ipAddress) throw new Error("IP Address is required for TCP connections.");
+    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if (!ipRegex.test(data.ipAddress)) {
+      throw new Error("Invalid IP Address format.");
+    }
+    if (!data.port) throw new Error("TCP Port is required for TCP connections.");
+    if (isNaN(Number(data.port)) || Number(data.port) <= 0 || Number(data.port) > 65535) {
+      throw new Error("TCP Port must be a valid port number (1-65535).");
+    }
+
+    // Check for duplicate IP and Port
+    const duplicate = gateways.find(g =>
+      g.id !== currentId &&
+      g.connectionType === 'tcp' &&
+      g.ipAddress === data.ipAddress &&
+      g.port === Number(data.port)
+    );
+    if (duplicate) {
+      throw new Error(`IP Address and Port combination is already in use by gateway: ${duplicate.name}`);
+    }
+  } else if (data.connectionType === 'serial') {
+    if (!data.serialPort) throw new Error("Serial Port is required for Serial connections.");
+    if (!data.baudRate) throw new Error("Baud Rate is required for Serial connections.");
+
+    // Check for duplicate COM port
+    const duplicate = gateways.find(g =>
+      g.id !== currentId &&
+      g.connectionType === 'serial' &&
+      g.serialPort === data.serialPort
+    );
+    if (duplicate) {
+      throw new Error(`Serial Port ${data.serialPort} is already in use by gateway: ${duplicate.name}`);
+    }
+  } else {
+      throw new Error("Invalid Connection Medium.");
+  }
+}
+
 export function addGateway(data: any): Gateway {
+  validateGatewayData(data);
   const nextId = `GW-${data.protocol.toUpperCase()}-${Math.floor(10 + Math.random() * 90)}`;
   const newGw: Gateway = {
     id: nextId,
@@ -789,6 +836,8 @@ export function updateGateway(id: string, data: any): Gateway | null {
   const idx = gateways.findIndex(g => g.id === id);
   if (idx === -1) return null;
   
+  validateGatewayData(data, id);
+
   const existing = gateways[idx];
   const updated: Gateway = {
     ...existing,
@@ -894,7 +943,7 @@ export function scanGatewayBus(id: string): string {
   if (gw.protocol === 'modbus-rtu' || gw.protocol === 'modbus-tcp') {
     output += `Starting Modbus Unit ID Scan (IDs 1 to 16)...\n`;
     for (let i = 1; i <= 8; i++) {
-      const isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
+      const _isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
         const d = devices.find(dev => dev.id === dId);
         return d && (d.id.includes(`0${i}`) || d.id.includes(`01`) || d.id.includes(`02`) || d.id.includes(`03`));
       });

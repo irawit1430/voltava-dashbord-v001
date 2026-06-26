@@ -154,7 +154,7 @@ export default function GatewayConfig({
 
     const interval = setInterval(generatePacket, 2500);
     return () => clearInterval(interval);
-  }, [selectedGatewayId, selectedGateway?.status, activeDiagnosticTab]);
+  }, [selectedGatewayId, selectedGateway, activeDiagnosticTab]);
 
   // Scroll to bottom of terminal logs
   useEffect(() => {
@@ -206,8 +206,8 @@ export default function GatewayConfig({
         pollingInterval: 5,
         connectedDevices: []
       });
-    } catch (err) {
-      setError('Failed to add gateway');
+    } catch (err: any) {
+      setError(err.message || 'Failed to add gateway');
     }
   };
 
@@ -218,8 +218,8 @@ export default function GatewayConfig({
       setError(null);
       await updateGatewayConfig(selectedGatewayId, editGw);
       setIsEditing(false);
-    } catch (err) {
-      setError('Failed to update config');
+    } catch (err: any) {
+      setError(err.message || 'Failed to update config');
     }
   };
 
