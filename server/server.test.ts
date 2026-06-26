@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { app } from './server';
-import { devices, toggleMosfet } from './simulator';
+import { devices } from './simulator';
 import type { Device } from './types';
 
 describe('Server API', () => {
@@ -63,6 +63,119 @@ describe('Server API', () => {
           code: 'BAD_REQUEST',
           message: `Device with ID ${mockDeviceId} does not support MOSFET operations`
         }
+      });
+    });
+  });
+
+  describe('POST /api/devices/ingest', () => {
+    it('should return 400 BAD_REQUEST for missing device id', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          payload: {
+            voltage: 230,
+            current: 10
+          }
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid or missing device id or payload'
+      });
+    });
+
+    it('should return 400 BAD_REQUEST for missing payload', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          id: 'mock-device-id'
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid or missing device id or payload'
+      });
+    });
+
+    it('should return 400 BAD_REQUEST for invalid id type', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          id: 123,
+          payload: {
+            voltage: 230
+          }
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid or missing device id or payload'
+      });
+    });
+
+    it('should return 400 BAD_REQUEST for invalid payload type (not an object)', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          id: 'mock-device-id',
+          payload: 'invalid-payload'
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid or missing device id or payload'
+      });
+    });
+
+    it('should return 400 BAD_REQUEST for invalid field type in payload', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          id: 'mock-device-id',
+          payload: {
+            voltage: '230' // Should be a number
+          }
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid or missing device id or payload'
+      });
+    });
+
+    it('should return 400 BAD_REQUEST for invalid faults array', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          id: 'mock-device-id',
+          payload: {
+            faults: ['fault1', 123] // Should be string[]
+          }
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid or missing device id or payload'
+      });
+    });
+
+    it('should return 200 SUCCESS for valid request', async () => {
+      const response = await request(app)
+        .post('/api/devices/ingest')
+        .send({
+          id: 'mock-device-id',
+          payload: {
+            voltage: 230,
+            current: 10,
+            soc: 80,
+            faults: ['warning1']
+          }
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        success: true,
+        message: 'Telemetry updated for device mock-device-id'
       });
     });
   });
