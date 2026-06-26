@@ -102,18 +102,21 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
             
             <div style={styles.filterBtnGroup}>
               <button 
+                aria-label="Filter by all pilots"
                 onClick={() => setSelectedCityFilter('all')}
                 style={{ ...styles.filterBtn, ...(selectedCityFilter === 'all' ? styles.filterBtnActive : {}) }}
               >
                 All Pilots
               </button>
               <button 
+                aria-label="Filter by Delhi-NCR"
                 onClick={() => setSelectedCityFilter('Delhi-NCR')}
                 style={{ ...styles.filterBtn, ...(selectedCityFilter === 'Delhi-NCR' ? styles.filterBtnActive : {}) }}
               >
                 Delhi-NCR
               </button>
               <button 
+                aria-label="Filter by Patna"
                 onClick={() => setSelectedCityFilter('Patna, Bihar')}
                 style={{ ...styles.filterBtn, ...(selectedCityFilter === 'Patna, Bihar' ? styles.filterBtnActive : {}) }}
               >
@@ -196,7 +199,7 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
               <div className="glass-panel glow-blue" style={styles.mapInfoCard}>
                 <div style={styles.mapInfoCardHeader}>
                   <h4 style={styles.mapInfoTitle}>{selectedVehicleData.name}</h4>
-                  <button onClick={() => setSelectedMapVehicle(null)} style={styles.mapInfoClose}>×</button>
+                  <button onClick={() => setSelectedMapVehicle(null)} style={styles.mapInfoClose} aria-label="Close vehicle details">×</button>
                 </div>
                 <div style={styles.mapInfoGrid}>
                   <div>
@@ -225,6 +228,7 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
                   </div>
                 </div>
                 <button 
+                  aria-label="Open BMS Inspector for selected vehicle"
                   onClick={() => onInspectDevice(selectedVehicleData)}
                   className="btn btn-primary"
                   style={{ width: '100%', marginTop: '0.5rem', padding: '0.25rem', fontSize: '0.7rem' }}
