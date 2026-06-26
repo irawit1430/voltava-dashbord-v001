@@ -716,11 +716,17 @@ export function triggerOtaUpdate(id: string) {
     devices = devices.map(d => {
       if (d.id === id) {
         const baseVer = d.firmware.split(' ')[0];
-        const [major, minor, patch] = baseVer.replace('v', '').split('.').map(Number);
-        const nextPatch = patch + 1;
+        const versionMatch = baseVer.match(/v?(\d+)\.(\d+)\.(\d+)/);
+        let nextFirmware = d.firmware;
+        if (versionMatch) {
+          const major = Number(versionMatch[1]);
+          const minor = Number(versionMatch[2]);
+          const patch = Number(versionMatch[3]);
+          nextFirmware = `v${major}.${minor}.${patch + 1}`;
+        }
         return {
           ...d,
-          firmware: `v${major}.${minor}.${nextPatch}`,
+          firmware: nextFirmware,
           telemetry: {
             ...d.telemetry,
             faults: d.telemetry.faults.filter(f => f !== 'OTA Update Initiated')
