@@ -233,6 +233,7 @@ wss.on('connection', (ws, request) => {
       ws.close(1008, 'Missing gatewayId');
       return;
     }
+
     console.log(`WS Packets Client connected for gateway ${gatewayId}`);
 
     const sendPacket = () => {

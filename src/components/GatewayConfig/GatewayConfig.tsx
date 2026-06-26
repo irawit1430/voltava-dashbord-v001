@@ -144,15 +144,9 @@ export default function GatewayConfig({
       };
     };
 
-    connectWs();
-
-    return () => {
-      active = false;
-      if (ws) {
-        ws.close();
-      }
-    };
-  }, [selectedGatewayId, selectedGateway, activeDiagnosticTab]);
+    const interval = setInterval(generatePacket, 2500);
+    return () => clearInterval(interval);
+  }, [selectedGatewayId, selectedGateway?.status, activeDiagnosticTab, selectedGateway, selectedGateway?.id, selectedGateway?.protocol, selectedGateway?.name]);
 
   // Scroll to bottom of terminal logs
   useEffect(() => {

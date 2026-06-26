@@ -224,6 +224,11 @@ export function useTelemetry() {
       })
       .catch(err => {
         console.error('Error updating gateway config:', err);
+        // revert
+        fetch('/api/gateways')
+          .then(res => res.json())
+          .then(data => setGateways(data));
+        throw err;
       });
   };
 
