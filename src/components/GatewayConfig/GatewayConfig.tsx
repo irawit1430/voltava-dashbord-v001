@@ -366,7 +366,7 @@ export default function GatewayConfig({
             <div className="glass-panel gw-form-container">
               <div className="gw-form-header">
                 <h3 className="gw-form-title">Add New Gateway Node</h3>
-                <button onClick={() => setIsAdding(false)} className="gw-close-btn">
+                <button onClick={() => setIsAdding(false)} className="gw-close-btn" aria-label="Close Add Gateway Form">
                   <X size={16} />
                 </button>
               </div>
