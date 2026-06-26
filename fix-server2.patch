@@ -1,0 +1,25 @@
+--- server/server.ts
++++ server/server.ts
+@@ -201,16 +201,31 @@
+   });
+ }
+
+ // Create HTTP Server
+ const server = createServer(app);
+
++/*
+ // Create WebSocket Server directly attached to the HTTP server
+ const wss = new WebSocketServer({ server });
++*/
++
++// Instead of creating WebSocket server directly attached to the same HTTP server port immediately,
++// Let's check how Render handles websockets. Usually we can attach it to the same server.
++const wss = new WebSocketServer({ server, path: '/ws' });
+
+ // Handle errors on the WebSocketServer itself
+ wss.on('error', (err) => {
+   console.error('WebSocketServer error:', err);
+ });
+
+ // WS Connection handler
+ wss.on('connection', (ws, request) => {
