@@ -1,0 +1,11 @@
+--- server/server.ts
++++ server/server.ts
+@@ -194,7 +194,7 @@
+ });
+
+ // Serve static assets in production if built
+-const distPath = path.join(__dirname, '../dist');
++const distPath = path.join(process.cwd(), 'dist');
+ if (fs.existsSync(distPath)) {
+   app.use(express.static(distPath));
+   app.get('*', (req, res) => {
