@@ -1,6 +1,16 @@
-🧹 Refactor explicit `any` to `ExternalDevicePayload` interface in `addOrUpdateExternalDevice`
+🎯 **What:** The testing gap addressed
+The `simulateStep` function in `server/simulator.ts` lacked test coverage. This function handles complex state mutations for gateways, various devices (BMS, Solar, etc.), AI predictions, and grid metrics.
 
-🎯 **What:** Replaced the explicit `any` type for the `payload` parameter in `addOrUpdateExternalDevice` with a dedicated `ExternalDevicePayload` interface in `server/types.ts`.
-💡 **Why:** Using an explicit interface improves code maintainability by providing strict typing for the device payload. This prevents errors when accessing properties and makes the code self-documenting.
-✅ **Verification:** Verified by running the existing unit test suite (`npm run test`), lint checks (`npm run lint`), and TypeScript compiler (`npx tsc --noEmit`). All checks passed successfully. No new functionality was introduced, avoiding backwards-incompatible changes by making all properties optional.
-✨ **Result:** Enhanced readability, improved maintainability, and introduced compile-time type safety within the simulator module.
+📊 **Coverage:** What scenarios are now tested
+1. **Gateways simulation**: Verifies offline/error persistence, random connection success matching expected probabilities, and expected calculation of transmitted/failed packets and signal strength.
+2. **Devices simulation**:
+   - Gateway downtime correctly forcing connected devices offline.
+   - MOSFET shutoffs triggering offline states.
+   - Device location routing tracking (lat/lng shifts and index increments).
+   - Expected SOC and voltage fluctuations during BMS charging and discharging.
+   - Dynamic solar generation accurately mapped to simulated time and mathematical modifiers.
+   - AI risk states either recovering or deteriorating based on generated faults (like high temp thresholds).
+3. **Grid Metrics**: Accurately deriving factory load, solar supply, and BESS inputs to update the aggregated `gridImport` metric correctly.
+
+✨ **Result:** The improvement in test coverage
+Introduced `server/simulator.test.ts` implementing 12 deterministic test cases covering these branches using mocked times (`vi.useFakeTimers()`) and random values (`vi.spyOn(Math, 'random')`). Ensures robust validation of backend state modification logic against unintentional regressions.
