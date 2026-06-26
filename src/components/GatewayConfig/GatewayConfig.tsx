@@ -482,11 +482,13 @@ export default function GatewayConfig({
                 <div style={{ marginTop: '1rem' }}>
                   <label className="gw-label">Link Monitored Assets</label>
                   <div className="gw-assets-checklist">
-                    {devices.filter(d => !d.gatewayId).map(d => (
+                    {(() => {
+                      const connectedSet = new Set(newGw.connectedDevices);
+                      return devices.filter(d => !d.gatewayId).map(d => (
                       <label key={d.id} className="gw-check-label">
                         <input 
                           type="checkbox"
-                          checked={newGw.connectedDevices.includes(d.id)}
+                          checked={connectedSet.has(d.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
                               setNewGw(prev => ({ ...prev, connectedDevices: [...prev.connectedDevices, d.id] }));
@@ -498,7 +500,8 @@ export default function GatewayConfig({
                         />
                         <span>{d.name} ({d.id})</span>
                       </label>
-                    ))}
+                    ));
+                    })()}
                     {devices.filter(d => !d.gatewayId).length === 0 && (
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>All available assets are already linked to gateways.</span>
                     )}
@@ -639,8 +642,10 @@ export default function GatewayConfig({
                     <div style={{ marginTop: '1rem' }}>
                       <label className="gw-label">Linked Monitored Assets</label>
                       <div className="gw-assets-checklist">
-                        {devices.map(d => {
-                          const isCurrentlySelected = editGw.connectedDevices.includes(d.id);
+                        {(() => {
+                          const connectedSet = new Set(editGw.connectedDevices);
+                          return devices.map(d => {
+                            const isCurrentlySelected = connectedSet.has(d.id);
                           const isLinkedElsewhere = d.gatewayId && d.gatewayId !== selectedGateway.id;
                           
                           if (isLinkedElsewhere) return null; // hide devices already bound to other gateways
@@ -662,7 +667,8 @@ export default function GatewayConfig({
                               <span>{d.name} ({d.id})</span>
                             </label>
                           );
-                        })}
+                          });
+                        })()}
                       </div>
                     </div>
 
