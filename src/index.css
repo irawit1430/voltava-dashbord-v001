@@ -3,7 +3,8 @@
 
 :root {
   /* Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-title: 'Outfit', var(--font-sans);
 
   /* Colors */
@@ -13,21 +14,21 @@
   --bg-sidebar: #090e1b;
   --border-color: rgba(255, 255, 255, 0.06);
   --border-color-glow: rgba(16, 185, 129, 0.2);
-  
+
   --text-primary: #f3f4f6;
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
 
   /* Accents */
-  --accent-green: #10b981;      /* Online, BMS, Energy savings */
+  --accent-green: #10b981; /* Online, BMS, Energy savings */
   --accent-green-glow: rgba(16, 185, 129, 0.15);
-  --accent-blue: #3b82f6;       /* Solar, Grid, Normal */
+  --accent-blue: #3b82f6; /* Solar, Grid, Normal */
   --accent-blue-glow: rgba(59, 130, 246, 0.15);
-  --accent-cyan: #06b6d4;       /* Smart meters, telemetry */
+  --accent-cyan: #06b6d4; /* Smart meters, telemetry */
   --accent-cyan-glow: rgba(6, 182, 212, 0.15);
-  --accent-orange: #f59e0b;     /* Warning, charging */
+  --accent-orange: #f59e0b; /* Warning, charging */
   --accent-orange-glow: rgba(245, 158, 11, 0.15);
-  --accent-red: #ef4444;        /* Fault, danger */
+  --accent-red: #ef4444; /* Fault, danger */
   --accent-red-glow: rgba(239, 68, 68, 0.15);
 
   /* Transitions */
@@ -68,7 +69,12 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-title);
   font-weight: 600;
   letter-spacing: -0.025em;
@@ -186,7 +192,10 @@ h1, h2, h3, h4, h5, h6 {
 .pulse-dot.online::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 50%;
   background-color: var(--accent-green);
   animation: pulse-ring 1.5s infinite ease-in-out;
@@ -202,7 +211,10 @@ h1, h2, h3, h4, h5, h6 {
 .pulse-dot.warning::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 50%;
   background-color: var(--accent-orange);
   animation: pulse-ring 1.5s infinite ease-in-out;
@@ -214,7 +226,10 @@ h1, h2, h3, h4, h5, h6 {
 .pulse-dot.fault::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 50%;
   background-color: var(--accent-red);
   animation: pulse-ring 1s infinite ease-in-out;
@@ -362,16 +377,25 @@ h1, h2, h3, h4, h5, h6 {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .animate-spin-slow {
   animation: spin 8s linear infinite;
 }
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* SVG Line Animations for Energy Flow */

@@ -2,27 +2,27 @@ import { Device, GridMetrics, TelemetryHistoryPoint, Gateway } from './types';
 
 // Coordinates for Delhi-NCR e-rickshaw route simulation
 const NCR_ROUTE: [number, number][] = [
-  [28.6139, 77.2090], // Connaught Place
-  [28.6250, 77.2150],
-  [28.6300, 77.2300], // ITO
-  [28.6200, 77.2400],
-  [28.6100, 77.2500], // Pragati Maidan
-  [28.5950, 77.2300], // Lodhi Garden
-  [28.5800, 77.2100], // AIIMS
-  [28.5700, 77.1950],
-  [28.5900, 77.1800], // Chanakyapuri
-  [28.6139, 77.2090], // Loop back
+  [28.6139, 77.209], // Connaught Place
+  [28.625, 77.215],
+  [28.63, 77.23], // ITO
+  [28.62, 77.24],
+  [28.61, 77.25], // Pragati Maidan
+  [28.595, 77.23], // Lodhi Garden
+  [28.58, 77.21], // AIIMS
+  [28.57, 77.195],
+  [28.59, 77.18], // Chanakyapuri
+  [28.6139, 77.209], // Loop back
 ];
 
 // Coordinates for Patna, Bihar route simulation
 const BIHAR_ROUTE: [number, number][] = [
-  [25.6110, 85.1440], // Patna Junction
-  [25.6170, 85.1600], // Gandhi Maidan
-  [25.6200, 85.1800],
-  [25.6150, 85.2000], // Gulzarbagh
-  [25.6100, 85.1800],
-  [25.5980, 85.1500],
-  [25.6110, 85.1440], // Loop back
+  [25.611, 85.144], // Patna Junction
+  [25.617, 85.16], // Gandhi Maidan
+  [25.62, 85.18],
+  [25.615, 85.2], // Gulzarbagh
+  [25.61, 85.18],
+  [25.598, 85.15],
+  [25.611, 85.144], // Loop back
 ];
 
 export let devices: Device[] = [
@@ -33,7 +33,13 @@ export let devices: Device[] = [
     status: 'online',
     model: 'VoltBMS-LFP-48V',
     firmware: 'v2.1.4',
-    location: { lat: 28.6139, lng: 77.2090, city: 'Delhi-NCR', route: NCR_ROUTE, currentRouteIndex: 0 },
+    location: {
+      lat: 28.6139,
+      lng: 77.209,
+      city: 'Delhi-NCR',
+      route: NCR_ROUTE,
+      currentRouteIndex: 0,
+    },
     owner: 'Shera E-Mobility Fleet',
     gatewayId: 'GW-DEL-TLM-01',
     telemetry: {
@@ -43,10 +49,15 @@ export let devices: Device[] = [
       soh: 96,
       temp: 34.5,
       faults: [],
-      cellVoltages: [3.21, 3.22, 3.20, 3.21, 3.22, 3.21, 3.20, 3.19, 3.21, 3.22, 3.22, 3.20, 3.21, 3.21, 3.22, 3.21],
-      cellTemps: [33, 34, 34, 33, 35, 34, 33, 33, 34, 34, 35, 34, 33, 34, 33, 34],
+      cellVoltages: [
+        3.21, 3.22, 3.2, 3.21, 3.22, 3.21, 3.2, 3.19, 3.21, 3.22, 3.22, 3.2,
+        3.21, 3.21, 3.22, 3.21,
+      ],
+      cellTemps: [
+        33, 34, 34, 33, 35, 34, 33, 33, 34, 34, 35, 34, 33, 34, 33, 34,
+      ],
       mosfetStatus: 'on',
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     },
     aiPredictions: {
       rul: 1850,
@@ -55,8 +66,8 @@ export let devices: Device[] = [
       cellRunawayRisk: false,
       mosfetRisk: false,
       chargerOverheatingRisk: false,
-      anomaliesDetected: []
-    }
+      anomaliesDetected: [],
+    },
   },
   {
     id: 'BMS-ER-BIH-02',
@@ -65,7 +76,13 @@ export let devices: Device[] = [
     status: 'warning',
     model: 'VoltBMS-LFP-48V',
     firmware: 'v2.1.3',
-    location: { lat: 25.6110, lng: 85.1440, city: 'Patna, Bihar', route: BIHAR_ROUTE, currentRouteIndex: 0 },
+    location: {
+      lat: 25.611,
+      lng: 85.144,
+      city: 'Patna, Bihar',
+      route: BIHAR_ROUTE,
+      currentRouteIndex: 0,
+    },
     owner: 'Dehat Energy Operators',
     gatewayId: 'GW-PAT-MOD-02',
     telemetry: {
@@ -75,10 +92,15 @@ export let devices: Device[] = [
       soh: 91,
       temp: 38.2,
       faults: ['Low SoC', 'Cell #4 Voltage Under-limit'],
-      cellVoltages: [3.18, 3.19, 3.17, 2.92, 3.19, 3.18, 3.17, 3.18, 3.19, 3.17, 3.19, 3.18, 3.17, 3.18, 3.19, 3.17],
-      cellTemps: [37, 38, 38, 41, 38, 37, 37, 38, 37, 38, 39, 38, 37, 38, 37, 38],
+      cellVoltages: [
+        3.18, 3.19, 3.17, 2.92, 3.19, 3.18, 3.17, 3.18, 3.19, 3.17, 3.19, 3.18,
+        3.17, 3.18, 3.19, 3.17,
+      ],
+      cellTemps: [
+        37, 38, 38, 41, 38, 37, 37, 38, 37, 38, 39, 38, 37, 38, 37, 38,
+      ],
       mosfetStatus: 'on',
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     },
     aiPredictions: {
       rul: 1120,
@@ -88,8 +110,11 @@ export let devices: Device[] = [
       cellRunawayRisk: false,
       mosfetRisk: false,
       chargerOverheatingRisk: false,
-      anomaliesDetected: ['Voltage Imbalance Detected', 'Cell #4 resistance increase']
-    }
+      anomaliesDetected: [
+        'Voltage Imbalance Detected',
+        'Cell #4 resistance increase',
+      ],
+    },
   },
   {
     id: 'BMS-ER-NCR-03',
@@ -98,7 +123,13 @@ export let devices: Device[] = [
     status: 'fault',
     model: 'VoltBMS-LFP-60V',
     firmware: 'v2.1.4',
-    location: { lat: 28.5800, lng: 77.2100, city: 'Noida-NCR', route: NCR_ROUTE.slice().reverse(), currentRouteIndex: 4 },
+    location: {
+      lat: 28.58,
+      lng: 77.21,
+      city: 'Noida-NCR',
+      route: NCR_ROUTE.slice().reverse(),
+      currentRouteIndex: 4,
+    },
     owner: 'Zomato Last-Mile Cargo',
     gatewayId: 'GW-DEL-TLM-01',
     telemetry: {
@@ -108,10 +139,15 @@ export let devices: Device[] = [
       soh: 88,
       temp: 64.8,
       faults: ['BMS Thermal Cut-off', 'Over-temperature Warning'],
-      cellVoltages: [3.88, 3.89, 3.92, 3.87, 3.88, 3.89, 4.12, 3.88, 3.88, 3.89, 3.90, 3.87, 3.88, 3.89, 3.89, 3.88],
-      cellTemps: [61, 62, 63, 62, 64, 63, 71, 62, 61, 62, 63, 62, 64, 63, 61, 62],
+      cellVoltages: [
+        3.88, 3.89, 3.92, 3.87, 3.88, 3.89, 4.12, 3.88, 3.88, 3.89, 3.9, 3.87,
+        3.88, 3.89, 3.89, 3.88,
+      ],
+      cellTemps: [
+        61, 62, 63, 62, 64, 63, 71, 62, 61, 62, 63, 62, 64, 63, 61, 62,
+      ],
       mosfetStatus: 'off',
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     },
     aiPredictions: {
       rul: 680,
@@ -121,8 +157,11 @@ export let devices: Device[] = [
       cellRunawayRisk: true,
       mosfetRisk: true,
       chargerOverheatingRisk: false,
-      anomaliesDetected: ['High temperature on cell #7', 'MOSFET gating resistance anomaly']
-    }
+      anomaliesDetected: [
+        'High temperature on cell #7',
+        'MOSFET gating resistance anomaly',
+      ],
+    },
   },
   {
     id: 'SLR-RAJ-01',
@@ -143,8 +182,8 @@ export let devices: Device[] = [
       activePower: 67.0, // kW
       energyGenerated: 480.5, // kWh today
       faults: [],
-      lastUpdated: new Date().toISOString()
-    }
+      lastUpdated: new Date().toISOString(),
+    },
   },
   {
     id: 'BES-IND-01',
@@ -165,7 +204,7 @@ export let devices: Device[] = [
       activePower: -40.0, // kW (charging)
       energyConsumed: 320.4, // kWh today
       faults: [],
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     },
     aiPredictions: {
       rul: 4100,
@@ -174,8 +213,8 @@ export let devices: Device[] = [
       cellRunawayRisk: false,
       mosfetRisk: false,
       chargerOverheatingRisk: false,
-      anomaliesDetected: []
-    }
+      anomaliesDetected: [],
+    },
   },
   {
     id: 'MTR-IND-01',
@@ -184,7 +223,7 @@ export let devices: Device[] = [
     status: 'online',
     model: 'VoltMeter-DLMS-3Ph',
     firmware: 'v1.4.1',
-    location: { lat: 19.0760, lng: 72.8777, city: 'Mumbai, MH' },
+    location: { lat: 19.076, lng: 72.8777, city: 'Mumbai, MH' },
     owner: 'Aegis Warehouse Infra',
     gatewayId: 'GW-MUM-DLMS-05',
     telemetry: {
@@ -198,8 +237,8 @@ export let devices: Device[] = [
       powerFactor: 0.98,
       frequency: 50.02, // Hz
       faults: [],
-      lastUpdated: new Date().toISOString()
-    }
+      lastUpdated: new Date().toISOString(),
+    },
   },
   {
     id: 'CHG-NCR-01',
@@ -208,7 +247,7 @@ export let devices: Device[] = [
     status: 'online',
     model: 'VoltCharger-DC-120K',
     firmware: 'v1.9.2',
-    location: { lat: 28.5355, lng: 77.3910, city: 'Noida, UP' },
+    location: { lat: 28.5355, lng: 77.391, city: 'Noida, UP' },
     owner: 'Voltava Charge-Network',
     gatewayId: 'GW-NOI-EV-06',
     telemetry: {
@@ -220,7 +259,7 @@ export let devices: Device[] = [
       activePower: 87.0, // kW
       energyConsumed: 450.8, // kWh dispensed
       faults: [],
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     },
     aiPredictions: {
       rul: 3200,
@@ -229,8 +268,8 @@ export let devices: Device[] = [
       cellRunawayRisk: false,
       mosfetRisk: false,
       chargerOverheatingRisk: false,
-      anomaliesDetected: []
-    }
+      anomaliesDetected: [],
+    },
   },
   {
     id: 'TLM-INF-01',
@@ -249,9 +288,9 @@ export let devices: Device[] = [
       soh: 94,
       temp: 26.4,
       faults: [],
-      lastUpdated: new Date().toISOString()
-    }
-  }
+      lastUpdated: new Date().toISOString(),
+    },
+  },
 ];
 
 export let gateways: Gateway[] = [
@@ -268,7 +307,7 @@ export let gateways: Gateway[] = [
     connectedDevices: ['BMS-ER-NCR-01', 'BMS-ER-NCR-03', 'TLM-INF-01'],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 1250,
-    packetsFailed: 2
+    packetsFailed: 2,
   },
   {
     id: 'GW-PAT-MOD-02',
@@ -283,7 +322,7 @@ export let gateways: Gateway[] = [
     connectedDevices: ['BMS-ER-BIH-02'],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 412,
-    packetsFailed: 8
+    packetsFailed: 8,
   },
   {
     id: 'GW-JAP-SLR-03',
@@ -298,7 +337,7 @@ export let gateways: Gateway[] = [
     connectedDevices: ['SLR-RAJ-01'],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 850,
-    packetsFailed: 0
+    packetsFailed: 0,
   },
   {
     id: 'GW-GUR-BESS-04',
@@ -313,7 +352,7 @@ export let gateways: Gateway[] = [
     connectedDevices: ['BES-IND-01'],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 1420,
-    packetsFailed: 1
+    packetsFailed: 1,
   },
   {
     id: 'GW-MUM-DLMS-05',
@@ -328,7 +367,7 @@ export let gateways: Gateway[] = [
     connectedDevices: ['MTR-IND-01'],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 290,
-    packetsFailed: 3
+    packetsFailed: 3,
   },
   {
     id: 'GW-NOI-EV-06',
@@ -343,10 +382,9 @@ export let gateways: Gateway[] = [
     connectedDevices: ['CHG-NCR-01'],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 680,
-    packetsFailed: 4
-  }
+    packetsFailed: 4,
+  },
 ];
-
 
 export let gridMetrics: GridMetrics = {
   solarPower: 67.0,
@@ -357,7 +395,7 @@ export let gridMetrics: GridMetrics = {
   gridFrequency: 50.02,
   powerFactor: 0.98,
   peakLimit: 150.0, // kW Limit
-  savingsINR: 12840.50,
+  savingsINR: 12840.5,
   carbonOffset: 485.6,
   outageBackupPredict: 180,
   isGridDown: false,
@@ -368,18 +406,31 @@ export const historyMap: Record<string, TelemetryHistoryPoint[]> = {};
 
 // Initialize history with initial mock points
 export function initHistory() {
-  devices.forEach(d => {
+  devices.forEach((d) => {
     const hist: TelemetryHistoryPoint[] = [];
     const now = new Date();
     for (let i = 9; i >= 0; i--) {
       const t = new Date(now.getTime() - i * 60000);
       hist.push({
-        timestamp: t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        voltage: Number((d.telemetry.voltage + (Math.random() - 0.5) * 5).toFixed(1)),
-        current: Number((d.telemetry.current + (Math.random() - 0.5) * 3).toFixed(1)),
-        soc: d.telemetry.soc ? Math.max(0, Math.min(100, Math.round(d.telemetry.soc - i * 2))) : 0,
+        timestamp: t.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        voltage: Number(
+          (d.telemetry.voltage + (Math.random() - 0.5) * 5).toFixed(1)
+        ),
+        current: Number(
+          (d.telemetry.current + (Math.random() - 0.5) * 3).toFixed(1)
+        ),
+        soc: d.telemetry.soc
+          ? Math.max(0, Math.min(100, Math.round(d.telemetry.soc - i * 2)))
+          : 0,
         temp: Number((d.telemetry.temp + (Math.random() - 0.5) * 2).toFixed(1)),
-        power: d.telemetry.activePower ? Number((d.telemetry.activePower + (Math.random() - 0.5) * 4).toFixed(1)) : undefined
+        power: d.telemetry.activePower
+          ? Number(
+              (d.telemetry.activePower + (Math.random() - 0.5) * 4).toFixed(1)
+            )
+          : undefined,
       });
     }
     historyMap[d.id] = hist;
@@ -387,41 +438,43 @@ export function initHistory() {
 }
 export function simulateStep() {
   // 1. Simulate gateways
-  gateways = gateways.map(g => {
+  gateways = gateways.map((g) => {
     if (g.status === 'offline' || g.status === 'error') {
       return g;
     }
-    
+
     if (g.status === 'connecting') {
       const isOnlineNow = Math.random() < 0.3;
       return {
         ...g,
         status: isOnlineNow ? 'online' : 'connecting',
-        lastSync: new Date().toISOString()
+        lastSync: new Date().toISOString(),
       };
     }
-    
+
     const packetsSent = Math.floor(Math.random() * 3) + 1;
     const failedPackets = Math.random() < 0.02 ? 1 : 0;
-    let nextSig = g.signalStrength ? g.signalStrength + (Math.floor(Math.random() * 3) - 1) : undefined;
+    let nextSig = g.signalStrength
+      ? g.signalStrength + (Math.floor(Math.random() * 3) - 1)
+      : undefined;
     if (nextSig !== undefined) {
       nextSig = Math.max(-90, Math.min(-40, nextSig));
     }
-    
+
     return {
       ...g,
       packetsTransmitted: g.packetsTransmitted + packetsSent,
       packetsFailed: g.packetsFailed + failedPackets,
       signalStrength: nextSig,
-      lastSync: new Date().toISOString()
+      lastSync: new Date().toISOString(),
     };
   });
 
   // 2. Simulate devices
-  devices = devices.map(d => {
-    const gw = gateways.find(g => g.id === d.gatewayId);
+  devices = devices.map((d) => {
+    const gw = gateways.find((g) => g.id === d.gatewayId);
     const isGwDown = gw && (gw.status === 'offline' || gw.status === 'error');
-    
+
     if (isGwDown) {
       return {
         ...d,
@@ -429,11 +482,11 @@ export function simulateStep() {
         telemetry: {
           ...d.telemetry,
           faults: ['Gateway Connection Timeout'],
-          lastUpdated: new Date().toISOString()
-        }
+          lastUpdated: new Date().toISOString(),
+        },
       };
     }
-    
+
     if (d.telemetry.mosfetStatus === 'off') {
       return {
         ...d,
@@ -441,8 +494,8 @@ export function simulateStep() {
         telemetry: {
           ...d.telemetry,
           faults: ['MOSFET Forced Shutoff'],
-          lastUpdated: new Date().toISOString()
-        }
+          lastUpdated: new Date().toISOString(),
+        },
       };
     }
 
@@ -451,11 +504,16 @@ export function simulateStep() {
     let updatedAi = d.aiPredictions ? { ...d.aiPredictions } : undefined;
 
     if (d.location.route && d.location.currentRouteIndex !== undefined) {
-      const nextIdx = (d.location.currentRouteIndex + 1) % d.location.route.length;
+      const nextIdx =
+        (d.location.currentRouteIndex + 1) % d.location.route.length;
       updatedLocation.currentRouteIndex = nextIdx;
       const coord = d.location.route[nextIdx];
-      updatedLocation.lat = Number((coord[0] + (Math.random() - 0.5) * 0.0005).toFixed(6));
-      updatedLocation.lng = Number((coord[1] + (Math.random() - 0.5) * 0.0005).toFixed(6));
+      updatedLocation.lat = Number(
+        (coord[0] + (Math.random() - 0.5) * 0.0005).toFixed(6)
+      );
+      updatedLocation.lng = Number(
+        (coord[1] + (Math.random() - 0.5) * 0.0005).toFixed(6)
+      );
     }
 
     // Realtime fluctuation
@@ -464,24 +522,42 @@ export function simulateStep() {
       const isDischarging = d.telemetry.current < 0;
 
       if (isDischarging) {
-        updatedTelemetry.soc = Math.max(1, Number((updatedTelemetry.soc - (d.id === 'BMS-ER-NCR-01' ? 0.05 : 0.02)).toFixed(2)));
-        updatedTelemetry.voltage = Math.max(42, Number((updatedTelemetry.voltage - 0.02).toFixed(2)));
+        updatedTelemetry.soc = Math.max(
+          1,
+          Number(
+            (
+              updatedTelemetry.soc - (d.id === 'BMS-ER-NCR-01' ? 0.05 : 0.02)
+            ).toFixed(2)
+          )
+        );
+        updatedTelemetry.voltage = Math.max(
+          42,
+          Number((updatedTelemetry.voltage - 0.02).toFixed(2))
+        );
       } else if (isCharging) {
-        updatedTelemetry.soc = Math.min(100, Number((updatedTelemetry.soc + 0.1).toFixed(2)));
-        updatedTelemetry.voltage = Math.min(54, Number((updatedTelemetry.voltage + 0.02).toFixed(2)));
+        updatedTelemetry.soc = Math.min(
+          100,
+          Number((updatedTelemetry.soc + 0.1).toFixed(2))
+        );
+        updatedTelemetry.voltage = Math.min(
+          54,
+          Number((updatedTelemetry.voltage + 0.02).toFixed(2))
+        );
       }
 
       if (updatedTelemetry.cellVoltages) {
         const avg = updatedTelemetry.voltage / 16;
-        updatedTelemetry.cellVoltages = updatedTelemetry.cellVoltages.map((_v, i) => {
-          if (d.id === 'BMS-ER-BIH-02' && i === 3) {
-            return Number((2.9 + Math.random() * 0.05).toFixed(2));
+        updatedTelemetry.cellVoltages = updatedTelemetry.cellVoltages.map(
+          (_v, i) => {
+            if (d.id === 'BMS-ER-BIH-02' && i === 3) {
+              return Number((2.9 + Math.random() * 0.05).toFixed(2));
+            }
+            if (d.id === 'BMS-ER-NCR-03' && i === 6 && d.telemetry.temp > 50) {
+              return Number((4.1 + Math.random() * 0.04).toFixed(2));
+            }
+            return Number((avg + (Math.random() - 0.5) * 0.05).toFixed(2));
           }
-          if (d.id === 'BMS-ER-NCR-03' && i === 6 && d.telemetry.temp > 50) {
-            return Number((4.1 + Math.random() * 0.04).toFixed(2));
-          }
-          return Number((avg + (Math.random() - 0.5) * 0.05).toFixed(2));
-        });
+        );
       }
 
       if (updatedTelemetry.cellTemps) {
@@ -489,53 +565,125 @@ export function simulateStep() {
           if (d.id === 'BMS-ER-NCR-03' && i === 6 && d.telemetry.temp > 50) {
             return Math.min(90, Math.round(70 + Math.random() * 2));
           }
-          return Math.max(20, Math.round(d.telemetry.temp + (Math.random() - 0.5) * 1.5));
+          return Math.max(
+            20,
+            Math.round(d.telemetry.temp + (Math.random() - 0.5) * 1.5)
+          );
         });
       }
 
       if (d.status === 'fault') {
-        updatedTelemetry.temp = Number((updatedTelemetry.temp + (Math.random() - 0.5) * 0.5).toFixed(1));
+        updatedTelemetry.temp = Number(
+          (updatedTelemetry.temp + (Math.random() - 0.5) * 0.5).toFixed(1)
+        );
       } else {
-        updatedTelemetry.temp = Number((32 + Math.sin(Date.now() / 60000) * 3 + Math.random() * 0.4).toFixed(1));
+        updatedTelemetry.temp = Number(
+          (32 + Math.sin(Date.now() / 60000) * 3 + Math.random() * 0.4).toFixed(
+            1
+          )
+        );
       }
-      updatedTelemetry.current = Number((d.telemetry.current + (Math.random() - 0.5) * 1.2).toFixed(1));
+      updatedTelemetry.current = Number(
+        (d.telemetry.current + (Math.random() - 0.5) * 1.2).toFixed(1)
+      );
     } else if (d.type === 'solar') {
-      const hour = new Date().getHours() + (new Date().getMinutes() / 60);
+      const hour = new Date().getHours() + new Date().getMinutes() / 60;
       const solarIntensity = Math.max(0, Math.sin(((hour - 6) / 12) * Math.PI));
       const basePower = d.id === 'SLR-RAJ-01' ? 100 : 50;
-      updatedTelemetry.activePower = Number((basePower * solarIntensity * (0.9 + Math.random() * 0.1)).toFixed(1));
-      updatedTelemetry.energyGenerated = Number(((updatedTelemetry.energyGenerated || 0) + (updatedTelemetry.activePower / 1800)).toFixed(2));
-      updatedTelemetry.voltage = Number((650 + (Math.random() - 0.5) * 15).toFixed(1));
-      updatedTelemetry.current = Number((updatedTelemetry.activePower * 1000 / updatedTelemetry.voltage).toFixed(1));
+      updatedTelemetry.activePower = Number(
+        (basePower * solarIntensity * (0.9 + Math.random() * 0.1)).toFixed(1)
+      );
+      updatedTelemetry.energyGenerated = Number(
+        (
+          (updatedTelemetry.energyGenerated || 0) +
+          updatedTelemetry.activePower / 1800
+        ).toFixed(2)
+      );
+      updatedTelemetry.voltage = Number(
+        (650 + (Math.random() - 0.5) * 15).toFixed(1)
+      );
+      updatedTelemetry.current = Number(
+        (
+          (updatedTelemetry.activePower * 1000) /
+          updatedTelemetry.voltage
+        ).toFixed(1)
+      );
     } else if (d.type === 'bess') {
       if (gridMetrics.gridImport > gridMetrics.peakLimit) {
-        updatedTelemetry.activePower = 35.0; 
-        updatedTelemetry.soc = Math.max(10, Number((updatedTelemetry.soc - 0.05).toFixed(2)));
+        updatedTelemetry.activePower = 35.0;
+        updatedTelemetry.soc = Math.max(
+          10,
+          Number((updatedTelemetry.soc - 0.05).toFixed(2))
+        );
       } else {
-        updatedTelemetry.activePower = -30.0; 
-        updatedTelemetry.soc = Math.min(100, Number((updatedTelemetry.soc + 0.03).toFixed(2)));
+        updatedTelemetry.activePower = -30.0;
+        updatedTelemetry.soc = Math.min(
+          100,
+          Number((updatedTelemetry.soc + 0.03).toFixed(2))
+        );
       }
-      updatedTelemetry.energyConsumed = Number(((updatedTelemetry.energyConsumed || 0) + (Math.abs(updatedTelemetry.activePower) / 1800)).toFixed(2));
-      updatedTelemetry.voltage = Number((410 + (Math.random() - 0.5) * 4).toFixed(1));
-      updatedTelemetry.current = Number((updatedTelemetry.activePower * 1000 / updatedTelemetry.voltage).toFixed(1));
+      updatedTelemetry.energyConsumed = Number(
+        (
+          (updatedTelemetry.energyConsumed || 0) +
+          Math.abs(updatedTelemetry.activePower) / 1800
+        ).toFixed(2)
+      );
+      updatedTelemetry.voltage = Number(
+        (410 + (Math.random() - 0.5) * 4).toFixed(1)
+      );
+      updatedTelemetry.current = Number(
+        (
+          (updatedTelemetry.activePower * 1000) /
+          updatedTelemetry.voltage
+        ).toFixed(1)
+      );
     } else if (d.type === 'meter') {
-      updatedTelemetry.activePower = Number((160 + Math.sin(Date.now() / 30000) * 15 + Math.random() * 5).toFixed(1));
-      updatedTelemetry.reactivePower = Number((updatedTelemetry.activePower * 0.2 + Math.random()).toFixed(1));
-      updatedTelemetry.current = Number((updatedTelemetry.activePower * 1000 / (1.732 * updatedTelemetry.voltage)).toFixed(1));
-      updatedTelemetry.powerFactor = Number((0.97 + Math.random() * 0.02).toFixed(2));
-      updatedTelemetry.frequency = Number((49.95 + Math.random() * 0.1).toFixed(2));
+      updatedTelemetry.activePower = Number(
+        (160 + Math.sin(Date.now() / 30000) * 15 + Math.random() * 5).toFixed(1)
+      );
+      updatedTelemetry.reactivePower = Number(
+        (updatedTelemetry.activePower * 0.2 + Math.random()).toFixed(1)
+      );
+      updatedTelemetry.current = Number(
+        (
+          (updatedTelemetry.activePower * 1000) /
+          (1.732 * updatedTelemetry.voltage)
+        ).toFixed(1)
+      );
+      updatedTelemetry.powerFactor = Number(
+        (0.97 + Math.random() * 0.02).toFixed(2)
+      );
+      updatedTelemetry.frequency = Number(
+        (49.95 + Math.random() * 0.1).toFixed(2)
+      );
     } else if (d.type === 'charger') {
-      updatedTelemetry.activePower = Number((80 + Math.sin(Date.now() / 45000) * 20 + Math.random() * 2).toFixed(1));
-      updatedTelemetry.energyConsumed = Number(((updatedTelemetry.energyConsumed || 0) + (updatedTelemetry.activePower / 1800)).toFixed(2));
-      updatedTelemetry.current = Number((updatedTelemetry.activePower * 1000 / updatedTelemetry.voltage).toFixed(1));
-      updatedTelemetry.temp = Number((45 + Math.sin(Date.now() / 60000) * 5 + Math.random()).toFixed(1));
+      updatedTelemetry.activePower = Number(
+        (80 + Math.sin(Date.now() / 45000) * 20 + Math.random() * 2).toFixed(1)
+      );
+      updatedTelemetry.energyConsumed = Number(
+        (
+          (updatedTelemetry.energyConsumed || 0) +
+          updatedTelemetry.activePower / 1800
+        ).toFixed(2)
+      );
+      updatedTelemetry.current = Number(
+        (
+          (updatedTelemetry.activePower * 1000) /
+          updatedTelemetry.voltage
+        ).toFixed(1)
+      );
+      updatedTelemetry.temp = Number(
+        (45 + Math.sin(Date.now() / 60000) * 5 + Math.random()).toFixed(1)
+      );
     }
 
     // Rebuild faults dynamically based on updated telemetry values
     const dynamicFaults: string[] = [];
 
     // Keep any non-telemetry state faults like OTA updates
-    const otaFault = d.telemetry.faults.find(f => f === 'OTA Update Initiated');
+    const otaFault = d.telemetry.faults.find(
+      (f) => f === 'OTA Update Initiated'
+    );
     if (otaFault) {
       dynamicFaults.push(otaFault);
     }
@@ -552,9 +700,9 @@ export function simulateStep() {
       } else if (updatedTelemetry.temp > 45) {
         dynamicFaults.push('Over-temperature Warning');
       }
-      
+
       if (updatedTelemetry.cellVoltages) {
-        if (updatedTelemetry.cellVoltages.some(v => v < 3.0)) {
+        if (updatedTelemetry.cellVoltages.some((v) => v < 3.0)) {
           dynamicFaults.push('Cell Voltage Under-limit');
         }
         const minCell = Math.min(...updatedTelemetry.cellVoltages);
@@ -594,41 +742,71 @@ export function simulateStep() {
 
     // Push telemetry to historical map
     const hist = historyMap[d.id] || [];
-    const newHist = [...hist.slice(1), {
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      voltage: updatedTelemetry.voltage,
-      current: updatedTelemetry.current,
-      soc: updatedTelemetry.soc,
-      temp: updatedTelemetry.temp,
-      power: updatedTelemetry.activePower
-    }];
+    const newHist = [
+      ...hist.slice(1),
+      {
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        voltage: updatedTelemetry.voltage,
+        current: updatedTelemetry.current,
+        soc: updatedTelemetry.soc,
+        temp: updatedTelemetry.temp,
+        power: updatedTelemetry.activePower,
+      },
+    ];
     historyMap[d.id] = newHist;
 
-    const normalStatus = updatedTelemetry.faults.length > 0 
-      ? (updatedTelemetry.faults.some(f => f.includes('Cut-off') || f.includes('Forced Shutoff') || f.includes('Alert') || f.includes('Timeout')) ? 'fault' : 'warning') 
-      : 'online';
+    const normalStatus =
+      updatedTelemetry.faults.length > 0
+        ? updatedTelemetry.faults.some(
+            (f) =>
+              f.includes('Cut-off') ||
+              f.includes('Forced Shutoff') ||
+              f.includes('Alert') ||
+              f.includes('Timeout')
+          )
+          ? 'fault'
+          : 'warning'
+        : 'online';
 
     // Dynamic AI Prognostic updates
     if (d.aiPredictions && updatedAi) {
-      const hasCriticalFaults = updatedTelemetry.faults.some(f => 
-        f.includes('Thermal') || f.includes('Cut-off') || f.includes('Warning') || f.includes('Low SoC') || f.includes('Under-limit')
+      const hasCriticalFaults = updatedTelemetry.faults.some(
+        (f) =>
+          f.includes('Thermal') ||
+          f.includes('Cut-off') ||
+          f.includes('Warning') ||
+          f.includes('Low SoC') ||
+          f.includes('Under-limit')
       );
-      const isMosfetOk = updatedTelemetry.mosfetStatus ? updatedTelemetry.mosfetStatus === 'on' : true;
-      
+      const isMosfetOk = updatedTelemetry.mosfetStatus
+        ? updatedTelemetry.mosfetStatus === 'on'
+        : true;
+
       if (!hasCriticalFaults && isMosfetOk) {
         // Recovering / Normal operation
-        const targetFailProb = d.id === 'BMS-ER-NCR-01' ? 1.2 : d.id === 'CHG-NCR-01' ? 4.8 : 5.0;
+        const targetFailProb =
+          d.id === 'BMS-ER-NCR-01' ? 1.2 : d.id === 'CHG-NCR-01' ? 4.8 : 5.0;
         if (updatedAi.failureProbability > targetFailProb) {
           updatedAi.failureProbability = Number(
-            Math.max(targetFailProb, updatedAi.failureProbability - 2.5).toFixed(1)
+            Math.max(
+              targetFailProb,
+              updatedAi.failureProbability - 2.5
+            ).toFixed(1)
           );
         }
-        
-        const targetHealth = d.id === 'BMS-ER-NCR-01' ? 94 : d.id === 'CHG-NCR-01' ? 88 : 90;
+
+        const targetHealth =
+          d.id === 'BMS-ER-NCR-01' ? 94 : d.id === 'CHG-NCR-01' ? 88 : 90;
         if (updatedAi.healthRank < targetHealth) {
-          updatedAi.healthRank = Math.min(targetHealth, updatedAi.healthRank + 2);
+          updatedAi.healthRank = Math.min(
+            targetHealth,
+            updatedAi.healthRank + 2
+          );
         }
-        
+
         const targetRul = d.id === 'BMS-ER-NCR-03' ? 1800 : updatedAi.rul;
         if (updatedAi.rul < targetRul) {
           updatedAi.rul = Math.min(targetRul, updatedAi.rul + 50);
@@ -637,8 +815,11 @@ export function simulateStep() {
         if (updatedAi.failureProbability < 15) {
           updatedAi.cellRunawayRisk = false;
           updatedAi.mosfetRisk = false;
-          updatedAi.anomaliesDetected = updatedAi.anomaliesDetected.filter(a => 
-            !a.includes('temperature') && !a.includes('High temperature') && !a.includes('MOSFET')
+          updatedAi.anomaliesDetected = updatedAi.anomaliesDetected.filter(
+            (a) =>
+              !a.includes('temperature') &&
+              !a.includes('High temperature') &&
+              !a.includes('MOSFET')
           );
           if (updatedAi.predictedFaultType === 'Thermal Runaway Risk') {
             delete updatedAi.predictedFaultType;
@@ -646,12 +827,20 @@ export function simulateStep() {
         }
       } else {
         // Elevated risk state
-        if (updatedTelemetry.faults.includes('BMS Thermal Cut-off') || updatedTelemetry.temp > 60) {
-          updatedAi.failureProbability = Math.min(99.0, Number((updatedAi.failureProbability + 1.5).toFixed(1)));
+        if (
+          updatedTelemetry.faults.includes('BMS Thermal Cut-off') ||
+          updatedTelemetry.temp > 60
+        ) {
+          updatedAi.failureProbability = Math.min(
+            99.0,
+            Number((updatedAi.failureProbability + 1.5).toFixed(1))
+          );
           updatedAi.healthRank = Math.max(10, updatedAi.healthRank - 2);
           updatedAi.cellRunawayRisk = true;
           updatedAi.mosfetRisk = true;
-          if (!updatedAi.anomaliesDetected.includes('High temperature on cell #7')) {
+          if (
+            !updatedAi.anomaliesDetected.includes('High temperature on cell #7')
+          ) {
             updatedAi.anomaliesDetected.push('High temperature on cell #7');
           }
           updatedAi.predictedFaultType = 'Thermal Runaway Risk';
@@ -664,17 +853,26 @@ export function simulateStep() {
       status: normalStatus,
       location: updatedLocation,
       telemetry: updatedTelemetry,
-      aiPredictions: updatedAi
+      aiPredictions: updatedAi,
     };
   });
 
   // Update grid metrics based on simulator values
-  const solarCurrent = devices.find(d => d.id === 'SLR-RAJ-01')?.telemetry.activePower || 0;
-  const bessCurrent = devices.find(d => d.id === 'BES-IND-01')?.telemetry.activePower || 0;
-  const factoryMeterCurrent = devices.find(d => d.id === 'MTR-IND-01')?.telemetry.activePower || 168.4;
+  const solarCurrent =
+    devices.find((d) => d.id === 'SLR-RAJ-01')?.telemetry.activePower || 0;
+  const bessCurrent =
+    devices.find((d) => d.id === 'BES-IND-01')?.telemetry.activePower || 0;
+  const factoryMeterCurrent =
+    devices.find((d) => d.id === 'MTR-IND-01')?.telemetry.activePower || 168.4;
 
-  const calculatedGridImport = Math.max(0, Number((factoryMeterCurrent - solarCurrent - bessCurrent).toFixed(1)));
-  const savingsSpeed = 0.5 + (solarCurrent > 0 ? solarCurrent * 0.05 : 0) + (bessCurrent > 0 ? 0.8 : 0);
+  const calculatedGridImport = Math.max(
+    0,
+    Number((factoryMeterCurrent - solarCurrent - bessCurrent).toFixed(1))
+  );
+  const savingsSpeed =
+    0.5 +
+    (solarCurrent > 0 ? solarCurrent * 0.05 : 0) +
+    (bessCurrent > 0 ? 0.8 : 0);
 
   gridMetrics = {
     ...gridMetrics,
@@ -682,41 +880,50 @@ export function simulateStep() {
     bessPower: bessCurrent,
     gridImport: calculatedGridImport,
     industrialLoad: factoryMeterCurrent,
-    savingsINR: Number((gridMetrics.savingsINR + (savingsSpeed / 300)).toFixed(2)),
-    carbonOffset: Number((gridMetrics.carbonOffset + (solarCurrent / 3600)).toFixed(4)),
+    savingsINR: Number(
+      (gridMetrics.savingsINR + savingsSpeed / 300).toFixed(2)
+    ),
+    carbonOffset: Number(
+      (gridMetrics.carbonOffset + solarCurrent / 3600).toFixed(4)
+    ),
     gridFrequency: Number((49.95 + Math.random() * 0.1).toFixed(2)),
-    gridVoltage: Number((415 + (Math.random() - 0.5) * 5).toFixed(1))
+    gridVoltage: Number((415 + (Math.random() - 0.5) * 5).toFixed(1)),
   };
 }
 
 export function triggerOtaUpdate(id: string) {
-  devices = devices.map(d => {
+  devices = devices.map((d) => {
     if (d.id === id) {
       return {
         ...d,
         firmware: d.firmware + ' (Installing OTA...)',
         telemetry: {
           ...d.telemetry,
-          faults: [...d.telemetry.faults, 'OTA Update Initiated']
-        }
+          faults: [...d.telemetry.faults, 'OTA Update Initiated'],
+        },
       };
     }
     return d;
   });
 
   setTimeout(() => {
-    devices = devices.map(d => {
+    devices = devices.map((d) => {
       if (d.id === id) {
         const baseVer = d.firmware.split(' ')[0];
-        const [major, minor, patch] = baseVer.replace('v', '').split('.').map(Number);
+        const [major, minor, patch] = baseVer
+          .replace('v', '')
+          .split('.')
+          .map(Number);
         const nextPatch = patch + 1;
         return {
           ...d,
           firmware: `v${major}.${minor}.${nextPatch}`,
           telemetry: {
             ...d.telemetry,
-            faults: d.telemetry.faults.filter(f => f !== 'OTA Update Initiated')
-          }
+            faults: d.telemetry.faults.filter(
+              (f) => f !== 'OTA Update Initiated'
+            ),
+          },
         };
       }
       return d;
@@ -726,14 +933,20 @@ export function triggerOtaUpdate(id: string) {
 
 export function toggleMosfet(id: string) {
   let resultingMosfet: 'on' | 'off' = 'on';
-  devices = devices.map(d => {
+  devices = devices.map((d) => {
     if (d.id === id && d.telemetry.mosfetStatus) {
       const nextState = d.telemetry.mosfetStatus === 'on' ? 'off' : 'on';
       resultingMosfet = nextState;
       const nextStatus = nextState === 'off' ? 'offline' : 'online';
-      const nextFaults = nextState === 'off' 
-        ? [...d.telemetry.faults, 'MOSFET Forced Shutoff'] 
-        : d.telemetry.faults.filter(f => f !== 'MOSFET Forced Shutoff' && f !== 'BMS Thermal Cut-off' && f !== 'Over-temperature Warning');
+      const nextFaults =
+        nextState === 'off'
+          ? [...d.telemetry.faults, 'MOSFET Forced Shutoff']
+          : d.telemetry.faults.filter(
+              (f) =>
+                f !== 'MOSFET Forced Shutoff' &&
+                f !== 'BMS Thermal Cut-off' &&
+                f !== 'Over-temperature Warning'
+            );
       return {
         ...d,
         status: nextStatus,
@@ -741,8 +954,8 @@ export function toggleMosfet(id: string) {
           ...d.telemetry,
           mosfetStatus: nextState,
           faults: nextFaults,
-          temp: nextState === 'off' ? 32.0 : d.telemetry.temp
-        }
+          temp: nextState === 'off' ? 32.0 : d.telemetry.temp,
+        },
       };
     }
     return d;
@@ -767,47 +980,59 @@ export function addGateway(data: any): Gateway {
     connectedDevices: data.connectedDevices || [],
     lastSync: new Date().toISOString(),
     packetsTransmitted: 0,
-    packetsFailed: 0
+    packetsFailed: 0,
   };
-  
+
   gateways.push(newGw);
-  
+
   // Link devices
   if (newGw.connectedDevices.length > 0) {
-    devices = devices.map(d => {
+    devices = devices.map((d) => {
       if (newGw.connectedDevices.includes(d.id)) {
         return { ...d, gatewayId: newGw.id };
       }
       return d;
     });
   }
-  
+
   return newGw;
 }
 
 export function updateGateway(id: string, data: any): Gateway | null {
-  const idx = gateways.findIndex(g => g.id === id);
+  const idx = gateways.findIndex((g) => g.id === id);
   if (idx === -1) return null;
-  
+
   const existing = gateways[idx];
   const updated: Gateway = {
     ...existing,
     name: data.name !== undefined ? data.name : existing.name,
     protocol: data.protocol !== undefined ? data.protocol : existing.protocol,
-    connectionType: data.connectionType !== undefined ? data.connectionType : existing.connectionType,
-    ipAddress: data.ipAddress !== undefined ? data.ipAddress : existing.ipAddress,
+    connectionType:
+      data.connectionType !== undefined
+        ? data.connectionType
+        : existing.connectionType,
+    ipAddress:
+      data.ipAddress !== undefined ? data.ipAddress : existing.ipAddress,
     port: data.port !== undefined ? Number(data.port) : existing.port,
-    serialPort: data.serialPort !== undefined ? data.serialPort : existing.serialPort,
-    baudRate: data.baudRate !== undefined ? Number(data.baudRate) : existing.baudRate,
-    pollingInterval: data.pollingInterval !== undefined ? Number(data.pollingInterval) : existing.pollingInterval,
-    connectedDevices: data.connectedDevices !== undefined ? data.connectedDevices : existing.connectedDevices
+    serialPort:
+      data.serialPort !== undefined ? data.serialPort : existing.serialPort,
+    baudRate:
+      data.baudRate !== undefined ? Number(data.baudRate) : existing.baudRate,
+    pollingInterval:
+      data.pollingInterval !== undefined
+        ? Number(data.pollingInterval)
+        : existing.pollingInterval,
+    connectedDevices:
+      data.connectedDevices !== undefined
+        ? data.connectedDevices
+        : existing.connectedDevices,
   };
-  
+
   gateways[idx] = updated;
-  
+
   // Update device mappings
   if (data.connectedDevices !== undefined) {
-    devices = devices.map(d => {
+    devices = devices.map((d) => {
       // If it is in the new list, make sure it has this gatewayId
       if (updated.connectedDevices.includes(d.id)) {
         return { ...d, gatewayId: updated.id };
@@ -819,14 +1044,14 @@ export function updateGateway(id: string, data: any): Gateway | null {
       return d;
     });
   }
-  
+
   return updated;
 }
 
 export function toggleGateway(id: string): Gateway | null {
-  const idx = gateways.findIndex(g => g.id === id);
+  const idx = gateways.findIndex((g) => g.id === id);
   if (idx === -1) return null;
-  
+
   const existing = gateways[idx];
   let nextStatus: GatewayStatus = 'online';
   if (existing.status === 'online') {
@@ -834,27 +1059,28 @@ export function toggleGateway(id: string): Gateway | null {
   } else if (existing.status === 'offline') {
     nextStatus = 'connecting';
   }
-  
+
   gateways[idx] = {
     ...existing,
     status: nextStatus,
-    lastSync: new Date().toISOString()
+    lastSync: new Date().toISOString(),
   };
-  
+
   return gateways[idx];
 }
 
 export function pingGateway(id: string): string {
-  const gw = gateways.find(g => g.id === id);
+  const gw = gateways.find((g) => g.id === id);
   if (!gw) return 'Error: Gateway not found';
-  
-  const ipOrSerial = gw.connectionType === 'tcp' 
-    ? `${gw.ipAddress}:${gw.port}` 
-    : `${gw.serialPort} @ ${gw.baudRate}bps`;
-    
+
+  const ipOrSerial =
+    gw.connectionType === 'tcp'
+      ? `${gw.ipAddress}:${gw.port}`
+      : `${gw.serialPort} @ ${gw.baudRate}bps`;
+
   let output = `Voltava Terminal Diagnostics v1.2.0\n`;
   output += `PING ${gw.name} (${id}) at ${ipOrSerial}...\n`;
-  
+
   if (gw.status === 'offline') {
     output += `Request timed out.\n`;
     output += `Request timed out.\n`;
@@ -864,42 +1090,52 @@ export function pingGateway(id: string): string {
     output += `Ping failed. Gateway is OFFLINE.\n`;
     return output;
   }
-  
+
   const rtt1 = 12 + Math.floor(Math.random() * 30);
   const rtt2 = 12 + Math.floor(Math.random() * 30);
   const rtt3 = 12 + Math.floor(Math.random() * 30);
-  
+
   output += `64 bytes response from ${id}: icmp_seq=1 ttl=64 time=${rtt1}ms\n`;
   output += `64 bytes response from ${id}: icmp_seq=2 ttl=64 time=${rtt2}ms\n`;
   output += `64 bytes response from ${id}: icmp_seq=3 ttl=64 time=${rtt3}ms\n`;
   output += `--- ${gw.id} ping statistics ---\n`;
   output += `3 packets transmitted, 3 received, 0% packet loss, time 2004ms\n`;
-  output += `rtt min/avg/max = ${Math.min(rtt1, rtt2, rtt3)}/${Math.round((rtt1+rtt2+rtt3)/3)}/${Math.max(rtt1, rtt2, rtt3)} ms\n`;
+  output += `rtt min/avg/max = ${Math.min(rtt1, rtt2, rtt3)}/${Math.round((rtt1 + rtt2 + rtt3) / 3)}/${Math.max(rtt1, rtt2, rtt3)} ms\n`;
   output += `Ping successful. Status: ${gw.status.toUpperCase()}\n`;
   return output;
 }
 
 export function scanGatewayBus(id: string): string {
-  const gw = gateways.find(g => g.id === id);
+  const gw = gateways.find((g) => g.id === id);
   if (!gw) return 'Error: Gateway not found';
-  
+
   let output = `Voltava Serial/Network Bus Scanner v1.2.0\n`;
   output += `Scanning bus on ${gw.name} [Protocol: ${gw.protocol.toUpperCase()}]...\n`;
-  
+
   if (gw.status === 'offline') {
     output += `Error: Bus communication error. Gateway is offline.\n`;
     return output;
   }
-  
+
   if (gw.protocol === 'modbus-rtu' || gw.protocol === 'modbus-tcp') {
     output += `Starting Modbus Unit ID Scan (IDs 1 to 16)...\n`;
     for (let i = 1; i <= 8; i++) {
-      const isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
-        const d = devices.find(dev => dev.id === dId);
-        return d && (d.id.includes(`0${i}`) || d.id.includes(`01`) || d.id.includes(`02`) || d.id.includes(`03`));
-      });
-      const matchingDev = gw.connectedDevices.map(dId => devices.find(dev => dev.id === dId)).find(dev => dev && dev.id);
-      
+      const _isDeviceMatched =
+        gw.connectedDevices.length > 0 &&
+        gw.connectedDevices.some((dId) => {
+          const d = devices.find((dev) => dev.id === dId);
+          return (
+            d &&
+            (d.id.includes(`0${i}`) ||
+              d.id.includes(`01`) ||
+              d.id.includes(`02`) ||
+              d.id.includes(`03`))
+          );
+        });
+      const matchingDev = gw.connectedDevices
+        .map((dId) => devices.find((dev) => dev.id === dId))
+        .find((dev) => dev && dev.id);
+
       if (matchingDev && i === 1) {
         output += `[Unit ID ${i}]: Device RESPONDED (Model: ${matchingDev.model}, ID: ${matchingDev.id})\n`;
       } else {
@@ -910,8 +1146,8 @@ export function scanGatewayBus(id: string): string {
   } else if (gw.protocol === 'dlms') {
     output += `Scanning DLMS/COSEM HDLC Address space...\n`;
     output += `Opening Logical Device Association LN (Logical Name) Referencing...\n`;
-    gw.connectedDevices.forEach(dId => {
-      const dev = devices.find(d => d.id === dId);
+    gw.connectedDevices.forEach((dId) => {
+      const dev = devices.find((d) => d.id === dId);
       if (dev) {
         output += `[SAP Address 0x01/0x10]: Connected to ${dev.model} (${dev.id}) OBIS profile active.\n`;
       }
@@ -919,8 +1155,8 @@ export function scanGatewayBus(id: string): string {
     output += `Scan complete.\n`;
   } else if (gw.protocol === 'ocpp') {
     output += `Listening for OCPP Chargepoint handshakes...\n`;
-    gw.connectedDevices.forEach(dId => {
-      const dev = devices.find(d => d.id === dId);
+    gw.connectedDevices.forEach((dId) => {
+      const dev = devices.find((d) => d.id === dId);
       if (dev) {
         output += `[WebSocket OCPP 1.6J]: Connection active for Charge Station ${dev.id}\n`;
       }
@@ -929,20 +1165,20 @@ export function scanGatewayBus(id: string): string {
   } else if (gw.protocol === 'can') {
     output += `Scanning J1939 CAN network identifier space...\n`;
     output += `PGN Filter active: 61444 (EEC1), 65263 (IC1)\n`;
-    gw.connectedDevices.forEach(dId => {
-      const dev = devices.find(d => d.id === dId);
+    gw.connectedDevices.forEach((dId) => {
+      const dev = devices.find((d) => d.id === dId);
       if (dev) {
         output += `[Source Addr 0x${(10 + Math.floor(Math.random() * 20)).toString(16).toUpperCase()}]: Broadcast detected. Name: ${dev.name}\n`;
       }
     });
     output += `Scan complete.\n`;
   }
-  
+
   return output;
 }
 
 export function addOrUpdateExternalDevice(id: string, payload: any): void {
-  const existingIdx = devices.findIndex(d => d.id === id);
+  const existingIdx = devices.findIndex((d) => d.id === id);
 
   const updatedTelemetry = {
     voltage: payload.voltage || 0,
@@ -955,7 +1191,7 @@ export function addOrUpdateExternalDevice(id: string, payload: any): void {
     cellTemps: payload.cellTemps,
     mosfetStatus: payload.mosfetStatus,
     activePower: payload.power,
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   };
 
   if (existingIdx >= 0) {
@@ -964,9 +1200,9 @@ export function addOrUpdateExternalDevice(id: string, payload: any): void {
       ...devices[existingIdx],
       telemetry: {
         ...devices[existingIdx].telemetry,
-        ...updatedTelemetry
+        ...updatedTelemetry,
       },
-      status: payload.faults && payload.faults.length > 0 ? 'fault' : 'online'
+      status: payload.faults && payload.faults.length > 0 ? 'fault' : 'online',
     };
   } else {
     // Create new device dynamically
@@ -979,7 +1215,7 @@ export function addOrUpdateExternalDevice(id: string, payload: any): void {
       firmware: payload.firmware || 'v1.0.0',
       location: payload.location || { lat: 0, lng: 0, city: 'Testing Lab' },
       owner: payload.owner || 'Testing Team',
-      telemetry: updatedTelemetry
+      telemetry: updatedTelemetry,
     };
     devices.push(newDevice as any);
   }
@@ -987,14 +1223,17 @@ export function addOrUpdateExternalDevice(id: string, payload: any): void {
   // Also update history
   const hist = historyMap[id] || [];
   const newHistPoint = {
-    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    timestamp: new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
     voltage: updatedTelemetry.voltage,
     current: updatedTelemetry.current,
     soc: updatedTelemetry.soc,
     temp: updatedTelemetry.temp,
-    power: payload.power
+    power: payload.power,
   };
-  
+
   if (hist.length >= 10) {
     historyMap[id] = [...hist.slice(1), newHistPoint];
   } else {

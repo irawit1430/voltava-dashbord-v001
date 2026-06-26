@@ -7,9 +7,12 @@ interface HealthPredictorProps {
   onInspectDevice: (device: Device) => void;
 }
 
-export default function HealthPredictor({ devices, onInspectDevice }: HealthPredictorProps) {
+export default function HealthPredictor({
+  devices,
+  onInspectDevice,
+}: HealthPredictorProps) {
   // Extract devices with AI predictions
-  const aiDevices = devices.filter(d => d.aiPredictions);
+  const aiDevices = devices.filter((d) => d.aiPredictions);
 
   const getRiskColor = (prob: number) => {
     if (prob > 60) return 'var(--accent-red)';
@@ -46,7 +49,7 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
       type: 'Aging Projection',
       desc: 'Completed 1200 cycles. Capacity fade model projects RUL of 4,100 cycles before reaching 80% SOH. Balance charging suggested.',
       severity: 'low',
-    }
+    },
   ];
 
   return (
@@ -54,34 +57,41 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
       {/* Top Welcome Banner */}
       <div className="glass-panel" style={styles.banner}>
         <div style={styles.bannerIconBox}>
-          <Brain size={24} color="var(--accent-green)" className="animate-pulse" />
+          <Brain
+            size={24}
+            color="var(--accent-green)"
+            className="animate-pulse"
+          />
         </div>
         <div>
           <h3 style={styles.bannerTitle}>Voltava AI Energy Brain Dashboard</h3>
           <p style={styles.bannerDesc}>
-            Runs continuous neural network inference on raw IoT telemetry packets. Predicts battery cell degradation, MOSFET thermal collapse, and grid outages before physical failures occur.
+            Runs continuous neural network inference on raw IoT telemetry
+            packets. Predicts battery cell degradation, MOSFET thermal collapse,
+            and grid outages before physical failures occur.
           </p>
         </div>
       </div>
 
       <div className="grid-main-layout">
-        
         {/* Left Side: Asset Diagnostics & Health Percentiles */}
         <div className="glass-panel" style={styles.mainDiagnostics}>
           <h4 style={styles.sectionHeader}>Hardware Health Diagnostics</h4>
-          
+
           <div style={styles.listContainer}>
-            {aiDevices.map(d => {
+            {aiDevices.map((d) => {
               const ai = d.aiPredictions!;
               const riskColor = getRiskColor(ai.failureProbability);
-              
+
               return (
                 <div key={d.id} style={styles.diagnosticRow}>
                   {/* Basic info */}
                   <div style={styles.diagLeft}>
                     <div>
                       <span style={styles.diagName}>{d.name}</span>
-                      <span style={styles.diagId}>ID: <code>{d.id}</code></span>
+                      <span style={styles.diagId}>
+                        ID: <code>{d.id}</code>
+                      </span>
                     </div>
                   </div>
 
@@ -89,7 +99,17 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
                   <div style={styles.diagMiddle}>
                     <div style={styles.statMetric}>
                       <span style={styles.statLabel}>AI Health Score</span>
-                      <span style={{ ...styles.statVal, color: ai.healthRank > 80 ? 'var(--accent-green)' : ai.healthRank > 50 ? 'var(--accent-orange)' : 'var(--accent-red)' }}>
+                      <span
+                        style={{
+                          ...styles.statVal,
+                          color:
+                            ai.healthRank > 80
+                              ? 'var(--accent-green)'
+                              : ai.healthRank > 50
+                                ? 'var(--accent-orange)'
+                                : 'var(--accent-red)',
+                        }}
+                      >
                         {ai.healthRank} / 100
                       </span>
                     </div>
@@ -121,7 +141,7 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
                       )}
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => onInspectDevice(d)}
                       className="btn btn-outline"
                       style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem' }}
@@ -138,20 +158,46 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
         {/* Right Side: AI Models Log Timeline */}
         <div className="glass-panel" style={styles.timelinePanel}>
           <h3 style={styles.panelTitle}>AI Inference Logs</h3>
-          <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Chronological log of anomaly flags raised by edge-gateways & cloud models.
+          <p
+            style={{
+              fontSize: '0.7rem',
+              color: 'var(--text-secondary)',
+              marginBottom: '1rem',
+            }}
+          >
+            Chronological log of anomaly flags raised by edge-gateways & cloud
+            models.
           </p>
 
           <div style={styles.timeline}>
             {anomaliesTimeline.map((log, i) => {
-              const borderCol = log.severity === 'high' ? 'var(--accent-red)' : log.severity === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-              const bgCol = log.severity === 'high' ? 'rgba(239, 68, 68, 0.05)' : log.severity === 'medium' ? 'rgba(245, 158, 11, 0.05)' : 'rgba(59, 130, 246, 0.05)';
-              
+              const borderCol =
+                log.severity === 'high'
+                  ? 'var(--accent-red)'
+                  : log.severity === 'medium'
+                    ? 'var(--accent-orange)'
+                    : 'var(--accent-blue)';
+              const bgCol =
+                log.severity === 'high'
+                  ? 'rgba(239, 68, 68, 0.05)'
+                  : log.severity === 'medium'
+                    ? 'rgba(245, 158, 11, 0.05)'
+                    : 'rgba(59, 130, 246, 0.05)';
+
               return (
-                <div key={i} style={{ ...styles.timelineItem, borderLeftColor: borderCol, backgroundColor: bgCol }}>
+                <div
+                  key={i}
+                  style={{
+                    ...styles.timelineItem,
+                    borderLeftColor: borderCol,
+                    backgroundColor: bgCol,
+                  }}
+                >
                   <div style={styles.timelineHeader}>
                     <span style={styles.timelineTime}>{log.time}</span>
-                    <span style={{ ...styles.timelineType, color: borderCol }}>{log.type}</span>
+                    <span style={{ ...styles.timelineType, color: borderCol }}>
+                      {log.type}
+                    </span>
                   </div>
                   <h4 style={styles.timelineDevice}>{log.device}</h4>
                   <p style={styles.timelineDesc}>{log.desc}</p>
@@ -160,7 +206,6 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
             })}
           </div>
         </div>
-
       </div>
     </div>
   );
@@ -174,7 +219,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   banner: {
     padding: '1.25rem 1.5rem',
-    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, rgba(6, 182, 212, 0.04) 100%)',
+    background:
+      'linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, rgba(6, 182, 212, 0.04) 100%)',
     display: 'flex',
     alignItems: 'center',
     gap: '1rem',

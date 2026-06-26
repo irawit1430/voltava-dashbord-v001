@@ -1,4 +1,3 @@
-
 import { Cpu, Sun, TrendingUp, Leaf, ArrowUpRight } from 'lucide-react';
 import type { GridMetrics } from '../../types';
 import './DashboardHome.css';
@@ -8,13 +7,16 @@ interface DashboardStatsProps {
   gridMetrics: GridMetrics;
 }
 
-export default function DashboardStats({ totalDevices, gridMetrics }: DashboardStatsProps) {
+export default function DashboardStats({
+  totalDevices,
+  gridMetrics,
+}: DashboardStatsProps) {
   // Format Indian Currency
   const formatINR = (value: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(value);
   };
 
@@ -49,9 +51,7 @@ export default function DashboardStats({ totalDevices, gridMetrics }: DashboardS
           {gridMetrics.solarPower} <span className="stat-unit">kW</span>
         </div>
         <div className="stat-footer">
-          <span className="stat-trend-up">
-            Peak 92.0 kW today
-          </span>
+          <span className="stat-trend-up">Peak 92.0 kW today</span>
           <span className="stat-sub-text">Rajasthan & Delhi sites</span>
         </div>
       </div>
@@ -61,7 +61,14 @@ export default function DashboardStats({ totalDevices, gridMetrics }: DashboardS
         <div className="stat-header">
           <span className="stat-label">Net Grid Demand</span>
           <div className="icon-wrap icon-wrap-red">
-            <TrendingUp size={20} color={gridMetrics.gridImport > gridMetrics.peakLimit ? "var(--accent-red)" : "var(--accent-cyan)"} />
+            <TrendingUp
+              size={20}
+              color={
+                gridMetrics.gridImport > gridMetrics.peakLimit
+                  ? 'var(--accent-red)'
+                  : 'var(--accent-cyan)'
+              }
+            />
           </div>
         </div>
         <div className="stat-value">
@@ -77,7 +84,9 @@ export default function DashboardStats({ totalDevices, gridMetrics }: DashboardS
               Below Peak Limit ({gridMetrics.peakLimit} kW)
             </span>
           )}
-          <span className="stat-sub-text">Industrial Power Factor: {gridMetrics.powerFactor}</span>
+          <span className="stat-sub-text">
+            Industrial Power Factor: {gridMetrics.powerFactor}
+          </span>
         </div>
       </div>
 

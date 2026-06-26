@@ -1,14 +1,14 @@
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  Cpu, 
-  Truck, 
-  Zap, 
-  Brain, 
-  Calculator, 
-  Layers, 
+import {
+  LayoutDashboard,
+  Cpu,
+  Truck,
+  Zap,
+  Brain,
+  Calculator,
+  Layers,
   Settings,
-  ShieldCheck
+  ShieldCheck,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -18,12 +18,27 @@ interface SidebarProps {
 
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   const menuItems = [
-    { id: 'overview', name: 'Overview', icon: LayoutDashboard, category: 'General' },
+    {
+      id: 'overview',
+      name: 'Overview',
+      icon: LayoutDashboard,
+      category: 'General',
+    },
     { id: 'devices', name: 'Device Registry', icon: Cpu, category: 'General' },
     { id: 'fleet', name: 'Fleet Mobility', icon: Truck, category: 'Modules' },
     { id: 'grid', name: 'Grid & Solar', icon: Zap, category: 'Modules' },
-    { id: 'simulator', name: 'BESS Simulator', icon: Calculator, category: 'Optimization' },
-    { id: 'ai', name: 'AI Energy Brain', icon: Brain, category: 'Optimization' },
+    {
+      id: 'simulator',
+      name: 'BESS Simulator',
+      icon: Calculator,
+      category: 'Optimization',
+    },
+    {
+      id: 'ai',
+      name: 'AI Energy Brain',
+      icon: Brain,
+      category: 'Optimization',
+    },
   ];
 
   return (
@@ -46,7 +61,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       {/* Navigation Groups */}
       <nav style={styles.nav}>
         {['General', 'Modules', 'Optimization'].map((category) => {
-          const items = menuItems.filter(item => item.category === category);
+          const items = menuItems.filter((item) => item.category === category);
           return (
             <div key={category} style={styles.navGroup}>
               <h2 style={styles.groupHeader}>{category}</h2>
@@ -63,12 +78,16 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
                           ...(isActive ? styles.navButtonActive : {}),
                         }}
                       >
-                        <Icon 
-                          size={18} 
-                          color={isActive ? '#10b981' : '#9ca3af'} 
-                          style={styles.buttonIcon} 
+                        <Icon
+                          size={18}
+                          color={isActive ? '#10b981' : '#9ca3af'}
+                          style={styles.buttonIcon}
                         />
-                        <span style={isActive ? styles.textActive : styles.textInactive}>
+                        <span
+                          style={
+                            isActive ? styles.textActive : styles.textInactive
+                          }
+                        >
                           {item.name}
                         </span>
                         {isActive && <div style={styles.activeIndicator} />}
@@ -88,7 +107,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           <Layers size={14} />
           <span>India Vision 2031</span>
         </div>
-        <button 
+        <button
           onClick={() => setActiveTab('gateway-config')}
           style={{
             ...styles.footerLink,
@@ -97,14 +116,27 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             cursor: 'pointer',
             width: '100%',
             textAlign: 'left',
-            color: activeTab === 'gateway-config' ? 'var(--text-primary)' : 'var(--text-muted)',
-            backgroundColor: activeTab === 'gateway-config' ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
+            color:
+              activeTab === 'gateway-config'
+                ? 'var(--text-primary)'
+                : 'var(--text-muted)',
+            backgroundColor:
+              activeTab === 'gateway-config'
+                ? 'rgba(255, 255, 255, 0.03)'
+                : 'transparent',
             borderRadius: '6px',
             transition: 'all 0.15s ease',
           }}
         >
-          <Settings size={14} color={activeTab === 'gateway-config' ? '#10b981' : '#9ca3af'} />
-          <span style={{ fontWeight: activeTab === 'gateway-config' ? 600 : 500 }}>Gateway Config</span>
+          <Settings
+            size={14}
+            color={activeTab === 'gateway-config' ? '#10b981' : '#9ca3af'}
+          />
+          <span
+            style={{ fontWeight: activeTab === 'gateway-config' ? 600 : 500 }}
+          >
+            Gateway Config
+          </span>
         </button>
       </div>
     </aside>

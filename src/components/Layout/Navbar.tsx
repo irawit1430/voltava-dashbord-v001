@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Bell, 
-  MapPin, 
-  Wifi, 
-  User, 
-  AlertTriangle 
-} from 'lucide-react';
+import { Bell, MapPin, Wifi, User, AlertTriangle } from 'lucide-react';
 import type { Device } from '../../types';
 import './Navbar.css';
 
@@ -15,21 +9,28 @@ interface NavbarProps {
   onSelectDevice: (device: Device) => void;
 }
 
-export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarProps) {
+export default function Navbar({
+  activeTab,
+  devices,
+  onSelectDevice,
+}: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const onlineCount = devices.filter(d => d.status === 'online').length;
-  const warningCount = devices.filter(d => d.status === 'warning').length;
-  const faultCount = devices.filter(d => d.status === 'fault').length;
+  const onlineCount = devices.filter((d) => d.status === 'online').length;
+  const warningCount = devices.filter((d) => d.status === 'warning').length;
+  const faultCount = devices.filter((d) => d.status === 'fault').length;
 
-  const warningDevices = devices.filter(d => d.status === 'warning');
-  const faultDevices = devices.filter(d => d.status === 'fault');
+  const warningDevices = devices.filter((d) => d.status === 'warning');
+  const faultDevices = devices.filter((d) => d.status === 'fault');
   const alertDevices = [...faultDevices, ...warningDevices];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -49,14 +50,22 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
 
   const getPageTitle = () => {
     switch (activeTab) {
-      case 'overview': return 'Executive Overview';
-      case 'devices': return 'Device Registry';
-      case 'fleet': return 'Voltava EIP Mobility';
-      case 'grid': return 'Grid & Solar Intelligence';
-      case 'simulator': return 'BESS Optimization Simulator';
-      case 'ai': return 'AI Predictive Energy Brain';
-      case 'gateway-config': return 'Gateway Configuration';
-      default: return 'Voltava EIP';
+      case 'overview':
+        return 'Executive Overview';
+      case 'devices':
+        return 'Device Registry';
+      case 'fleet':
+        return 'Voltava EIP Mobility';
+      case 'grid':
+        return 'Grid & Solar Intelligence';
+      case 'simulator':
+        return 'BESS Optimization Simulator';
+      case 'ai':
+        return 'AI Predictive Energy Brain';
+      case 'gateway-config':
+        return 'Gateway Configuration';
+      default:
+        return 'Voltava EIP';
     }
   };
 
@@ -86,7 +95,11 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
 
         {faultCount > 0 && (
           <div className="status-group">
-            <AlertTriangle size={14} color="var(--accent-red)" className="animate-pulse" />
+            <AlertTriangle
+              size={14}
+              color="var(--accent-red)"
+              className="animate-pulse"
+            />
             <span className="status-label status-label-fault">
               {faultCount} Fault{faultCount > 1 ? 's' : ''}
             </span>
@@ -110,29 +123,39 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
         </div>
 
         {/* Notifications */}
-        <div style={{ position: 'relative' }} ref={dropdownRef} onKeyDown={handleKeyDown}>
-          <button 
-            className={`navbar-btn ${isOpen ? 'active' : ''}`} 
+        <div
+          style={{ position: 'relative' }}
+          ref={dropdownRef}
+          onKeyDown={handleKeyDown}
+        >
+          <button
+            className={`navbar-btn ${isOpen ? 'active' : ''}`}
             aria-label="View notifications"
             onClick={() => setIsOpen(!isOpen)}
             aria-expanded={isOpen}
           >
-            <Bell size={18} color={isOpen ? "var(--text-primary)" : "var(--text-secondary)"} />
+            <Bell
+              size={18}
+              color={isOpen ? 'var(--text-primary)' : 'var(--text-secondary)'}
+            />
             {alertDevices.length > 0 && (
-              <span className="notification-badge">
-                {alertDevices.length}
-              </span>
+              <span className="notification-badge">{alertDevices.length}</span>
             )}
           </button>
 
           {/* Popover Dropdown Panel */}
           {isOpen && (
-            <div className="popover glass-panel" role="dialog" aria-label="System Notifications">
+            <div
+              className="popover glass-panel"
+              role="dialog"
+              aria-label="System Notifications"
+            >
               <div className="popover-header">
                 <h3 className="popover-title">System Notifications</h3>
                 {alertDevices.length > 0 && (
                   <span className="popover-badge-count">
-                    {alertDevices.length} Alert{alertDevices.length > 1 ? 's' : ''}
+                    {alertDevices.length} Alert
+                    {alertDevices.length > 1 ? 's' : ''}
                   </span>
                 )}
               </div>
@@ -144,14 +167,16 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
                       <span style={{ fontSize: '1.25rem' }}>✅</span>
                     </div>
                     <p className="empty-text">All systems operational</p>
-                    <p className="empty-sub-text">No active alerts or hardware faults detected.</p>
+                    <p className="empty-sub-text">
+                      No active alerts or hardware faults detected.
+                    </p>
                   </div>
                 ) : (
                   alertDevices.map((device) => {
                     const isFault = device.status === 'fault';
                     return (
-                      <button 
-                        key={device.id} 
+                      <button
+                        key={device.id}
                         className={`notification-item notification-item-hover ${isFault ? 'notification-item-fault' : 'notification-item-warning'}`}
                         onClick={() => {
                           onSelectDevice(device);
@@ -161,21 +186,34 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
                         role="listitem"
                       >
                         <div className="notification-icon-wrap">
-                          <AlertTriangle size={16} color={isFault ? "var(--accent-red)" : "var(--accent-orange)"} className={isFault ? "animate-pulse" : ""} />
+                          <AlertTriangle
+                            size={16}
+                            color={
+                              isFault
+                                ? 'var(--accent-red)'
+                                : 'var(--accent-orange)'
+                            }
+                            className={isFault ? 'animate-pulse' : ''}
+                          />
                         </div>
                         <div className="notification-content">
                           <div className="notification-meta">
                             <span className="device-name">{device.name}</span>
-                            <span className={`badge ${isFault ? 'badge-fault' : 'badge-warning'} inline-badge`}>
+                            <span
+                              className={`badge ${isFault ? 'badge-fault' : 'badge-warning'} inline-badge`}
+                            >
                               {device.status}
                             </span>
                           </div>
                           <p className="device-fault-msg">
-                            {device.telemetry.faults && device.telemetry.faults.length > 0 
-                              ? device.telemetry.faults.join(', ') 
+                            {device.telemetry.faults &&
+                            device.telemetry.faults.length > 0
+                              ? device.telemetry.faults.join(', ')
                               : `Device is in ${device.status} state.`}
                           </p>
-                          <span className="device-id-text">{device.id} • NCR HQ</span>
+                          <span className="device-id-text">
+                            {device.id} • NCR HQ
+                          </span>
                         </div>
                       </button>
                     );

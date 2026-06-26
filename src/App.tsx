@@ -17,23 +17,23 @@ function App() {
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
 
   // Invoke our telemetry simulation engine
-  const { 
-    devices, 
+  const {
+    devices,
     gateways,
-    gridMetrics, 
-    triggerOtaUpdate, 
-    toggleMosfet, 
+    gridMetrics,
+    triggerOtaUpdate,
+    toggleMosfet,
     getDeviceHistory,
     toggleGateway,
     updateGatewayConfig,
     addGateway,
     pingGateway,
-    scanGatewayBus
+    scanGatewayBus,
   } = useTelemetry();
 
   // Find dynamic version of selected device for real-time modal updates
-  const activeSelectedDevice = selectedDevice 
-    ? devices.find(d => d.id === selectedDevice.id) || selectedDevice 
+  const activeSelectedDevice = selectedDevice
+    ? devices.find((d) => d.id === selectedDevice.id) || selectedDevice
     : null;
 
   return (
@@ -44,53 +44,49 @@ function App() {
       {/* Main Content Area */}
       <main className="main-content">
         {/* Navbar */}
-        <Navbar 
-          activeTab={activeTab} 
-          devices={devices} 
-          onSelectDevice={(device) => setSelectedDevice(device)} 
+        <Navbar
+          activeTab={activeTab}
+          devices={devices}
+          onSelectDevice={(device) => setSelectedDevice(device)}
         />
 
         {/* Tab Routing Body */}
         <div className="content-body">
           {activeTab === 'overview' && (
-            <DashboardHome 
-              devices={devices} 
-              gridMetrics={gridMetrics} 
-              setActiveTab={setActiveTab} 
+            <DashboardHome
+              devices={devices}
+              gridMetrics={gridMetrics}
+              setActiveTab={setActiveTab}
             />
           )}
 
           {activeTab === 'devices' && (
-            <DeviceList 
-              devices={devices} 
-              onSelectDevice={(device) => setSelectedDevice(device)} 
+            <DeviceList
+              devices={devices}
+              onSelectDevice={(device) => setSelectedDevice(device)}
             />
           )}
 
           {activeTab === 'fleet' && (
-            <FleetOverview 
-              devices={devices} 
-              onInspectDevice={(device) => setSelectedDevice(device)} 
+            <FleetOverview
+              devices={devices}
+              onInspectDevice={(device) => setSelectedDevice(device)}
             />
           )}
 
-          {activeTab === 'grid' && (
-            <GridOverview gridMetrics={gridMetrics} />
-          )}
+          {activeTab === 'grid' && <GridOverview gridMetrics={gridMetrics} />}
 
-          {activeTab === 'simulator' && (
-            <CostSavingsSimulator />
-          )}
+          {activeTab === 'simulator' && <CostSavingsSimulator />}
 
           {activeTab === 'ai' && (
-            <HealthPredictor 
-              devices={devices} 
-              onInspectDevice={(device) => setSelectedDevice(device)} 
+            <HealthPredictor
+              devices={devices}
+              onInspectDevice={(device) => setSelectedDevice(device)}
             />
           )}
 
           {activeTab === 'gateway-config' && (
-            <GatewayConfig 
+            <GatewayConfig
               gateways={gateways}
               devices={devices}
               toggleGateway={toggleGateway}

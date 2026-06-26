@@ -38,10 +38,18 @@
   justify-content: center;
 }
 
-.icon-wrap-cyan { background-color: rgba(6, 182, 212, 0.1); }
-.icon-wrap-blue { background-color: rgba(59, 130, 246, 0.1); }
-.icon-wrap-red { background-color: rgba(239, 68, 68, 0.1); }
-.icon-wrap-green { background-color: rgba(16, 185, 129, 0.1); }
+.icon-wrap-cyan {
+  background-color: rgba(6, 182, 212, 0.1);
+}
+.icon-wrap-blue {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+.icon-wrap-red {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+.icon-wrap-green {
+  background-color: rgba(16, 185, 129, 0.1);
+}
 
 .stat-value {
   font-size: 1.8rem;

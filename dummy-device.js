@@ -28,7 +28,7 @@ function simulateTelemetry() {
   // Add random faults occasionally
   if (Math.random() < 0.01) {
     telemetry.faults = ['Over-temperature Warning'];
-    telemetry.temp += 10; 
+    telemetry.temp += 10;
   } else if (Math.random() < 0.02 && telemetry.faults.length > 0) {
     telemetry.faults = []; // Clear faults
   }
@@ -45,7 +45,7 @@ function sendTelemetry() {
       type: 'bms',
       model: 'Dummy-Li-Ion-50V',
       firmware: 'v1.0.0-test',
-      location: { lat: 28.5355, lng: 77.3910, city: 'Testing Lab' },
+      location: { lat: 28.5355, lng: 77.391, city: 'Testing Lab' },
       owner: 'Test Engineer',
       voltage: Number(telemetry.voltage.toFixed(2)),
       current: Number(telemetry.current.toFixed(2)),
@@ -53,11 +53,23 @@ function sendTelemetry() {
       soh: 98,
       temp: Number(telemetry.temp.toFixed(1)),
       faults: telemetry.faults,
-      cellVoltages: Array(16).fill(0).map(() => Number((telemetry.voltage / 16 + (Math.random() - 0.5) * 0.05).toFixed(2))),
-      cellTemps: Array(16).fill(0).map(() => Math.round(telemetry.temp + (Math.random() - 0.5) * 2)),
-      mosfetStatus: telemetry.faults.includes('Over-temperature Warning') ? 'off' : 'on',
-      power: Number((Math.abs(telemetry.voltage * telemetry.current) / 1000).toFixed(2)) // kW
-    }
+      cellVoltages: Array(16)
+        .fill(0)
+        .map(() =>
+          Number(
+            (telemetry.voltage / 16 + (Math.random() - 0.5) * 0.05).toFixed(2)
+          )
+        ),
+      cellTemps: Array(16)
+        .fill(0)
+        .map(() => Math.round(telemetry.temp + (Math.random() - 0.5) * 2)),
+      mosfetStatus: telemetry.faults.includes('Over-temperature Warning')
+        ? 'off'
+        : 'on',
+      power: Number(
+        (Math.abs(telemetry.voltage * telemetry.current) / 1000).toFixed(2)
+      ), // kW
+    },
   };
 
   const data = JSON.stringify(payload);
@@ -69,20 +81,27 @@ function sendTelemetry() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(data)
-    }
+      'Content-Length': Buffer.byteLength(data),
+    },
   };
 
   const req = http.request(options, (res) => {
     let responseData = '';
-    res.on('data', (chunk) => { responseData += chunk; });
+    res.on('data', (chunk) => {
+      responseData += chunk;
+    });
     res.on('end', () => {
-      console.log(`[${new Date().toISOString()}] Data sent. Status: ${res.statusCode}, Response: ${responseData}`);
+      console.log(
+        `[${new Date().toISOString()}] Data sent. Status: ${res.statusCode}, Response: ${responseData}`
+      );
     });
   });
 
   req.on('error', (error) => {
-    console.error(`[${new Date().toISOString()}] Error sending telemetry:`, error.message);
+    console.error(
+      `[${new Date().toISOString()}] Error sending telemetry:`,
+      error.message
+    );
   });
 
   req.write(data);

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Filter, 
-  Cpu, 
-  Battery, 
-  Sun, 
-  Activity, 
-  Zap, 
+import {
+  Search,
+  Filter,
+  Cpu,
+  Battery,
+  Sun,
+  Activity,
+  Zap,
   RefreshCw,
-  Eye
+  Eye,
 } from 'lucide-react';
 import type { Device, DeviceType, DeviceStatus } from '../../types';
 
@@ -17,52 +17,76 @@ interface DeviceListProps {
   onSelectDevice: (device: Device) => void;
 }
 
-export default function DeviceList({ devices, onSelectDevice }: DeviceListProps) {
+export default function DeviceList({
+  devices,
+  onSelectDevice,
+}: DeviceListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
   // Filter devices
-  const filteredDevices = devices.filter(device => {
-    const matchesSearch = device.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          device.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          device.owner.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredDevices = devices.filter((device) => {
+    const matchesSearch =
+      device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      device.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      device.owner.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === 'all' || device.type === selectedType;
-    const matchesStatus = selectedStatus === 'all' || device.status === selectedStatus;
+    const matchesStatus =
+      selectedStatus === 'all' || device.status === selectedStatus;
     return matchesSearch && matchesType && matchesStatus;
   });
 
   const getDeviceIcon = (type: DeviceType) => {
     switch (type) {
-      case 'bms': return <Battery size={16} color="var(--accent-green)" />;
-      case 'bess': return <Zap size={16} color="var(--accent-green)" />;
-      case 'solar': return <Sun size={16} color="var(--accent-blue)" />;
-      case 'meter': return <Activity size={16} color="var(--accent-cyan)" />;
-      case 'charger': return <Zap size={16} color="var(--accent-orange)" />;
-      case 'telematics': return <Cpu size={16} color="var(--accent-blue)" />;
-      default: return <Cpu size={16} />;
+      case 'bms':
+        return <Battery size={16} color="var(--accent-green)" />;
+      case 'bess':
+        return <Zap size={16} color="var(--accent-green)" />;
+      case 'solar':
+        return <Sun size={16} color="var(--accent-blue)" />;
+      case 'meter':
+        return <Activity size={16} color="var(--accent-cyan)" />;
+      case 'charger':
+        return <Zap size={16} color="var(--accent-orange)" />;
+      case 'telematics':
+        return <Cpu size={16} color="var(--accent-blue)" />;
+      default:
+        return <Cpu size={16} />;
     }
   };
 
   const getTypeLabel = (type: DeviceType) => {
     switch (type) {
-      case 'bms': return 'Smart BMS';
-      case 'bess': return 'Factory BESS';
-      case 'solar': return 'Solar Inverter';
-      case 'meter': return 'Smart Meter';
-      case 'charger': return 'DC Charger';
-      case 'telematics': return 'Telematics';
-      default: return type;
+      case 'bms':
+        return 'Smart BMS';
+      case 'bess':
+        return 'Factory BESS';
+      case 'solar':
+        return 'Solar Inverter';
+      case 'meter':
+        return 'Smart Meter';
+      case 'charger':
+        return 'DC Charger';
+      case 'telematics':
+        return 'Telematics';
+      default:
+        return type;
     }
   };
 
   const getStatusBadgeClass = (status: DeviceStatus) => {
     switch (status) {
-      case 'online': return 'badge-online';
-      case 'offline': return 'badge-offline';
-      case 'warning': return 'badge-warning';
-      case 'fault': return 'badge-fault';
-      default: return '';
+      case 'online':
+        return 'badge-online';
+      case 'offline':
+        return 'badge-offline';
+      case 'warning':
+        return 'badge-warning';
+      case 'fault':
+        return 'badge-fault';
+      default:
+        return '';
     }
   };
 
@@ -71,7 +95,11 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
       {/* Search and Filters Bar */}
       <div className="glass-panel" style={styles.filterBar}>
         <div style={styles.searchWrapper}>
-          <Search size={18} color="var(--text-secondary)" style={styles.searchIcon} />
+          <Search
+            size={18}
+            color="var(--text-secondary)"
+            style={styles.searchIcon}
+          />
           <input
             type="text"
             placeholder="Search by ID, name, owner..."
@@ -84,7 +112,11 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
 
         <div style={styles.filtersGroup}>
           <div style={styles.filterSelectWrap}>
-            <Filter size={14} color="var(--text-secondary)" style={{ marginRight: 6 }} />
+            <Filter
+              size={14}
+              color="var(--text-secondary)"
+              style={{ marginRight: 6 }}
+            />
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
@@ -174,20 +206,35 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
                         <code style={styles.codeId}>{device.id}</code>
                       </td>
                       <td style={styles.nameCell}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                          }}
+                        >
                           {getDeviceIcon(device.type)}
                           <div>
-                            <span style={{ fontWeight: 600 }}>{device.name}</span>
+                            <span style={{ fontWeight: 600 }}>
+                              {device.name}
+                            </span>
                             <span style={styles.modelSub}>{device.model}</span>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <span style={styles.typeText}>{getTypeLabel(device.type)}</span>
+                        <span style={styles.typeText}>
+                          {getTypeLabel(device.type)}
+                        </span>
                       </td>
                       <td>
-                        <span className={`badge ${getStatusBadgeClass(device.status)}`}>
-                          <span className={`pulse-dot ${device.status}`} style={{ width: 6, height: 6, marginRight: 4 }} />
+                        <span
+                          className={`badge ${getStatusBadgeClass(device.status)}`}
+                        >
+                          <span
+                            className={`pulse-dot ${device.status}`}
+                            style={{ width: 6, height: 6, marginRight: 4 }}
+                          />
                           {device.status}
                         </span>
                       </td>
@@ -196,13 +243,19 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
                       </td>
                       <td style={styles.ownerText}>{device.owner}</td>
                       <td>
-                        <span style={styles.locationCity}>{device.location.city}</span>
+                        <span style={styles.locationCity}>
+                          {device.location.city}
+                        </span>
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <button
                           onClick={() => onSelectDevice(device)}
                           className="btn btn-outline"
-                          style={{ padding: '0.35rem 0.65rem', display: 'inline-flex', alignItems: 'center' }}
+                          style={{
+                            padding: '0.35rem 0.65rem',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                          }}
                         >
                           <Eye size={14} style={{ marginRight: 4 }} /> Inspect
                         </button>

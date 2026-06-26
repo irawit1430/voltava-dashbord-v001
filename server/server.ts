@@ -33,13 +33,13 @@ process.on('exit', (code) => {
   console.log(`Process exiting with code: ${code}`);
 });
 
-import { 
-  devices, 
-  gridMetrics, 
-  historyMap, 
-  initHistory, 
-  simulateStep, 
-  triggerOtaUpdate, 
+import {
+  devices,
+  gridMetrics,
+  historyMap,
+  initHistory,
+  simulateStep,
+  triggerOtaUpdate,
   toggleMosfet,
   gateways,
   addGateway,
@@ -47,7 +47,7 @@ import {
   toggleGateway,
   pingGateway,
   scanGatewayBus,
-  addOrUpdateExternalDevice
+  addOrUpdateExternalDevice,
 } from './simulator';
 
 // Initialize history
@@ -79,13 +79,13 @@ app.get('/api/devices/history', (req, res) => {
 });
 
 app.get('/api/devices/:id', (req, res) => {
-  const device = devices.find(d => d.id === req.params.id);
+  const device = devices.find((d) => d.id === req.params.id);
   if (!device) {
     return res.status(404).json({
       error: {
         code: 'NOT_FOUND',
-        message: `Device with ID ${req.params.id} not found`
-      }
+        message: `Device with ID ${req.params.id} not found`,
+      },
     });
   }
   res.json(device);
@@ -97,21 +97,21 @@ app.get('/api/devices/:id/history', (req, res) => {
     return res.status(404).json({
       error: {
         code: 'NOT_FOUND',
-        message: `History for device with ID ${req.params.id} not found`
-      }
+        message: `History for device with ID ${req.params.id} not found`,
+      },
     });
   }
   res.json(history);
 });
 
 app.post('/api/devices/:id/ota', (req, res) => {
-  const device = devices.find(d => d.id === req.params.id);
+  const device = devices.find((d) => d.id === req.params.id);
   if (!device) {
     return res.status(404).json({
       error: {
         code: 'NOT_FOUND',
-        message: `Device with ID ${req.params.id} not found`
-      }
+        message: `Device with ID ${req.params.id} not found`,
+      },
     });
   }
   triggerOtaUpdate(req.params.id);
@@ -119,21 +119,21 @@ app.post('/api/devices/:id/ota', (req, res) => {
 });
 
 app.post('/api/devices/:id/toggle-mosfet', (req, res) => {
-  const device = devices.find(d => d.id === req.params.id);
+  const device = devices.find((d) => d.id === req.params.id);
   if (!device) {
     return res.status(404).json({
       error: {
         code: 'NOT_FOUND',
-        message: `Device with ID ${req.params.id} not found`
-      }
+        message: `Device with ID ${req.params.id} not found`,
+      },
     });
   }
   if (!device.telemetry.mosfetStatus) {
     return res.status(400).json({
       error: {
         code: 'BAD_REQUEST',
-        message: `Device with ID ${req.params.id} does not support MOSFET operations`
-      }
+        message: `Device with ID ${req.params.id} does not support MOSFET operations`,
+      },
     });
   }
   const status = toggleMosfet(req.params.id);
@@ -212,7 +212,7 @@ wss.on('error', (err) => {
 wss.on('connection', (ws, request) => {
   const reqUrl = request.url || '';
   const pathname = new URL(reqUrl, 'http://localhost').pathname;
-  
+
   if (pathname !== '/ws' && pathname !== '/') {
     console.log(`Closing connection for unmatched path: ${pathname}`);
     ws.close(1008, 'Unsupported path');
@@ -220,16 +220,18 @@ wss.on('connection', (ws, request) => {
   }
 
   console.log('WS Client connected');
-  
+
   // Send immediate initial data state
-  ws.send(JSON.stringify({
-    type: 'TELEMETRY_UPDATE',
-    data: {
-      devices,
-      gridMetrics,
-      gateways
-    }
-  }));
+  ws.send(
+    JSON.stringify({
+      type: 'TELEMETRY_UPDATE',
+      data: {
+        devices,
+        gridMetrics,
+        gateways,
+      },
+    })
+  );
 
   ws.on('error', (err) => {
     console.error('WS Client connection error:', err);
@@ -249,15 +251,15 @@ function broadcastTelemetry() {
       data: {
         devices,
         gridMetrics,
-        gateways
-      }
+        gateways,
+      },
     });
   } catch (err) {
     console.error('Failed to serialize telemetry payload:', err);
     return;
   }
 
-  wss.clients.forEach(client => {
+  wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       try {
         client.send(payload, (err) => {

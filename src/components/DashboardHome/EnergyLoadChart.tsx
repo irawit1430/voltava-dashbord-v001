@@ -1,5 +1,13 @@
-
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 import './DashboardHome.css';
 
 export default function EnergyLoadChart() {
@@ -18,40 +26,97 @@ export default function EnergyLoadChart() {
     <div className="glass-panel chart-panel">
       <div className="panel-header">
         <h3 className="panel-title">Multi-Asset Energy Load Curve (24h)</h3>
-        <span className="panel-subtitle">Monitored via industrial Modbus/DLMS Gateways</span>
+        <span className="panel-subtitle">
+          Monitored via industrial Modbus/DLMS Gateways
+        </span>
       </div>
       <div className="chart-wrap">
         <ResponsiveContainer width="100%" height={320}>
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart
+            data={chartData}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          >
             <defs>
               <linearGradient id="colorSolar" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent-blue)" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="var(--accent-blue)" stopOpacity={0}/>
+                <stop
+                  offset="5%"
+                  stopColor="var(--accent-blue)"
+                  stopOpacity={0.4}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--accent-blue)"
+                  stopOpacity={0}
+                />
               </linearGradient>
               <linearGradient id="colorLoad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent-cyan)" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="var(--accent-cyan)" stopOpacity={0}/>
+                <stop
+                  offset="5%"
+                  stopColor="var(--accent-cyan)"
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--accent-cyan)"
+                  stopOpacity={0}
+                />
               </linearGradient>
               <linearGradient id="colorGrid" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent-red)" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="var(--accent-red)" stopOpacity={0}/>
+                <stop
+                  offset="5%"
+                  stopColor="var(--accent-red)"
+                  stopOpacity={0.2}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--accent-red)"
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="time" stroke="var(--text-secondary)" fontSize={11} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.05)"
+            />
+            <XAxis
+              dataKey="time"
+              stroke="var(--text-secondary)"
+              fontSize={11}
+            />
             <YAxis stroke="var(--text-secondary)" fontSize={11} unit="kW" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'var(--bg-surface-opaque)', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'var(--bg-surface-opaque)',
                 borderColor: 'var(--border-color)',
                 color: 'var(--text-primary)',
-                borderRadius: '8px'
-              }} 
+                borderRadius: '8px',
+              }}
             />
             <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-            <Area type="monotone" dataKey="solar" name="Solar Generation (kW)" stroke="var(--accent-blue)" fillOpacity={1} fill="url(#colorSolar)" />
-            <Area type="monotone" dataKey="load" name="Total Factory Load (kW)" stroke="var(--accent-cyan)" fillOpacity={1} fill="url(#colorLoad)" />
-            <Area type="monotone" dataKey="grid" name="Grid Power Import (kW)" stroke="var(--accent-red)" fillOpacity={1} fill="url(#colorGrid)" />
+            <Area
+              type="monotone"
+              dataKey="solar"
+              name="Solar Generation (kW)"
+              stroke="var(--accent-blue)"
+              fillOpacity={1}
+              fill="url(#colorSolar)"
+            />
+            <Area
+              type="monotone"
+              dataKey="load"
+              name="Total Factory Load (kW)"
+              stroke="var(--accent-cyan)"
+              fillOpacity={1}
+              fill="url(#colorLoad)"
+            />
+            <Area
+              type="monotone"
+              dataKey="grid"
+              name="Grid Power Import (kW)"
+              stroke="var(--accent-red)"
+              fillOpacity={1}
+              fill="url(#colorGrid)"
+            />
           </AreaChart>
         </ResponsiveContainer>
       </div>

@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
-import { 
-  X, 
-  Battery, 
-  Cpu, 
-  Activity, 
-  Zap, 
+import {
+  X,
+  Battery,
+  Cpu,
+  Activity,
+  Zap,
   Sun,
-  Shield, 
-  Thermometer, 
+  Shield,
+  Thermometer,
   ZapOff,
   RefreshCw,
-  PlayCircle
+  PlayCircle,
 } from 'lucide-react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
 import type { Device, TelemetryHistoryPoint } from '../types';
 
@@ -32,31 +32,37 @@ interface DeviceDetailModalProps {
   onPingGateway?: (gatewayId: string) => Promise<string>;
 }
 
-export default function DeviceDetailModal({ 
-  device, 
-  history, 
-  onClose, 
-  onTriggerOta, 
+export default function DeviceDetailModal({
+  device,
+  history,
+  onClose,
+  onTriggerOta,
   onToggleMosfet,
-  onPingGateway
+  onPingGateway,
 }: DeviceDetailModalProps) {
-  const [activeChart, setActiveChart] = useState<'voltage' | 'current' | 'soc' | 'temp'>('soc');
+  const [activeChart, setActiveChart] = useState<
+    'voltage' | 'current' | 'soc' | 'temp'
+  >('soc');
   const [pingLog, setPingLog] = useState<string | null>(null);
   const [isPinging, setIsPinging] = useState(false);
 
   const handlePingDeviceGateway = async () => {
     if (!device.gatewayId) {
-      setPingLog("Error: This device is not linked to any active telemetry gateway node.");
+      setPingLog(
+        'Error: This device is not linked to any active telemetry gateway node.'
+      );
       return;
     }
     if (!onPingGateway) {
-      setPingLog("Error: Ping service is currently unavailable.");
+      setPingLog('Error: Ping service is currently unavailable.');
       return;
     }
 
     setIsPinging(true);
-    setPingLog(`Connecting to J1939 CAN network bus via gateway ${device.gatewayId}...\n`);
-    
+    setPingLog(
+      `Connecting to J1939 CAN network bus via gateway ${device.gatewayId}...\n`
+    );
+
     try {
       const output = await onPingGateway(device.gatewayId);
       setPingLog(output);
@@ -69,7 +75,7 @@ export default function DeviceDetailModal({
 
   const isBms = device.type === 'bms';
   const isBess = device.type === 'bess';
-  
+
   const getCellColor = (volts: number) => {
     if (volts < 2.95) return '#ef4444'; // critical low (red)
     if (volts < 3.1) return '#f59e0b'; // low (orange)
@@ -90,24 +96,45 @@ export default function DeviceDetailModal({
         <div style={styles.header}>
           <div style={styles.headerTitle}>
             <div style={styles.headerIcon}>
-              {device.type === 'bms' && <Battery size={24} color="var(--accent-green)" />}
-              {device.type === 'solar' && <Sun size={24} color="var(--accent-blue)" />}
-              {device.type === 'bess' && <Zap size={24} color="var(--accent-green)" />}
-              {device.type === 'meter' && <Activity size={24} color="var(--accent-cyan)" />}
-              {device.type === 'charger' && <Zap size={24} color="var(--accent-orange)" />}
-              {device.type === 'telematics' && <Cpu size={24} color="var(--accent-blue)" />}
+              {device.type === 'bms' && (
+                <Battery size={24} color="var(--accent-green)" />
+              )}
+              {device.type === 'solar' && (
+                <Sun size={24} color="var(--accent-blue)" />
+              )}
+              {device.type === 'bess' && (
+                <Zap size={24} color="var(--accent-green)" />
+              )}
+              {device.type === 'meter' && (
+                <Activity size={24} color="var(--accent-cyan)" />
+              )}
+              {device.type === 'charger' && (
+                <Zap size={24} color="var(--accent-orange)" />
+              )}
+              {device.type === 'telematics' && (
+                <Cpu size={24} color="var(--accent-blue)" />
+              )}
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
                 <h3 style={styles.title}>{device.name}</h3>
-                <span className={`badge badge-${device.status}`}>{device.status}</span>
+                <span className={`badge badge-${device.status}`}>
+                  {device.status}
+                </span>
               </div>
               <p style={styles.metaSubtitle}>
-                ID: <code style={styles.inlineCode}>{device.id}</code> | Model: {device.model} | Firmware: {device.firmware}
+                ID: <code style={styles.inlineCode}>{device.id}</code> | Model:{' '}
+                {device.model} | Firmware: {device.firmware}
               </p>
             </div>
           </div>
-          <button onClick={onClose} style={styles.closeBtn} aria-label="Close Inspector">
+          <button
+            onClick={onClose}
+            style={styles.closeBtn}
+            aria-label="Close Inspector"
+          >
             <X size={20} color="var(--text-secondary)" />
           </button>
         </div>
@@ -115,20 +142,29 @@ export default function DeviceDetailModal({
         {/* Content Body */}
         <div style={styles.modalBody}>
           <div className="modal-grid">
-            
             {/* Left Panel: Primary telemetry statistics & Charts */}
             <div style={styles.telemetryPanel}>
               <h4 style={styles.sectionHeader}>Live Telemetry Indicators</h4>
-              
+
               {/* Telemetry Grid */}
               <div style={styles.telemStatsGrid}>
                 <div style={styles.telemStatBox}>
                   <span style={styles.telemLabel}>Pack Voltage</span>
-                  <span style={styles.telemVal}>{device.telemetry.voltage.toFixed(1)} V</span>
+                  <span style={styles.telemVal}>
+                    {device.telemetry.voltage.toFixed(1)} V
+                  </span>
                 </div>
                 <div style={styles.telemStatBox}>
                   <span style={styles.telemLabel}>Pack Current</span>
-                  <span style={{ ...styles.telemVal, color: device.telemetry.current < 0 ? 'var(--accent-orange)' : 'var(--accent-green)' }}>
+                  <span
+                    style={{
+                      ...styles.telemVal,
+                      color:
+                        device.telemetry.current < 0
+                          ? 'var(--accent-orange)'
+                          : 'var(--accent-green)',
+                    }}
+                  >
                     {device.telemetry.current.toFixed(1)} A
                   </span>
                 </div>
@@ -136,13 +172,23 @@ export default function DeviceDetailModal({
                   <>
                     <div style={styles.telemStatBox}>
                       <span style={styles.telemLabel}>State of Charge</span>
-                      <span style={{ ...styles.telemVal, color: 'var(--accent-green)' }}>
+                      <span
+                        style={{
+                          ...styles.telemVal,
+                          color: 'var(--accent-green)',
+                        }}
+                      >
                         {device.telemetry.soc.toFixed(0)}%
                       </span>
                     </div>
                     <div style={styles.telemStatBox}>
                       <span style={styles.telemLabel}>State of Health</span>
-                      <span style={{ ...styles.telemVal, color: 'var(--accent-blue)' }}>
+                      <span
+                        style={{
+                          ...styles.telemVal,
+                          color: 'var(--accent-blue)',
+                        }}
+                      >
                         {device.telemetry.soh.toFixed(0)}%
                       </span>
                     </div>
@@ -150,14 +196,24 @@ export default function DeviceDetailModal({
                 )}
                 <div style={styles.telemStatBox}>
                   <span style={styles.telemLabel}>Temperature</span>
-                  <span style={{ ...styles.telemVal, color: device.telemetry.temp > 50 ? 'var(--accent-red)' : 'var(--text-primary)' }}>
+                  <span
+                    style={{
+                      ...styles.telemVal,
+                      color:
+                        device.telemetry.temp > 50
+                          ? 'var(--accent-red)'
+                          : 'var(--text-primary)',
+                    }}
+                  >
                     {device.telemetry.temp.toFixed(1)} °C
                   </span>
                 </div>
                 {device.telemetry.activePower !== undefined && (
                   <div style={styles.telemStatBox}>
                     <span style={styles.telemLabel}>Active Power</span>
-                    <span style={styles.telemVal}>{device.telemetry.activePower.toFixed(1)} kW</span>
+                    <span style={styles.telemVal}>
+                      {device.telemetry.activePower.toFixed(1)} kW
+                    </span>
                   </div>
                 )}
               </div>
@@ -165,41 +221,63 @@ export default function DeviceDetailModal({
               {/* Historical Charting */}
               <div style={styles.chartSection}>
                 <div style={styles.chartTabs}>
-                  {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
-                    if ((tab === 'soc') && !isBms && !isBess) return null;
-                    return (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveChart(tab)}
-                        style={{
-                          ...styles.chartTabBtn,
-                          ...(activeChart === tab ? styles.chartTabBtnActive : {})
-                        }}
-                      >
-                        {tab.toUpperCase()}
-                      </button>
-                    );
-                  })}
+                  {(['soc', 'voltage', 'current', 'temp'] as const).map(
+                    (tab) => {
+                      if (tab === 'soc' && !isBms && !isBess) return null;
+                      return (
+                        <button
+                          key={tab}
+                          onClick={() => setActiveChart(tab)}
+                          style={{
+                            ...styles.chartTabBtn,
+                            ...(activeChart === tab
+                              ? styles.chartTabBtnActive
+                              : {}),
+                          }}
+                        >
+                          {tab.toUpperCase()}
+                        </button>
+                      );
+                    }
+                  )}
                 </div>
 
                 <div style={styles.chartWrapper}>
                   <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={history} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                      <XAxis dataKey="timestamp" stroke="var(--text-secondary)" fontSize={10} />
+                    <LineChart
+                      data={history}
+                      margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="rgba(255,255,255,0.05)"
+                      />
+                      <XAxis
+                        dataKey="timestamp"
+                        stroke="var(--text-secondary)"
+                        fontSize={10}
+                      />
                       <YAxis stroke="var(--text-secondary)" fontSize={10} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'var(--bg-surface-opaque)', 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'var(--bg-surface-opaque)',
                           borderColor: 'var(--border-color)',
                           color: 'var(--text-primary)',
-                          borderRadius: '8px'
-                        }} 
+                          borderRadius: '8px',
+                        }}
                       />
-                      <Line 
-                        type="monotone" 
-                        dataKey={activeChart} 
-                        stroke={activeChart === 'soc' ? 'var(--accent-green)' : activeChart === 'voltage' ? 'var(--accent-blue)' : activeChart === 'temp' ? 'var(--accent-red)' : 'var(--accent-orange)'} 
+                      <Line
+                        type="monotone"
+                        dataKey={activeChart}
+                        stroke={
+                          activeChart === 'soc'
+                            ? 'var(--accent-green)'
+                            : activeChart === 'voltage'
+                              ? 'var(--accent-blue)'
+                              : activeChart === 'temp'
+                                ? 'var(--accent-red)'
+                                : 'var(--accent-orange)'
+                        }
                         strokeWidth={2}
                         dot={false}
                       />
@@ -211,13 +289,28 @@ export default function DeviceDetailModal({
 
             {/* Right Panel: BMS Cells Grid OR Custom Telemetry details */}
             <div style={styles.rightPanel}>
-              {isBms && device.telemetry.cellVoltages && device.telemetry.cellTemps ? (
+              {isBms &&
+              device.telemetry.cellVoltages &&
+              device.telemetry.cellTemps ? (
                 <div>
                   <div style={styles.flexBetween}>
                     <h4 style={styles.sectionHeader}>BMS Cell Matrix (16S)</h4>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                      MOSFET Switch: 
-                      <b style={{ color: device.telemetry.mosfetStatus === 'on' ? 'var(--accent-green)' : 'var(--accent-red)', marginLeft: 4 }}>
+                    <span
+                      style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
+                      MOSFET Switch:
+                      <b
+                        style={{
+                          color:
+                            device.telemetry.mosfetStatus === 'on'
+                              ? 'var(--accent-green)'
+                              : 'var(--accent-red)',
+                          marginLeft: 4,
+                        }}
+                      >
                         {device.telemetry.mosfetStatus?.toUpperCase()}
                       </b>
                     </span>
@@ -225,20 +318,40 @@ export default function DeviceDetailModal({
 
                   {/* 4x4 Grid for 16 Cells */}
                   <div style={styles.cellsGrid}>
-                    {device.telemetry.cellVoltages.map((v: number, idx: number) => {
-                      const temp = device.telemetry.cellTemps![idx];
-                      const voltColor = getCellColor(v);
-                      const tempColor = getCellTempColor(temp);
-                      return (
-                        <div key={idx} className="cell-item" style={{ ...styles.cellBox, borderLeftColor: voltColor }}>
-                          <span style={styles.cellIndex}>Cell #{idx + 1}</span>
-                          <span style={{ ...styles.cellVoltage, color: voltColor }}>{v.toFixed(2)} V</span>
-                          <span style={{ ...styles.cellTemp, color: tempColor }}>
-                            <Thermometer size={10} /> {temp}°C
-                          </span>
-                        </div>
-                      );
-                    })}
+                    {device.telemetry.cellVoltages.map(
+                      (v: number, idx: number) => {
+                        const temp = device.telemetry.cellTemps![idx];
+                        const voltColor = getCellColor(v);
+                        const tempColor = getCellTempColor(temp);
+                        return (
+                          <div
+                            key={idx}
+                            className="cell-item"
+                            style={{
+                              ...styles.cellBox,
+                              borderLeftColor: voltColor,
+                            }}
+                          >
+                            <span style={styles.cellIndex}>
+                              Cell #{idx + 1}
+                            </span>
+                            <span
+                              style={{
+                                ...styles.cellVoltage,
+                                color: voltColor,
+                              }}
+                            >
+                              {v.toFixed(2)} V
+                            </span>
+                            <span
+                              style={{ ...styles.cellTemp, color: tempColor }}
+                            >
+                              <Thermometer size={10} /> {temp}°C
+                            </span>
+                          </div>
+                        );
+                      }
+                    )}
                   </div>
 
                   {/* Fault list specific to this device */}
@@ -248,7 +361,11 @@ export default function DeviceDetailModal({
                       <ul style={styles.faultList}>
                         {device.telemetry.faults.map((f: string, i: number) => (
                           <li key={i} style={styles.faultItem}>
-                            <ZapOff size={12} color="var(--accent-red)" style={{ marginRight: 6 }} />
+                            <ZapOff
+                              size={12}
+                              color="var(--accent-red)"
+                              style={{ marginRight: 6 }}
+                            />
                             <span>{f}</span>
                           </li>
                         ))}
@@ -259,7 +376,7 @@ export default function DeviceDetailModal({
               ) : (
                 <div style={styles.nonBmsDetails}>
                   <h4 style={styles.sectionHeader}>Asset Details</h4>
-                  
+
                   <div style={styles.detailRow}>
                     <span style={styles.detailLabel}>Asset Owner</span>
                     <span style={styles.detailVal}>{device.owner}</span>
@@ -270,8 +387,11 @@ export default function DeviceDetailModal({
                   </div>
                   <div style={styles.detailRow}>
                     <span style={styles.detailLabel}>Coordinates</span>
-                    <span style={{ ...styles.detailVal, fontFamily: 'monospace' }}>
-                      {device.location.lat.toFixed(4)}°N, {device.location.lng.toFixed(4)}°E
+                    <span
+                      style={{ ...styles.detailVal, fontFamily: 'monospace' }}
+                    >
+                      {device.location.lat.toFixed(4)}°N,{' '}
+                      {device.location.lng.toFixed(4)}°E
                     </span>
                   </div>
                   <div style={styles.detailRow}>
@@ -280,11 +400,23 @@ export default function DeviceDetailModal({
                   </div>
 
                   <div style={{ ...styles.glowBox, marginTop: '2rem' }}>
-                    <Shield size={16} color="var(--accent-blue)" style={{ marginRight: 8 }} />
+                    <Shield
+                      size={16}
+                      color="var(--accent-blue)"
+                      style={{ marginRight: 8 }}
+                    />
                     <div>
-                      <h5 style={{ fontSize: '0.8rem', fontWeight: 600 }}>Modbus/OCPP Connection Secure</h5>
-                      <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                        SSL encrypted telemetry channel authenticated via X.509 device certificates.
+                      <h5 style={{ fontSize: '0.8rem', fontWeight: 600 }}>
+                        Modbus/OCPP Connection Secure
+                      </h5>
+                      <p
+                        style={{
+                          fontSize: '0.7rem',
+                          color: 'var(--text-secondary)',
+                        }}
+                      >
+                        SSL encrypted telemetry channel authenticated via X.509
+                        device certificates.
                       </p>
                     </div>
                   </div>
@@ -295,7 +427,7 @@ export default function DeviceDetailModal({
               <div style={styles.controlSection}>
                 <h4 style={styles.sectionHeader}>Remote IoT Control Gateway</h4>
                 <div style={styles.controlButtonGrid}>
-                  <button 
+                  <button
                     onClick={() => onTriggerOta(device.id)}
                     className="btn btn-outline"
                     style={styles.controlBtn}
@@ -304,36 +436,48 @@ export default function DeviceDetailModal({
                   </button>
 
                   {isBms && (
-                    <button 
+                    <button
                       onClick={() => onToggleMosfet(device.id)}
                       className="btn"
                       style={{
                         ...styles.controlBtn,
-                        backgroundColor: device.telemetry.mosfetStatus === 'on' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                        color: device.telemetry.mosfetStatus === 'on' ? 'var(--accent-red)' : 'var(--accent-green)',
-                        borderColor: device.telemetry.mosfetStatus === 'on' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)',
+                        backgroundColor:
+                          device.telemetry.mosfetStatus === 'on'
+                            ? 'rgba(239, 68, 68, 0.15)'
+                            : 'rgba(16, 185, 129, 0.15)',
+                        color:
+                          device.telemetry.mosfetStatus === 'on'
+                            ? 'var(--accent-red)'
+                            : 'var(--accent-green)',
+                        borderColor:
+                          device.telemetry.mosfetStatus === 'on'
+                            ? 'rgba(239, 68, 68, 0.3)'
+                            : 'rgba(16, 185, 129, 0.3)',
                       }}
                     >
-                      <ZapOff size={14} /> 
-                      {device.telemetry.mosfetStatus === 'on' ? 'Forced MOSFET Cutoff' : 'Re-enable MOSFET'}
+                      <ZapOff size={14} />
+                      {device.telemetry.mosfetStatus === 'on'
+                        ? 'Forced MOSFET Cutoff'
+                        : 'Re-enable MOSFET'}
                     </button>
                   )}
 
-                  <button 
+                  <button
                     onClick={handlePingDeviceGateway}
                     disabled={isPinging}
                     className="btn btn-outline"
                     style={styles.controlBtn}
                   >
-                    <PlayCircle size={14} /> {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
+                    <PlayCircle size={14} />{' '}
+                    {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
                   </button>
 
                   {pingLog !== null && (
                     <div style={styles.inlineTerminal}>
                       <div style={styles.inlineTerminalHeader}>
                         <span>Diagnostics: CAN Ping Terminal</span>
-                        <button 
-                          onClick={() => setPingLog(null)} 
+                        <button
+                          onClick={() => setPingLog(null)}
                           style={styles.inlineTerminalClose}
                           title="Clear Output"
                         >
@@ -345,9 +489,7 @@ export default function DeviceDetailModal({
                   )}
                 </div>
               </div>
-
             </div>
-
           </div>
         </div>
       </div>

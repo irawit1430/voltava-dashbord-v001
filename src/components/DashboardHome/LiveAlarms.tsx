@@ -1,4 +1,3 @@
-
 import { ShieldAlert, AlertOctagon, AlertTriangle } from 'lucide-react';
 import './DashboardHome.css';
 
@@ -12,7 +11,10 @@ interface LiveAlarmsProps {
   onAnalyze: () => void;
 }
 
-export default function LiveAlarms({ activeAlerts, onAnalyze }: LiveAlarmsProps) {
+export default function LiveAlarms({
+  activeAlerts,
+  onAnalyze,
+}: LiveAlarmsProps) {
   return (
     <div className="glass-panel alarm-panel">
       <div className="panel-header">
@@ -27,31 +29,37 @@ export default function LiveAlarms({ activeAlerts, onAnalyze }: LiveAlarmsProps)
         {activeAlerts.length === 0 ? (
           <div className="empty-alarms">
             <span style={{ fontSize: '1.5rem' }}>✅</span>
-            <p className="empty-text">All connected hardware online and running within safety envelopes.</p>
+            <p className="empty-text">
+              All connected hardware online and running within safety envelopes.
+            </p>
           </div>
         ) : (
           activeAlerts.map((alert, i) => {
             const isFault = alert.status === 'fault';
             return (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`alarm-item ${isFault ? 'alarm-item-fault' : 'alarm-item-warning'}`}
               >
                 <div className="alarm-meta">
                   <span className="alarm-device">{alert.device}</span>
-                  <span 
+                  <span
                     className={`badge ${isFault ? 'badge-fault' : 'badge-warning'} alarm-badge`}
                   >
                     {alert.status}
                   </span>
                 </div>
                 <p className="alarm-msg">
-                  {isFault ? <AlertOctagon size={12} className="alarm-msg-icon" /> : <AlertTriangle size={12} className="alarm-msg-icon" />}
+                  {isFault ? (
+                    <AlertOctagon size={12} className="alarm-msg-icon" />
+                  ) : (
+                    <AlertTriangle size={12} className="alarm-msg-icon" />
+                  )}
                   {alert.fault}
                 </p>
                 <div className="alarm-actions">
-                  <button 
-                    onClick={onAnalyze} 
+                  <button
+                    onClick={onAnalyze}
                     className="action-btn"
                     aria-label={`Analyze BMS cells for ${alert.device}`}
                   >
