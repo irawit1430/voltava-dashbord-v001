@@ -336,6 +336,7 @@ export default function DeviceDetailModal({
                           onClick={() => setPingLog(null)} 
                           style={styles.inlineTerminalClose}
                           title="Clear Output"
+                          aria-label="Clear diagnostic output"
                         >
                           ×
                         </button>
