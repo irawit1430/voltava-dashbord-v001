@@ -74,6 +74,7 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
           <Search size={18} color="var(--text-secondary)" style={styles.searchIcon} />
           <input
             type="text"
+            aria-label="Search devices"
             placeholder="Search by ID, name, owner..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -86,6 +87,7 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
           <div style={styles.filterSelectWrap}>
             <Filter size={14} color="var(--text-secondary)" style={{ marginRight: 6 }} />
             <select
+              aria-label="Filter by asset type"
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
               style={styles.filterSelect}
@@ -103,6 +105,7 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
 
           <div style={styles.filterSelectWrap}>
             <select
+              aria-label="Filter by status"
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               style={styles.filterSelect}
