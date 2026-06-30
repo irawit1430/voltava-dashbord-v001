@@ -119,3 +119,25 @@ export interface ExternalDevicePayload {
   power?: number;
   gatewayId?: string;
 }
+
+// ---------------------------------------------------------
+// Auth types
+// ---------------------------------------------------------
+
+/** Authenticated user stored in the session / JWT payload. */
+export interface User {
+  email: string;
+  name: string;
+  picture: string;
+  role: 'admin';
+}
+
+/** Shape of a decoded JWT — extends User with standard JWT claims. */
+export interface AuthPayload {
+  email: string;
+  name: string;
+  picture: string;
+  role: 'admin';
+  iat?: number;
+  exp?: number;
+}

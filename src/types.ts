@@ -98,3 +98,11 @@ export interface TelemetryHistoryPoint {
   temp: number;
   power?: number;
 }
+
+// Auth types
+export interface User {
+  email: string;
+  name: string;
+  picture: string;
+  role: 'admin';
+}

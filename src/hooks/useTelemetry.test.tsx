@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useTelemetry } from './useTelemetry';
+import { AuthContext } from '../contexts/AuthContext';
 
 describe('useTelemetry Hook', () => {
   const mockDevices = [{ id: 'dev-1', name: 'Device 1' }];
@@ -57,7 +58,22 @@ describe('useTelemetry Hook', () => {
   });
 
   it('fetches initial data on mount', async () => {
-    const { result } = renderHook(() => useTelemetry());
+    const wrapper = ({ children }: any) => (
+      <AuthContext.Provider value={{
+        user: null,
+        token: 'mock-token-xyz',
+        isLoading: false,
+        error: null,
+        login: vi.fn(),
+        loginBypass: vi.fn(),
+        logout: vi.fn(),
+        clearError: vi.fn()
+      }}>
+        {children}
+      </AuthContext.Provider>
+    );
+
+    const { result } = renderHook(() => useTelemetry(), { wrapper });
 
     // Wait for the fetch promises to resolve and state to update
     await waitFor(() => {
@@ -70,9 +86,9 @@ describe('useTelemetry Hook', () => {
       expect(result.current.gridMetrics).toEqual(mockGridMetrics);
     });
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/devices');
-    expect(global.fetch).toHaveBeenCalledWith('/api/grid-metrics');
-    expect(global.fetch).toHaveBeenCalledWith('/api/devices/history');
-    expect(global.fetch).toHaveBeenCalledWith('/api/gateways');
+    expect(global.fetch).toHaveBeenCalledWith('/api/devices', expect.any(Object));
+    expect(global.fetch).toHaveBeenCalledWith('/api/grid-metrics', expect.any(Object));
+    expect(global.fetch).toHaveBeenCalledWith('/api/devices/history', expect.any(Object));
+    expect(global.fetch).toHaveBeenCalledWith('/api/gateways', expect.any(Object));
   });
 });

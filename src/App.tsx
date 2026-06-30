@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useAuth } from './contexts/AuthContext';
+import LoginPage from './components/Auth/LoginPage';
 import Sidebar from './components/Layout/Sidebar';
 import Navbar from './components/Layout/Navbar';
 import DashboardHome from './components/DashboardHome/DashboardHome';
@@ -9,10 +11,13 @@ import GridOverview from './components/GridESS/GridOverview';
 import CostSavingsSimulator from './components/Simulator/CostSavingsSimulator';
 import HealthPredictor from './components/AIBrain/HealthPredictor';
 import GatewayConfig from './components/GatewayConfig/GatewayConfig';
+import AccessControl from './components/Auth/AccessControl';
 import { useTelemetry } from './hooks/useTelemetry';
 import type { Device } from './types';
 
 function App() {
+  const { user, isLoading } = useAuth();
+
   // Force new build hash to bypass CDN cache
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
@@ -36,6 +41,21 @@ function App() {
   const activeSelectedDevice = selectedDevice 
     ? devices.find(d => d.id === selectedDevice.id) || selectedDevice 
     : null;
+
+  // Auth loading state
+  if (isLoading) {
+    return (
+      <div className="app-loading-screen">
+        <div className="app-loading-spinner" />
+        <span className="app-loading-text">Initializing Voltava EIP…</span>
+      </div>
+    );
+  }
+
+  // Not authenticated
+  if (!user) {
+    return <LoginPage />;
+  }
 
   return (
     <div className="app-container">
@@ -100,6 +120,10 @@ function App() {
               pingGateway={pingGateway}
               scanGatewayBus={scanGatewayBus}
             />
+          )}
+
+          {activeTab === 'access-control' && (
+            <AccessControl />
           )}
         </div>
       </main>

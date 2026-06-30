@@ -302,3 +302,215 @@
   border-radius: 2px;
   transition: width 0.5s ease;
 }
+
+/* ---------------------------------------------------------
+   Multi-Asset Energy Load Curve Chart Visual Enhancements
+   --------------------------------------------------------- */
+
+/* Interactive Chart Filters */
+.chart-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-pill:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.filter-pill.active {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.15);
+}
+
+.pill-icon {
+  opacity: 0.8;
+}
+
+/* KPI Summary Cards Panel */
+.chart-kpi-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .chart-kpi-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kpi-card {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.kpi-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.kpi-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.kpi-value {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.kpi-unit {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* KPI Theme Accents */
+.kpi-card--solar {
+  border-left: 3px solid var(--accent-orange);
+}
+.kpi-card--solar:hover {
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.05);
+}
+.kpi-card--solar .kpi-icon-wrap {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-orange);
+}
+
+.kpi-card--load {
+  border-left: 3px solid var(--accent-cyan);
+}
+.kpi-card--load:hover {
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.05);
+}
+.kpi-card--load .kpi-icon-wrap {
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--accent-cyan);
+}
+
+.kpi-card--grid {
+  border-left: 3px solid var(--accent-red);
+}
+.kpi-card--grid:hover {
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.05);
+}
+.kpi-card--grid .kpi-icon-wrap {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+}
+
+.kpi-card--battery {
+  border-left: 3px solid var(--accent-green);
+}
+.kpi-card--battery:hover {
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
+}
+.kpi-card--battery .kpi-icon-wrap {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-green);
+}
+
+/* Ultra-Premium Glassmorphic Tooltip */
+.custom-chart-tooltip {
+  background: rgba(9, 14, 27, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  min-width: 220px;
+}
+
+.tooltip-title {
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.25rem;
+}
+
+.tooltip-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tooltip-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.tooltip-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--item-color);
+  margin-right: 8px;
+  box-shadow: 0 0 8px var(--item-color);
+}
+
+.tooltip-label {
+  flex: 1;
+}
+
+.tooltip-value {
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-left: 12px;
+}
+

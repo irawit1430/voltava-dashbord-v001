@@ -8,7 +8,8 @@ import {
   Calculator, 
   Layers, 
   Settings,
-  ShieldCheck
+  ShieldCheck,
+  Users
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -105,6 +106,25 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         >
           <Settings size={14} color={activeTab === 'gateway-config' ? '#10b981' : '#9ca3af'} />
           <span style={{ fontWeight: activeTab === 'gateway-config' ? 600 : 500 }}>Gateway Config</span>
+        </button>
+        <button 
+          onClick={() => setActiveTab('access-control')}
+          style={{
+            ...styles.footerLink,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            width: '100%',
+            textAlign: 'left',
+            color: activeTab === 'access-control' ? 'var(--text-primary)' : 'var(--text-muted)',
+            backgroundColor: activeTab === 'access-control' ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
+            borderRadius: '6px',
+            transition: 'all 0.15s ease',
+            marginTop: '0.25rem'
+          }}
+        >
+          <Users size={14} color={activeTab === 'access-control' ? '#10b981' : '#9ca3af'} />
+          <span style={{ fontWeight: activeTab === 'access-control' ? 600 : 500 }}>Access Control</span>
         </button>
       </div>
     </aside>

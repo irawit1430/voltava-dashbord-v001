@@ -1,10 +1,21 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import {
+  requireAuth,
+  verifyGoogleToken,
+  isEmailAllowed,
+  generateSessionToken,
+  authenticateWs,
+  getAllowedEmails,
+  saveAllowedEmails,
+} from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,27 +67,205 @@ initHistory();
 export const app = express();
 const port = process.env.PORT || 5000;
 
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "wss:", "ws:"],
+    }
+  }
+}));
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Dynamically check so tests can override if needed
+    if (!origin) return callback(null, true);
+
+    // Always allow localhost/127.0.0.1 origins for local development/testing
+    if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') {
+      return callback(null, true);
+    }
+    
+    // Check custom environment allowed origins
     const allowedOrigins = process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',')
-      : ['http://localhost:5173', 'http://127.0.0.1:5173'];
-
-    if (!origin) return callback(null, true);
+      : [];
     
     const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
-                      origin.endsWith('.onrender.com') ||
                       origin === 'https://voltava-dashboard.onrender.com';
 
     if (isAllowed) {
       callback(null, true);
     } else {
+      console.warn('[CORS] Rejected origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  credentials: true,
 }));
 app.use(express.json());
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000, // relaxed limit for APIs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20, // strict limit for auth
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/', apiLimiter);
+app.use('/api/auth/', authLimiter);
+
+// ---------------------------------------------------------
+// Auth Endpoints (public — no requireAuth)
+// ---------------------------------------------------------
+
+/**
+ * POST /api/auth/google
+ * Receives { idToken } from the client, verifies it with Google,
+ * checks the email allowlist, and returns a signed session JWT.
+ */
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken || typeof idToken !== 'string') {
+      return res.status(400).json({
+        error: { code: 'BAD_REQUEST', message: 'idToken is required' },
+      });
+    }
+
+    // Verify with Google
+    const googleUser = await verifyGoogleToken(idToken);
+
+    // Check allowlist
+    if (!isEmailAllowed(googleUser.email)) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Email not authorised for this dashboard',
+        },
+      });
+    }
+
+    // Build user & sign session token
+    const user = { ...googleUser, role: 'admin' as const };
+    const token = generateSessionToken(user);
+
+    return res.json({ user, token });
+  } catch (err: any) {
+    console.error('[auth] Google sign-in failed:', err.message);
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Google token verification failed',
+      },
+    });
+  }
+});
+
+/**
+ * POST /api/auth/bypass
+ * Development-only bypass endpoint to sign in a mock user without Google OAuth.
+ */
+app.post('/api/auth/bypass', (req, res) => {
+  // Only allow bypass in non-production environments
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({
+      error: { code: 'FORBIDDEN', message: 'Bypass not allowed in production' },
+    });
+  }
+
+  const user = {
+    email: 'anuirawit@gmail.com',
+    name: 'Anurag Tiwari (Dev Bypass)',
+    picture: '',
+    role: 'admin' as const,
+  };
+  const token = generateSessionToken(user);
+  return res.json({ user, token });
+});
+
+
+/**
+ * GET /api/auth/me
+ * Returns the currently authenticated user (from JWT).
+ */
+app.get('/api/auth/me', requireAuth, (req, res) => {
+  res.json({ user: req.user });
+});
+
+/**
+ * POST /api/auth/logout
+ * Stateless JWT — the client simply discards its token.
+ * This endpoint exists for semantic completeness & audit hooks.
+ */
+app.post('/api/auth/logout', requireAuth, (req, res) => {
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
+/**
+ * GET /api/auth/allowlist
+ * Returns the list of currently authorized Google emails.
+ */
+app.get('/api/auth/allowlist', requireAuth, (req, res) => {
+  res.json({ emails: getAllowedEmails() });
+});
+
+/**
+ * POST /api/auth/allowlist
+ * Adds a new email address to the authorized list.
+ */
+app.post('/api/auth/allowlist', requireAuth, (req, res) => {
+  const { email } = req.body;
+  if (typeof email !== 'string' || !email.includes('@')) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+  const targetEmail = email.trim().toLowerCase();
+  const emails = getAllowedEmails();
+  if (emails.includes(targetEmail)) {
+    return res.status(400).json({ error: 'Email is already authorized' });
+  }
+  const updatedEmails = [...emails, targetEmail];
+  saveAllowedEmails(updatedEmails);
+  res.json({ success: true, emails: updatedEmails });
+});
+
+/**
+ * DELETE /api/auth/allowlist/:email
+ * Removes an email address from the authorized list.
+ * Safe checks: Cannot delete primary admin (anuirawit@gmail.com) or own logged-in email.
+ */
+app.delete('/api/auth/allowlist/:email', requireAuth, (req, res) => {
+  const targetEmail = req.params.email.trim().toLowerCase();
+  const emails = getAllowedEmails();
+  if (!emails.includes(targetEmail)) {
+    return res.status(404).json({ error: 'Email not found in allowlist' });
+  }
+  if (targetEmail === 'anuirawit@gmail.com') {
+    return res.status(400).json({ error: 'Cannot remove the primary admin email' });
+  }
+  if (req.user && req.user.email.toLowerCase() === targetEmail) {
+    return res.status(400).json({ error: 'Cannot remove your own email while logged in' });
+  }
+  const updatedEmails = emails.filter(e => e !== targetEmail);
+  saveAllowedEmails(updatedEmails);
+  res.json({ success: true, emails: updatedEmails });
+});
+
+// ---------------------------------------------------------
+// Protect all downstream API routes with requireAuth
+// ---------------------------------------------------------
+app.use('/api/devices', requireAuth);
+app.use('/api/gateways', requireAuth);
+app.use('/api/grid-metrics', requireAuth);
+
 
 function isValidPayload(payload: any): boolean {
   if (typeof payload !== 'object' || payload === null) return false;
@@ -270,7 +459,8 @@ wss.on('error', (err) => {
 // WS Connection handler
 wss.on('connection', (ws, request) => {
   const reqUrl = request.url || '';
-  const pathname = new URL(reqUrl, 'http://localhost').pathname;
+  const parsed = new URL(reqUrl, 'http://localhost');
+  const pathname = parsed.pathname;
   
   if (pathname !== '/ws' && pathname !== '/') {
     console.log(`Closing connection for unmatched path: ${pathname}`);
@@ -278,7 +468,15 @@ wss.on('connection', (ws, request) => {
     return;
   }
 
-  console.log('WS Client connected');
+  // Authenticate WebSocket connection via query-param token
+  const wsUser = authenticateWs(reqUrl);
+  if (!wsUser) {
+    console.log('WS connection rejected — invalid or missing token');
+    ws.close(1008, 'Unauthorized');
+    return;
+  }
+
+  console.log(`WS Client connected: ${wsUser.email}`);
   
   // Send immediate initial data state
   ws.send(JSON.stringify({

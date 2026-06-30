@@ -6,8 +6,10 @@ import {
   User, 
   AlertTriangle,
   X,
-  CheckCircle2
+  CheckCircle2,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Device } from '../../types';
 import './Navbar.css';
 
@@ -28,6 +30,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarProps) {
+  const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -152,6 +155,7 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
       case 'simulator': return 'BESS Optimization Simulator';
       case 'ai': return 'AI Predictive Energy Brain';
       case 'gateway-config': return 'Gateway Configuration';
+      case 'access-control': return 'System Access Control';
       default: return 'Voltava EIP';
     }
   };
@@ -323,14 +327,40 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
 
         {/* User profile */}
         <div className="profile">
-          <div className="avatar">
-            <User size={16} color="#060913" />
-          </div>
+          {user?.picture ? (
+            <img
+              src={user.picture}
+              alt={user.name}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2px solid rgba(255,255,255,0.1)',
+              }}
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="avatar">
+              <User size={16} color="#060913" />
+            </div>
+          )}
           <div className="navbar-profile-text">
-            <span className="user-name">Anurag Tiwari</span>
-            <span className="user-role">Super Admin</span>
+            <span className="user-name">{user?.name || 'User'}</span>
+            <span className="user-role">{user?.role || 'Admin'}</span>
           </div>
         </div>
+
+        {/* Logout button */}
+        <button
+          className="navbar-btn"
+          onClick={logout}
+          aria-label="Sign out"
+          title="Sign out"
+          style={{ marginLeft: '0.5rem' }}
+        >
+          <LogOut size={16} color="var(--text-secondary)" />
+        </button>
       </div>
     </header>
   );

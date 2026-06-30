@@ -2,6 +2,19 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import Navbar from './Navbar';
 import type { Device } from '../../types';
 
+vi.mock('../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { email: 'anuirawit@gmail.com', name: 'Anurag Tiwari (Dev)', picture: '', role: 'admin' },
+    token: 'mock-token-xyz',
+    isLoading: false,
+    error: null,
+    login: vi.fn(),
+    loginBypass: vi.fn(),
+    logout: vi.fn(),
+    clearError: vi.fn()
+  })
+}));
+
 describe('Navbar Component', () => {
   const mockDevices: Device[] = [
     {

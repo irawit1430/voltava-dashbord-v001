@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import type { Device, GridMetrics, TelemetryHistoryPoint, Gateway } from '../types';
+import { AuthContext } from '../contexts/AuthContext';
 
 export function useTelemetry() {
+  const authContext = useContext(AuthContext);
   const [devices, setDevices] = useState<Device[]>([]);
   const [gateways, setGateways] = useState<Gateway[]>([]);
   const [gridMetrics, setGridMetrics] = useState<GridMetrics>({
@@ -22,10 +24,29 @@ export function useTelemetry() {
   const historyRef = useRef<Record<string, TelemetryHistoryPoint[]>>({});
   const wsRef = useRef<WebSocket | null>(null);
 
+  // Authenticated fetch helper — adds Bearer token and handles 401
+  const authFetch = (url: string, options?: RequestInit): Promise<Response> => {
+    const headers: Record<string, string> = {
+      ...(options?.headers as Record<string, string> || {}),
+    };
+    if (authContext?.token) {
+      headers['Authorization'] = `Bearer ${authContext.token}`;
+    }
+
+    return fetch(url, { ...options, headers }).then(res => {
+      if (res.status === 401) {
+        authContext?.logout();
+      }
+      return res;
+    });
+  };
+
   // Fetch initial state & history from the REST API
   useEffect(() => {
+    if (!authContext?.token) return;
+
     // 1. Fetch initial devices
-    fetch('/api/devices')
+    authFetch('/api/devices')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch devices');
         return res.json();
@@ -36,7 +57,7 @@ export function useTelemetry() {
       .catch(err => console.error('Error fetching devices:', err));
 
     // 2. Fetch initial grid metrics
-    fetch('/api/grid-metrics')
+    authFetch('/api/grid-metrics')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch grid metrics');
         return res.json();
@@ -47,7 +68,7 @@ export function useTelemetry() {
       .catch(err => console.error('Error fetching grid metrics:', err));
 
     // 3. Fetch initial telemetry history mapping
-    fetch('/api/devices/history')
+    authFetch('/api/devices/history')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch history');
         return res.json();
@@ -58,7 +79,7 @@ export function useTelemetry() {
       .catch(err => console.error('Error fetching history:', err));
 
     // 4. Fetch initial gateways
-    fetch('/api/gateways')
+    authFetch('/api/gateways')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch gateways');
         return res.json();
@@ -67,19 +88,22 @@ export function useTelemetry() {
         setGateways(data);
       })
       .catch(err => console.error('Error fetching gateways:', err));
-  }, []);
+  }, [authContext?.token]);
 
   // Establish real-time WebSocket connection
   useEffect(() => {
+    if (!authContext?.token) return;
+
     let active = true;
 
     function connectWs() {
       if (!active) return;
 
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = window.location.port !== '' && window.location.port !== '5000'
+      const wsBase = window.location.port !== '' && window.location.port !== '5000'
         ? `${wsProtocol}//${window.location.hostname}:5000/ws`
         : `${wsProtocol}//${window.location.host}/ws`;
+      const wsUrl = `${wsBase}?token=${authContext?.token}`;
       console.log(`Connecting to WebSocket at: ${wsUrl}`);
       
       const ws = new WebSocket(wsUrl);
@@ -154,7 +178,7 @@ export function useTelemetry() {
         wsRef.current.close();
       }
     };
-  }, []);
+  }, [authContext?.token]);
 
   // Remote Actions
   const triggerOtaUpdate = (id: string) => {
@@ -174,7 +198,7 @@ export function useTelemetry() {
     }));
 
     // Trigger on server
-    fetch(`/api/devices/${id}/ota`, {
+    authFetch(`/api/devices/${id}/ota`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -187,7 +211,7 @@ export function useTelemetry() {
       .catch(err => {
         console.error('Error triggering OTA update:', err);
         // Revert UI changes on error by fetching current devices list
-        fetch('/api/devices')
+        authFetch('/api/devices')
           .then(res => res.json())
           .then(data => setDevices(data));
       });
@@ -217,7 +241,7 @@ export function useTelemetry() {
     }));
 
     // Trigger on server
-    fetch(`/api/devices/${id}/toggle-mosfet`, {
+    authFetch(`/api/devices/${id}/toggle-mosfet`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -230,7 +254,7 @@ export function useTelemetry() {
       .catch(err => {
         console.error('Error toggling MOSFET:', err);
         // Revert UI changes on error by fetching current devices list
-        fetch('/api/devices')
+        authFetch('/api/devices')
           .then(res => res.json())
           .then(data => setDevices(data));
       });
@@ -252,7 +276,7 @@ export function useTelemetry() {
       return g;
     }));
 
-    return fetch(`/api/gateways/${id}/toggle`, {
+    return authFetch(`/api/gateways/${id}/toggle`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     })
@@ -263,7 +287,7 @@ export function useTelemetry() {
       .catch(err => {
         console.error('Error toggling gateway:', err);
         // revert by refetching
-        fetch('/api/gateways')
+        authFetch('/api/gateways')
           .then(res => res.json())
           .then(data => setGateways(data));
       });
@@ -278,7 +302,7 @@ export function useTelemetry() {
       return g;
     }));
 
-    return fetch(`/api/gateways/${id}`, {
+    return authFetch(`/api/gateways/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData)
@@ -293,7 +317,7 @@ export function useTelemetry() {
       .catch(err => {
         console.error('Error updating gateway config:', err);
         // revert
-        fetch('/api/gateways')
+        authFetch('/api/gateways')
           .then(res => res.json())
           .then(data => setGateways(data));
         throw err;
@@ -301,7 +325,7 @@ export function useTelemetry() {
   };
 
   const addGateway = (newGwData: any) => {
-    return fetch('/api/gateways', {
+    return authFetch('/api/gateways', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newGwData)
@@ -324,7 +348,7 @@ export function useTelemetry() {
   };
 
   const pingGateway = (id: string): Promise<string> => {
-    return fetch(`/api/gateways/${id}/ping`, {
+    return authFetch(`/api/gateways/${id}/ping`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     })
@@ -340,7 +364,7 @@ export function useTelemetry() {
   };
 
   const scanGatewayBus = (id: string): Promise<string> => {
-    return fetch(`/api/gateways/${id}/scan`, {
+    return authFetch(`/api/gateways/${id}/scan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     })

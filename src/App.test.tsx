@@ -45,6 +45,21 @@ vi.mock('./components/GatewayConfig/GatewayConfig', () => ({ default: () => <div
 // Mock useTelemetry hook
 vi.mock('./hooks/useTelemetry');
 
+// Mock useAuth context hook
+vi.mock('./contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { email: 'anuirawit@gmail.com', name: 'Anurag Tiwari (Dev)', picture: '', role: 'admin' },
+    token: 'mock-token-xyz',
+    isLoading: false,
+    error: null,
+    login: vi.fn(),
+    loginBypass: vi.fn(),
+    logout: vi.fn(),
+    clearError: vi.fn()
+  }),
+  AuthProvider: ({ children }: any) => <>{children}</>
+}));
+
 describe('App Component', () => {
   const mockUseTelemetry = {
     devices: [{ id: 'dev-1', name: 'Device 1' }],
