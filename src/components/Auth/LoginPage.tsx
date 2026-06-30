@@ -69,21 +69,28 @@ export default function LoginPage() {
         {/* Google Sign-In */}
         <div className="login-google-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div className="login-google-wrapper">
-            <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                if (credentialResponse.credential) {
-                  login(credentialResponse.credential);
-                }
-              }}
-              onError={() => {
-                console.error('Google Login Failed');
-              }}
-              theme="filled_black"
-              shape="pill"
-              size="large"
-              width="380"
-              text="signin_with"
-            />
+            {!import.meta.env.VITE_GOOGLE_CLIENT_ID ? (
+              <div style={{ color: 'var(--accent-red)', padding: '1rem', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                <strong>⚠️ Missing Configuration</strong>
+                <p style={{ fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>The Google Client ID is not set. If you are on Render, please ensure <code>VITE_GOOGLE_CLIENT_ID</code> is set in the environment variables and <strong>rebuild your app</strong>.</p>
+              </div>
+            ) : (
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    login(credentialResponse.credential);
+                  }
+                }}
+                onError={() => {
+                  console.error('Google Login Failed');
+                }}
+                theme="filled_black"
+                shape="pill"
+                size="large"
+                width="380"
+                text="signin_with"
+              />
+            )}
           </div>
           {window.location.hostname === 'localhost' && (
             <button
