@@ -18,12 +18,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ALLOWLIST_FILE = path.resolve(__dirname, 'allowlist.json');
 
-// Helper to get allowed emails
+/**
+ * Retrieves the list of allowed emails from the allowlist file.
+ * Falls back to the default configuration if the file is missing or unreadable.
+ */
 export function getAllowedEmails(): string[] {
   try {
     if (fs.existsSync(ALLOWLIST_FILE)) {
-      const data = fs.readFileSync(ALLOWLIST_FILE, 'utf-8');
-      return JSON.parse(data);
+      return JSON.parse(fs.readFileSync(ALLOWLIST_FILE, 'utf-8'));
     }
   } catch (err) {
     console.error('Error reading allowlist file:', err);
@@ -31,7 +33,11 @@ export function getAllowedEmails(): string[] {
   return AUTH_CONFIG.ALLOWED_EMAILS;
 }
 
-// Helper to save allowed emails
+/**
+ * Saves a new list of allowed emails to the allowlist file.
+ * 
+ * @param emails The updated list of allowed email addresses
+ */
 export function saveAllowedEmails(emails: string[]): void {
   try {
     fs.writeFileSync(ALLOWLIST_FILE, JSON.stringify(emails, null, 2), 'utf-8');
@@ -78,19 +84,13 @@ export async function verifyGoogleToken(
   });
 
   const payload = ticket.getPayload();
-  if (!payload) {
-    throw new Error('Google token payload is empty');
-  }
-
-  const { email, name, picture } = payload;
-  if (!email) {
-    throw new Error('Google token is missing email claim');
-  }
+  if (!payload) throw new Error('Google token payload is empty');
+  if (!payload.email) throw new Error('Google token is missing email claim');
 
   return {
-    email: email.toLowerCase(),
-    name: name || email.split('@')[0],
-    picture: picture || '',
+    email: payload.email.toLowerCase(),
+    name: payload.name || payload.email.split('@')[0],
+    picture: payload.picture || '',
   };
 }
 
@@ -109,19 +109,28 @@ export function isEmailAllowed(email: string): boolean {
 // ---------------------------------------------------------
 // 3. Generate a signed session JWT
 // ---------------------------------------------------------
+
 /**
- * Signs a JWT containing the user payload.
+ * Extracts core user profile fields from a payload or user object.
+ * Useful for stripping out extra properties like JWT 'iat' or 'exp'.
+ */
+function extractUser(payload: AuthPayload | User): User {
+  return {
+    email: payload.email,
+    name: payload.name,
+    picture: payload.picture,
+    role: payload.role,
+  };
+}
+
+/**
+ * Signs a session JWT containing the user payload.
  *
  * @param user  The authenticated user object.
- * @returns     A signed JWT string.
+ * @returns     A signed JWT string valid for the configured expiry.
  */
 export function generateSessionToken(user: User): string {
-  const tokenPayload: Omit<AuthPayload, 'iat' | 'exp'> = {
-    email: user.email,
-    name: user.name,
-    picture: user.picture,
-    role: user.role,
-  };
+  const tokenPayload = extractUser(user);
 
   return jwt.sign(tokenPayload, AUTH_CONFIG.JWT_SECRET, {
     expiresIn: AUTH_CONFIG.JWT_EXPIRY,
@@ -140,8 +149,7 @@ export function generateSessionToken(user: User): string {
  */
 export function verifySessionToken(token: string): AuthPayload | null {
   try {
-    const decoded = jwt.verify(token, AUTH_CONFIG.JWT_SECRET, { algorithms: ['HS256'] }) as AuthPayload;
-    return decoded;
+    return jwt.verify(token, AUTH_CONFIG.JWT_SECRET, { algorithms: ['HS256'] }) as AuthPayload;
   } catch {
     return null;
   }
@@ -150,6 +158,16 @@ export function verifySessionToken(token: string): AuthPayload | null {
 // ---------------------------------------------------------
 // 5. Express middleware — requireAuth
 // ---------------------------------------------------------
+
+/**
+ * Helper to format standard unauthorized responses.
+ */
+function sendUnauthorized(res: Response, message: string): void {
+  res.status(401).json({
+    error: { code: 'UNAUTHORIZED', message },
+  });
+}
+
 /**
  * Express middleware that enforces Bearer-token authentication.
  *
@@ -163,49 +181,23 @@ export function requireAuth(
   next: NextFunction,
 ): void {
   if (process.env.NODE_ENV === 'test') {
-    req.user = {
-      email: 'test@example.com',
-      name: 'Test User',
-      picture: '',
-      role: 'admin',
-    };
-    next();
-    return;
+    req.user = { email: 'test@example.com', name: 'Test User', picture: '', role: 'admin' };
+    return next();
   }
 
   const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({
-      error: {
-        code: 'UNAUTHORIZED',
-        message: 'Missing or malformed Authorization header',
-      },
-    });
-    return;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return sendUnauthorized(res, 'Missing or malformed Authorization header');
   }
 
   const token = authHeader.slice(7); // strip "Bearer "
   const payload = verifySessionToken(token);
 
   if (!payload) {
-    res.status(401).json({
-      error: {
-        code: 'UNAUTHORIZED',
-        message: 'Invalid or expired session token',
-      },
-    });
-    return;
+    return sendUnauthorized(res, 'Invalid or expired session token');
   }
 
-  // Attach the authenticated user to the request object.
-  req.user = {
-    email: payload.email,
-    name: payload.name,
-    picture: payload.picture,
-    role: payload.role,
-  };
-
+  req.user = extractUser(payload);
   next();
 }
 
@@ -224,21 +216,12 @@ export function authenticateWs(url: string): User | null {
     const parsed = new URL(url, 'http://localhost');
     const token = parsed.searchParams.get('token');
 
-    if (!token) {
-      return null;
-    }
+    if (!token) return null;
 
     const payload = verifySessionToken(token);
-    if (!payload) {
-      return null;
-    }
+    if (!payload) return null;
 
-    return {
-      email: payload.email,
-      name: payload.name,
-      picture: payload.picture,
-      role: payload.role,
-    };
+    return extractUser(payload);
   } catch {
     return null;
   }

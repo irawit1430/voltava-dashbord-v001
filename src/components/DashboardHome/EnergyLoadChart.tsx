@@ -1,13 +1,46 @@
-import { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Sun, Zap, Activity, BatteryCharging } from 'lucide-react';
 import './DashboardHome.css';
 
-export default function EnergyLoadChart() {
+// Custom Tooltip Component
+const CustomTooltip = React.memo(({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    // Sort payload descending by normalized height to match the physical order of the lines
+    // Power axis max is ~180, Bess axis max is 100.
+    const sortedPayload = [...payload].sort((a: any, b: any) => {
+      const aNorm = a.dataKey === 'bessSoc' ? a.value / 100 : a.value / 180;
+      const bNorm = b.dataKey === 'bessSoc' ? b.value / 100 : b.value / 180;
+      return bNorm - aNorm;
+    });
+
+    return (
+      <div className="custom-chart-tooltip">
+        <p className="tooltip-title">🕒 Time: {label}</p>
+        <div className="tooltip-items">
+          {sortedPayload.map((item: any) => {
+            const isBess = item.dataKey === 'bessSoc';
+            const unit = isBess ? '%' : 'kW';
+            return (
+              <div key={item.dataKey} className="tooltip-item" style={{ '--item-color': item.color || item.stroke } as React.CSSProperties}>
+                <span className="tooltip-indicator" />
+                <span className="tooltip-label">{item.name}:</span>
+                <span className="tooltip-value">{item.value}{unit}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+  return null;
+});
+
+const EnergyLoadChart = React.memo(function EnergyLoadChart() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'solar' | 'load-grid' | 'battery'>('all');
   const [mouseY, setMouseY] = useState<number | undefined>(undefined);
 
-  const handleMouseMove = (state: any) => {
+  const handleMouseMove = useCallback((state: any) => {
     if (state && state.chartY !== undefined) {
       // Clamp Y coordinate to prevent it from going out of bounds of the 320px responsive container
       const y = Math.max(10, Math.min(state.chartY - 60, 200));
@@ -15,14 +48,14 @@ export default function EnergyLoadChart() {
     } else {
       setMouseY(undefined);
     }
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setMouseY(undefined);
-  };
+  }, []);
 
   // Mock historical power flow curve for Rajasthan and Gurugram Factory
-  const chartData = [
+  const chartData = useMemo(() => [
     { time: '08:00', solar: 15, load: 120, grid: 105, bessSoc: 60 },
     { time: '10:00', solar: 45, load: 140, grid: 95, bessSoc: 65 },
     { time: '12:00', solar: 85, load: 160, grid: 75, bessSoc: 55 },
@@ -30,46 +63,17 @@ export default function EnergyLoadChart() {
     { time: '16:00', solar: 60, load: 165, grid: 105, bessSoc: 42 },
     { time: '18:00', solar: 10, load: 150, grid: 140, bessSoc: 60 },
     { time: '20:00', solar: 0, load: 135, grid: 135, bessSoc: 75 },
-  ];
+  ], []);
 
   // Dynamic stats calculated from data
-  const peakSolar = Math.max(...chartData.map(d => d.solar));
-  const avgLoad = Math.round(chartData.reduce((acc, d) => acc + d.load, 0) / chartData.length);
-  const peakGrid = Math.max(...chartData.map(d => d.grid));
-  const currentBess = chartData[chartData.length - 1].bessSoc;
-
-  // Custom Tooltip Component
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      // Sort payload descending by normalized height to match the physical order of the lines
-      // Power axis max is ~180, Bess axis max is 100.
-      const sortedPayload = [...payload].sort((a: any, b: any) => {
-        const aNorm = a.dataKey === 'bessSoc' ? a.value / 100 : a.value / 180;
-        const bNorm = b.dataKey === 'bessSoc' ? b.value / 100 : b.value / 180;
-        return bNorm - aNorm;
-      });
-
-      return (
-        <div className="custom-chart-tooltip">
-          <p className="tooltip-title">🕒 Time: {label}</p>
-          <div className="tooltip-items">
-            {sortedPayload.map((item: any) => {
-              const isBess = item.dataKey === 'bessSoc';
-              const unit = isBess ? '%' : 'kW';
-              return (
-                <div key={item.dataKey} className="tooltip-item" style={{ '--item-color': item.color || item.stroke } as React.CSSProperties}>
-                  <span className="tooltip-indicator" />
-                  <span className="tooltip-label">{item.name}:</span>
-                  <span className="tooltip-value">{item.value}{unit}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
+  const { peakSolar, avgLoad, peakGrid, currentBess } = useMemo(() => {
+    return {
+      peakSolar: Math.max(...chartData.map(d => d.solar)),
+      avgLoad: Math.round(chartData.reduce((acc, d) => acc + d.load, 0) / chartData.length),
+      peakGrid: Math.max(...chartData.map(d => d.grid)),
+      currentBess: chartData[chartData.length - 1].bessSoc
+    };
+  }, [chartData]);
 
   return (
     <div className="glass-panel chart-panel">
@@ -259,4 +263,6 @@ export default function EnergyLoadChart() {
       </div>
     </div>
   );
-}
+});
+
+export default EnergyLoadChart;

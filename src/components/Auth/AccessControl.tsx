@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Users, UserPlus, Trash2, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
+import './AccessControl.css';
 
 export default function AccessControl() {
   const { token, user: currentUser } = useAuth();
@@ -167,17 +168,17 @@ export default function AccessControl() {
                 const isCurrent = currentUser?.email.toLowerCase() === email;
                 
                 return (
-                  <div key={email} style={styles.listItem}>
+                  <div key={email} className="access-list-item">
                     <div style={styles.emailContainer}>
                       <span style={styles.emailText}>{email}</span>
                       {isPrimary && (
-                        <span style={styles.primaryBadge}>
+                        <span className="access-badge" style={styles.primaryBadge}>
                           <Shield size={10} />
                           Primary Admin
                         </span>
                       )}
                       {isCurrent && (
-                        <span style={styles.currentBadge}>
+                        <span className="access-badge" style={styles.currentBadge}>
                           You
                         </span>
                       )}
@@ -186,7 +187,7 @@ export default function AccessControl() {
                     {!isPrimary && !isCurrent && (
                       <button
                         onClick={() => handleDeleteEmail(email)}
-                        style={styles.deleteButton}
+                        className="access-delete-btn"
                         title="Revoke access"
                       >
                         <Trash2 size={16} />
@@ -291,15 +292,6 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     gap: '0.75rem',
   },
-  listItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '0.75rem 1rem',
-    borderRadius: '6px',
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid var(--border-color)',
-  },
   emailContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -331,17 +323,5 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     fontSize: '0.7rem',
     fontWeight: 600,
-  },
-  deleteButton: {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    color: 'var(--text-muted)',
-    padding: '0.25rem',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'all 0.15s ease',
   },
 };

@@ -1,0 +1,49 @@
+.access-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
+
+.access-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.access-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.access-delete-btn:hover {
+  color: var(--accent-red);
+  background-color: rgba(239, 68, 68, 0.15);
+  transform: scale(1.1) rotate(5deg);
+}
+
+.access-delete-btn:active {
+  transform: scale(0.95);
+}
+
+.access-badge {
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.access-badge:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
