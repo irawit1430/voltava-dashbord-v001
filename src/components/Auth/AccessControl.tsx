@@ -189,6 +189,7 @@ export default function AccessControl() {
                         onClick={() => handleDeleteEmail(email)}
                         className="access-delete-btn"
                         title="Revoke access"
+                        aria-label={`Revoke access for ${email}`}
                       >
                         <Trash2 size={16} />
                       </button>
