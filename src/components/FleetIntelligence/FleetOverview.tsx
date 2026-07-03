@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { 
   Navigation, 
   BatteryCharging, 
@@ -301,7 +301,7 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   container: {
     display: 'flex',
     flexDirection: 'column',
