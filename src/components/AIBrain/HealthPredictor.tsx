@@ -264,6 +264,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '1rem',
+    flexWrap: 'wrap',
   },
   riskFlags: {
     display: 'flex',

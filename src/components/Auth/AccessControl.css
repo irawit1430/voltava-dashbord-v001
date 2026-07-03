@@ -47,3 +47,19 @@
   transform: scale(1.05);
   filter: brightness(1.2);
 }
+
+.access-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 600px) {
+  .access-form {
+    flex-direction: column;
+  }
+  
+  .access-form .btn {
+    width: 100%;
+  }
+}

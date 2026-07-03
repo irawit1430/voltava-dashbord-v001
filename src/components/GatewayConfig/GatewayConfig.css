@@ -580,5 +580,37 @@
   font-size: 0.85rem;
   padding: 2rem;
   text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .gw-main-grid {
+    grid-template-columns: 1fr;
   }
+  .gw-list-section {
+    height: 400px;
+  }
+  .gw-detail-section {
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .gw-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .gw-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .gw-meta-row-grid {
+    grid-template-columns: 1fr;
+  }
+  .gw-terminal-tabs {
+    flex-wrap: wrap;
+  }
+  .gw-terminal-tab-btn {
+    flex-basis: 50%;
+    border-bottom: 1px solid #161b22;
+  }
+}
 

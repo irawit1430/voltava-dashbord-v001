@@ -299,7 +299,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   savingsBox: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
     gap: '1rem',
     marginTop: '1.25rem',
     backgroundColor: 'rgba(255,255,255,0.02)',

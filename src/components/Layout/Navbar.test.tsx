@@ -57,17 +57,17 @@ describe('Navbar Component', () => {
 
   it('renders correct page title based on activeTab', () => {
     const { rerender } = render(
-      <Navbar activeTab="overview" devices={[]} onSelectDevice={mockOnSelectDevice} />
+      <Navbar activeTab="overview" devices={[]} onSelectDevice={mockOnSelectDevice} isMobileMenuOpen={false} setIsMobileMenuOpen={vi.fn()} />
     );
     expect(screen.getByText('Executive Overview')).toBeInTheDocument();
 
-    rerender(<Navbar activeTab="devices" devices={[]} onSelectDevice={mockOnSelectDevice} />);
+    rerender(<Navbar activeTab="devices" devices={[]} onSelectDevice={mockOnSelectDevice} isMobileMenuOpen={false} setIsMobileMenuOpen={vi.fn()} />);
     expect(screen.getByText('Device Registry')).toBeInTheDocument();
   });
 
   it('displays correct status counts', () => {
     render(
-      <Navbar activeTab="overview" devices={mockDevices} onSelectDevice={mockOnSelectDevice} />
+      <Navbar activeTab="overview" devices={mockDevices} onSelectDevice={mockOnSelectDevice} isMobileMenuOpen={false} setIsMobileMenuOpen={vi.fn()} />
     );
 
     expect(screen.getByText('1 Online')).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('Navbar Component', () => {
 
   it('opens notifications dropdown when bell icon is clicked', () => {
     render(
-      <Navbar activeTab="overview" devices={mockDevices} onSelectDevice={mockOnSelectDevice} />
+      <Navbar activeTab="overview" devices={mockDevices} onSelectDevice={mockOnSelectDevice} isMobileMenuOpen={false} setIsMobileMenuOpen={vi.fn()} />
     );
 
     const bellButton = screen.getByRole('button', { name: /view notifications/i });
@@ -89,7 +89,7 @@ describe('Navbar Component', () => {
 
   it('calls onSelectDevice when a notification is clicked', () => {
     render(
-      <Navbar activeTab="overview" devices={mockDevices} onSelectDevice={mockOnSelectDevice} />
+      <Navbar activeTab="overview" devices={mockDevices} onSelectDevice={mockOnSelectDevice} isMobileMenuOpen={false} setIsMobileMenuOpen={vi.fn()} />
     );
 
     const bellButton = screen.getByRole('button', { name: /view notifications/i });

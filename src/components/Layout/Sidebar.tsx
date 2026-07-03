@@ -9,15 +9,18 @@ import {
   Layers, 
   Settings,
   ShieldCheck,
-  Users
+  Users,
+  X
 } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: SidebarProps) {
   const menuItems = [
     { id: 'overview', name: 'Overview', icon: LayoutDashboard, category: 'General' },
     { id: 'devices', name: 'Device Registry', icon: Cpu, category: 'General' },
@@ -28,15 +31,25 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   ];
 
   return (
-    <aside style={styles.sidebar}>
-      {/* Brand Logo */}
-      <div style={styles.logoContainer}>
-        <div style={styles.logoIcon}>V</div>
-        <div>
-          <h1 style={styles.logoText}>VOLTAVA</h1>
-          <span style={styles.logoSubtitle}>Energy Intelligence</span>
+    <>
+      {isOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <aside className={`sidebar-container ${isOpen ? 'open' : ''}`} style={styles.sidebar}>
+        {/* Brand Logo */}
+        <div style={styles.logoContainer}>
+          <div style={styles.logoIcon}>V</div>
+          <div>
+            <h1 style={styles.logoText}>VOLTAVA</h1>
+            <span style={styles.logoSubtitle}>Energy Intelligence</span>
+          </div>
+          <button className="mobile-close-btn" onClick={() => setIsOpen(false)}>
+            <X size={20} />
+          </button>
         </div>
-      </div>
 
       {/* Subscription Status Pin */}
       <div style={styles.subBanner}>
@@ -128,6 +141,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </button>
       </div>
     </aside>
+    </>
   );
 }
 

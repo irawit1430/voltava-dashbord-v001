@@ -272,29 +272,29 @@ h1, h2, h3, h4, h5, h6 {
 /* Flex and Grid Utilities */
 .grid-cols-4 {
   display: grid;
-  grid-template-cols: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.25rem;
 }
 
 .grid-cols-2 {
   display: grid;
-  grid-template-cols: 1fr;
+  grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 @media (min-width: 1024px) {
   .grid-cols-2 {
-    grid-template-cols: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .grid-main-layout {
   display: grid;
-  grid-template-cols: 1fr;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 @media (min-width: 1280px) {
   .grid-main-layout {
-    grid-template-cols: 2.2fr 1fr;
+    grid-template-columns: 2.2fr 1fr;
   }
 }
 
@@ -469,24 +469,113 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal-grid {
   display: grid;
-  grid-template-cols: 1fr;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 @media (min-width: 768px) {
   .modal-grid {
-    grid-template-cols: 1.2fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
   }
 }
 
 /* Simulator Layout Classes */
 .sim-grid {
   display: grid;
-  grid-template-cols: 1fr;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   align-items: start;
 }
 @media (min-width: 1024px) {
   .sim-grid {
-    grid-template-cols: 1fr 1.2fr;
+    grid-template-columns: 1fr 1.2fr;
+  }
+}
+
+/* Mobile Sidebar and Layout Adjustments */
+.sidebar-container {
+  transition: transform var(--transition-normal);
+  z-index: 50;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+  display: none;
+}
+
+.mobile-close-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0.25rem;
+}
+.mobile-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 1rem;
+  padding: 0.25rem;
+}
+.mobile-menu-btn:hover {
+  opacity: 0.8;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  }
+  
+  .sidebar-container.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .mobile-close-btn {
+    display: block;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .content-body {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-cols-4, .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .content-body {
+    padding: 1rem 0.5rem;
+  }
+  
+  .navbar-metrics {
+    display: none;
   }
 }

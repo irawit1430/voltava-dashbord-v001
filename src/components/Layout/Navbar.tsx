@@ -7,7 +7,8 @@ import {
   AlertTriangle,
   X,
   CheckCircle2,
-  LogOut
+  LogOut,
+  Menu
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Device } from '../../types';
@@ -27,9 +28,11 @@ interface NavbarProps {
   activeTab: string;
   devices: Device[];
   onSelectDevice: (device: Device) => void;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (isOpen: boolean) => void;
 }
 
-export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarProps) {
+export default function Navbar({ activeTab, devices, onSelectDevice, isMobileMenuOpen, setIsMobileMenuOpen }: NavbarProps) {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
@@ -163,9 +166,14 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
   return (
     <header className="navbar glass-panel">
       {/* Title */}
-      <div>
-        <h2 className="page-title">{getPageTitle()}</h2>
-        <p className="subtitle">India National Energy Asset Operations</p>
+      <div className="navbar-left">
+        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <Menu size={24} color="var(--text-primary)" />
+        </button>
+        <div>
+          <h2 className="page-title">{getPageTitle()}</h2>
+          <p className="subtitle">India National Energy Asset Operations</p>
+        </div>
       </div>
 
       {/* Center Metrics (Status Badges) */}

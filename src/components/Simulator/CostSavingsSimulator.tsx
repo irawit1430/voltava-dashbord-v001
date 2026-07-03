@@ -323,7 +323,7 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'right',
   },
   tariffsRow: {
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
     gap: '1rem',
   },
   infoFooter: {
@@ -342,7 +342,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   resultsGrid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
     gap: '1rem',
   },
   resultCard: {

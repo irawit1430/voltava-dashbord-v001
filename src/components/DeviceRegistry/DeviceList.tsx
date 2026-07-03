@@ -68,6 +68,17 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
 
   return (
     <div style={styles.container}>
+      <style>{`
+        @media (max-width: 768px) {
+          .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .custom-table {
+            min-width: 800px;
+          }
+        }
+      `}</style>
       {/* Search and Filters Bar */}
       <div className="glass-panel" style={styles.filterBar}>
         <div style={styles.searchWrapper}>

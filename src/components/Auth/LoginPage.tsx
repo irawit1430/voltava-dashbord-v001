@@ -87,7 +87,6 @@ export default function LoginPage() {
                 theme="filled_black"
                 shape="pill"
                 size="large"
-                width="380"
                 text="signin_with"
               />
             )}

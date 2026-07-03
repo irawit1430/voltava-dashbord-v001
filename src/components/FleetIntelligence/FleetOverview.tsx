@@ -424,7 +424,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   mapInfoGrid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))',
     gap: '0.4rem',
   },
   mapInfoLabel: {
@@ -450,11 +450,14 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '6px',
     backgroundColor: 'rgba(255, 255, 255, 0.01)',
     border: '1px solid var(--border-color)',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
   },
   rankLeft: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.75rem',
+    flexWrap: 'wrap',
   },
   rankNum: {
     fontFamily: 'var(--font-title)',

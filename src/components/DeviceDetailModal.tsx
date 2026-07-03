@@ -85,6 +85,28 @@ export default function DeviceDetailModal({
 
   return (
     <div className="modal-overlay">
+      <style>{`
+        @media (max-width: 768px) {
+          .modal-container {
+            width: 95vw !important;
+            max-height: 90vh !important;
+            margin: 5vh auto !important;
+            display: flex;
+            flex-direction: column;
+          }
+          .modal-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 1.5rem;
+          }
+          .telem-stats-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .bms-cells-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
       <div className="glass-panel glow-blue modal-container">
         {/* Header */}
         <div style={styles.header}>
@@ -121,7 +143,7 @@ export default function DeviceDetailModal({
               <h4 style={styles.sectionHeader}>Live Telemetry Indicators</h4>
               
               {/* Telemetry Grid */}
-              <div style={styles.telemStatsGrid}>
+              <div style={styles.telemStatsGrid} className="telem-stats-grid">
                 <div style={styles.telemStatBox}>
                   <span style={styles.telemLabel}>Pack Voltage</span>
                   <span style={styles.telemVal}>{device.telemetry.voltage.toFixed(1)} V</span>
@@ -224,7 +246,7 @@ export default function DeviceDetailModal({
                   </div>
 
                   {/* 4x4 Grid for 16 Cells */}
-                  <div style={styles.cellsGrid}>
+                  <div style={styles.cellsGrid} className="bms-cells-grid">
                     {device.telemetry.cellVoltages.map((v: number, idx: number) => {
                       const temp = device.telemetry.cellTemps![idx];
                       const voltColor = getCellColor(v);

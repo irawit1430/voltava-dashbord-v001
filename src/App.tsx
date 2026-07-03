@@ -21,6 +21,7 @@ function App() {
   // Force new build hash to bypass CDN cache
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Invoke our telemetry simulation engine
   const { 
@@ -60,7 +61,15 @@ function App() {
   return (
     <div className="app-container">
       {/* Sidebar Navigation */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          setIsMobileMenuOpen(false);
+        }}
+        isOpen={isMobileMenuOpen}
+        setIsOpen={setIsMobileMenuOpen}
+      />
 
       {/* Main Content Area */}
       <main className="main-content">
@@ -69,6 +78,8 @@ function App() {
           activeTab={activeTab} 
           devices={devices} 
           onSelectDevice={(device) => setSelectedDevice(device)} 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
 
         {/* Tab Routing Body */}

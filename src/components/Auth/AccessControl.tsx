@@ -148,7 +148,7 @@ export default function AccessControl() {
           </div>
         )}
 
-        <form onSubmit={handleAddEmail} style={styles.form}>
+        <form onSubmit={handleAddEmail} className="access-form">
           <input
             type="email"
             placeholder="new.user@gmail.com"
@@ -271,11 +271,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '6px',
     fontSize: '0.85rem',
     marginBottom: '1rem',
-  },
-  form: {
-    display: 'flex',
-    gap: '1rem',
-    marginBottom: '2rem',
   },
   input: {
     flex: 1,
