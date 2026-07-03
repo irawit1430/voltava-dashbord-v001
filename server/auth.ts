@@ -197,6 +197,11 @@ export function requireAuth(
     return sendUnauthorized(res, 'Invalid or expired session token');
   }
 
+  // Re-verify against allowlist to handle revoked access dynamically
+  if (!isEmailAllowed(payload.email)) {
+    return sendUnauthorized(res, 'Access revoked. Your email is no longer authorized.');
+  }
+
   req.user = extractUser(payload);
   next();
 }
@@ -220,6 +225,9 @@ export function authenticateWs(url: string): User | null {
 
     const payload = verifySessionToken(token);
     if (!payload) return null;
+
+    // Re-verify against allowlist
+    if (!isEmailAllowed(payload.email)) return null;
 
     return extractUser(payload);
   } catch {

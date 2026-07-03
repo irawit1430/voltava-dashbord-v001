@@ -67,6 +67,16 @@ initHistory();
 export const app = express();
 const port = process.env.PORT || 5000;
 
+const activeClients = new Map<string, Set<WebSocket>>();
+
+export function disconnectUserWs(email: string) {
+  const clients = activeClients.get(email);
+  if (clients) {
+    clients.forEach(ws => ws.close(1008, 'Access revoked'));
+    activeClients.delete(email);
+  }
+}
+
 app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
   crossOriginEmbedderPolicy: false,
@@ -259,6 +269,9 @@ app.delete('/api/auth/allowlist/:email', requireAuth, (req, res) => {
   }
   const updatedEmails = emails.filter(e => e !== targetEmail);
   saveAllowedEmails(updatedEmails);
+
+  disconnectUserWs(targetEmail);
+
   res.json({ success: true, emails: updatedEmails });
 });
 
@@ -481,6 +494,11 @@ wss.on('connection', (ws, request) => {
 
   console.log(`WS Client connected: ${wsUser.email}`);
   
+  if (!activeClients.has(wsUser.email)) {
+    activeClients.set(wsUser.email, new Set());
+  }
+  activeClients.get(wsUser.email)!.add(ws);
+  
   // Send immediate initial data state
   ws.send(JSON.stringify({
     type: 'TELEMETRY_UPDATE',
@@ -497,6 +515,7 @@ wss.on('connection', (ws, request) => {
 
   ws.on('close', () => {
     console.log('WS Client disconnected');
+    activeClients.get(wsUser.email)?.delete(ws);
   });
 });
 
