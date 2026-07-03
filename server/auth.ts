@@ -21,7 +21,7 @@ try {
   } else if (!hasCreds) {
     console.warn("GOOGLE_APPLICATION_CREDENTIALS not set. Running with fallback local allowlist.");
   }
-} catch (e) {
+} catch {
   console.warn("Firebase Admin initialization failed. Ensure GOOGLE_APPLICATION_CREDENTIALS is set.");
 }
 
@@ -191,11 +191,6 @@ export function requireAuth(
   res: Response,
   next: NextFunction,
 ): void {
-  if (process.env.NODE_ENV === 'test') {
-    req.user = { email: 'test@example.com', name: 'Test User', picture: '', role: 'admin' };
-    return next();
-  }
-
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
     return sendUnauthorized(res, 'Missing or malformed Authorization header');
