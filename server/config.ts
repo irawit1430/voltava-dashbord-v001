@@ -6,6 +6,7 @@
 // ---------------------------------------------------------
 
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 dotenv.config();
 
 /**
@@ -18,9 +19,13 @@ dotenv.config();
  */
 export const AUTH_CONFIG = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
-  JWT_SECRET:
-    process.env.JWT_SECRET ||
-    'voltava-dev-secret-change-in-production-' + Date.now(),
+  JWT_SECRET: (() => {
+    if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL: JWT_SECRET environment variable is required in production.');
+    }
+    return crypto.randomBytes(32).toString('hex');
+  })(),
   JWT_EXPIRY: '7d',
   ALLOWED_EMAILS: (
     process.env.ALLOWED_EMAILS || 'anuirawit@gmail.com'
@@ -36,8 +41,8 @@ if (!AUTH_CONFIG.GOOGLE_CLIENT_ID) {
   );
 }
 
-if (!process.env.JWT_SECRET) {
+if (!process.env.JWT_SECRET && process.env.NODE_ENV !== 'production') {
   console.warn(
-    '[config] ⚠  JWT_SECRET is using a default value — set a strong secret in production.',
+    '[config] ⚠  JWT_SECRET is using a randomly generated value for development. Set a strong secret in production.',
   );
 }
