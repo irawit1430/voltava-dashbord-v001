@@ -537,9 +537,8 @@ function simulateDevices() {
     const dynamicFaults: string[] = [];
 
     // Keep any non-telemetry state faults like OTA updates
-    const otaFault = d.telemetry.faults.find(f => f === 'OTA Update Initiated');
-    if (otaFault) {
-      dynamicFaults.push(otaFault);
+    if (d.telemetry.faults.includes('OTA Update Initiated')) {
+      dynamicFaults.push('OTA Update Initiated');
     }
 
     if (d.type === 'bms') {
