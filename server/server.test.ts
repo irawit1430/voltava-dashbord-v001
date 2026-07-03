@@ -1,5 +1,18 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import type { Request, Response, NextFunction } from 'express';
+
+vi.mock('./auth.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./auth.js')>();
+  return {
+    ...actual,
+    requireAuth: (req: Request, res: Response, next: NextFunction) => {
+      req.user = { email: 'test@example.com', name: 'Test User', picture: '', role: 'admin' };
+      next();
+    }
+  };
+});
+
 import { app } from './server';
 import { devices } from './simulator';
 import type { Device } from './types';
