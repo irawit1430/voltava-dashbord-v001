@@ -103,7 +103,7 @@ export function useTelemetry() {
       const wsBase = window.location.port !== '' && window.location.port !== '5000'
         ? `${wsProtocol}//${window.location.hostname}:5000/ws`
         : `${wsProtocol}//${window.location.host}/ws`;
-      const wsUrl = `${wsBase}?token=${authContext?.token}`;
+      const wsUrl = wsBase;
       console.log(`Connecting to WebSocket at: ${wsUrl}`);
       
       const ws = new WebSocket(wsUrl);
@@ -111,6 +111,9 @@ export function useTelemetry() {
 
       ws.onopen = () => {
         console.log('WebSocket connection opened successfully!');
+        if (authContext?.token) {
+          ws.send(JSON.stringify({ type: 'AUTH', token: authContext.token }));
+        }
       };
 
       ws.onmessage = (event) => {

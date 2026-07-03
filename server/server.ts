@@ -485,38 +485,66 @@ wss.on('connection', (ws, request) => {
     return;
   }
 
-  // Authenticate WebSocket connection via query-param token
-  const wsUser = authenticateWs(reqUrl);
-  if (!wsUser) {
-    console.log('WS connection rejected — invalid or missing token');
-    ws.close(1008, 'Unauthorized');
-    return;
-  }
+  // Authenticate WebSocket connection via first message
+  let isAuthenticated = false;
+  let wsUser: any = null;
 
-  console.log(`WS Client connected: ${wsUser.email}`);
-  
-  if (!activeClients.has(wsUser.email)) {
-    activeClients.set(wsUser.email, new Set());
-  }
-  activeClients.get(wsUser.email)!.add(ws);
-  
-  // Send immediate initial data state
-  ws.send(JSON.stringify({
-    type: 'TELEMETRY_UPDATE',
-    data: {
-      devices,
-      gridMetrics,
-      gateways
+  const authTimeout = setTimeout(() => {
+    if (!isAuthenticated) {
+      console.log('WS connection rejected — authentication timeout');
+      ws.close(1008, 'Unauthorized');
     }
-  }));
+  }, 5000);
+
+  ws.on('message', (data) => {
+    if (!isAuthenticated) {
+      try {
+        const message = JSON.parse(data.toString());
+        if (message.type === 'AUTH' && message.token) {
+          wsUser = authenticateWs(message.token);
+          if (wsUser) {
+            isAuthenticated = true;
+            clearTimeout(authTimeout);
+            console.log(`WS Client connected: ${wsUser.email}`);
+
+            if (!activeClients.has(wsUser.email)) {
+              activeClients.set(wsUser.email, new Set());
+            }
+            activeClients.get(wsUser.email)!.add(ws);
+
+            // Send immediate initial data state
+            ws.send(JSON.stringify({
+              type: 'TELEMETRY_UPDATE',
+              data: {
+                devices,
+                gridMetrics,
+                gateways
+              }
+            }));
+          } else {
+            console.log('WS connection rejected — invalid token');
+            ws.close(1008, 'Unauthorized');
+          }
+        } else {
+          console.log('WS connection rejected — missing AUTH message or token');
+          ws.close(1008, 'Unauthorized');
+        }
+      } catch (err) {
+        console.error('WS auth message parse error:', err);
+        ws.close(1008, 'Unauthorized');
+      }
+    }
+  });
 
   ws.on('error', (err) => {
     console.error('WS Client connection error:', err);
   });
 
   ws.on('close', () => {
-    console.log('WS Client disconnected');
-    activeClients.get(wsUser.email)?.delete(ws);
+    if (wsUser) {
+      console.log('WS Client disconnected');
+      activeClients.get(wsUser.email)?.delete(ws);
+    }
   });
 });
 
