@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { isEmailAllowed, saveAllowedEmails, getAllowedEmails } from './auth';
+import { isEmailAllowed, saveAllowedEmails, getAllowedEmails, generateSessionToken } from './auth';
+import jwt from 'jsonwebtoken';
+import { AUTH_CONFIG } from './config.js';
 
 describe('Auth Module - isEmailAllowed', () => {
   let originalAllowlist: string[];
@@ -41,5 +43,46 @@ describe('Auth Module - isEmailAllowed', () => {
 
   it('should return false for a whitespace-only string', () => {
     expect(isEmailAllowed('   ')).toBe(false);
+  });
+});
+
+
+describe('Auth Module - generateSessionToken', () => {
+  it('should generate a valid JWT token returning a string', () => {
+    const user = {
+      email: 'admin@voltava.com',
+      name: 'Admin User',
+      picture: 'https://example.com/pic.jpg',
+      role: 'admin' as const,
+    };
+    const token = generateSessionToken(user);
+    expect(typeof token).toBe('string');
+  });
+
+  it('should correctly decode to match input User fields and strip extra properties', () => {
+    const user = {
+      email: 'admin@voltava.com',
+      name: 'Admin User',
+      picture: 'https://example.com/pic.jpg',
+      role: 'admin' as const,
+      extraField: 'shouldBeStripped' // extra field
+    } as any; // Cast as any to test extraction logic
+
+    const token = generateSessionToken(user);
+
+    // Verify using the secret
+    const decoded = jwt.verify(token, AUTH_CONFIG.JWT_SECRET) as any;
+
+    expect(decoded.email).toBe('admin@voltava.com');
+    expect(decoded.name).toBe('Admin User');
+    expect(decoded.picture).toBe('https://example.com/pic.jpg');
+    expect(decoded.role).toBe('admin');
+
+    // Ensure extra field is stripped
+    expect(decoded.extraField).toBeUndefined();
+
+    // Ensure standard JWT claims are present
+    expect(decoded.iat).toBeDefined();
+    expect(decoded.exp).toBeDefined();
   });
 });
