@@ -190,9 +190,9 @@ app.post('/api/auth/google', async (req, res) => {
  */
 app.post('/api/auth/bypass', (req, res) => {
   // Only allow bypass in non-production environments
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test') {
     return res.status(403).json({
-      error: { code: 'FORBIDDEN', message: 'Bypass not allowed in production' },
+      error: { code: 'FORBIDDEN', message: 'Bypass only allowed in development or test environments' },
     });
   }
 
