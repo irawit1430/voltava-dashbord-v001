@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './GatewayConfig.css';
 import { 
   Settings, 
@@ -35,6 +35,15 @@ export default function GatewayConfig({
   scanGatewayBus
 }: GatewayConfigProps) {
   const [selectedGatewayId, setSelectedGatewayId] = useState<string | null>(null);
+
+  const deviceMap = useMemo(() => {
+    const map: Record<string, Device> = {};
+    for (let i = 0; i < devices.length; i++) {
+        map[devices[i].id] = devices[i];
+    }
+    return map;
+  }, [devices]);
+
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -727,7 +736,7 @@ export default function GatewayConfig({
                   <h4 className="gw-sub-header">Monitored Assets Connected via Gateway</h4>
                   <div className="gw-linked-grid">
                     {selectedGateway.connectedDevices.map(dId => {
-                      const dev = devices.find(d => d.id === dId);
+                      const dev = deviceMap[dId];
                       if (!dev) return null;
                       return (
                         <div key={dev.id} className="gw-linked-device-card">
