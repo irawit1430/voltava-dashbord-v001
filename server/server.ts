@@ -65,6 +65,18 @@ import {
 // Initialize history
 initHistory();
 
+
+// Cache for O(1) device lookups
+let deviceMapCache = new Map<string, any>();
+let lastDevicesRef: any[] = [];
+
+function getDeviceById(id: string) {
+  if (devices !== lastDevicesRef || devices.length !== deviceMapCache.size) {
+    deviceMapCache = new Map(devices.map(d => [d.id, d]));
+    lastDevicesRef = devices;
+  }
+  return deviceMapCache.get(id);
+}
 export const app = express();
 const port = process.env.PORT || 5000;
 
@@ -336,7 +348,7 @@ app.get('/api/devices/history', (req, res) => {
 });
 
 app.get('/api/devices/:id', (req, res) => {
-  const device = devices.find(d => d.id === req.params.id);
+  const device = getDeviceById(req.params.id);
   if (!device) {
     return res.status(404).json({
       error: {
@@ -362,7 +374,7 @@ app.get('/api/devices/:id/history', (req, res) => {
 });
 
 app.post('/api/devices/:id/ota', (req, res) => {
-  const device = devices.find(d => d.id === req.params.id);
+  const device = getDeviceById(req.params.id);
   if (!device) {
     return res.status(404).json({
       error: {
@@ -376,7 +388,7 @@ app.post('/api/devices/:id/ota', (req, res) => {
 });
 
 app.post('/api/devices/:id/toggle-mosfet', (req, res) => {
-  const device = devices.find(d => d.id === req.params.id);
+  const device = getDeviceById(req.params.id);
   if (!device) {
     return res.status(404).json({
       error: {
