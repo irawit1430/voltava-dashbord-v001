@@ -973,7 +973,8 @@ export function scanGatewayBus(id: string): string {
   if (gw.protocol === 'modbus-rtu' || gw.protocol === 'modbus-tcp') {
     output += `Starting Modbus Unit ID Scan (IDs 1 to 16)...\n`;
 
-    const matchingDev = gw.connectedDevices.map(dId => devices.find(dev => dev.id === dId)).find(dev => dev && dev.id);
+    const deviceMap = new Map(devices.map(d => [d.id, d]));
+    const matchingDev = gw.connectedDevices.map(dId => deviceMap.get(dId)).find(dev => dev && dev.id);
 
     for (let i = 1; i <= 8; i++) {
       /* const isDeviceMatched = gw.connectedDevices.length > 0 && gw.connectedDevices.some(dId => {
