@@ -92,8 +92,9 @@ export default function CostSavingsSimulator() {
 
           {/* DISCOM Select */}
           <div style={styles.controlGroup}>
-            <label style={styles.sliderLabel}>Indian Utility DISCOM Tariff Model</label>
+            <label htmlFor="discom-select" style={styles.sliderLabel}>Indian Utility DISCOM Tariff Model</label>
             <select
+              id="discom-select"
               value={selectedDiscom}
               onChange={(e) => setSelectedDiscom(e.target.value)}
               className="input-control"
@@ -108,10 +109,11 @@ export default function CostSavingsSimulator() {
           {/* Slider 1: BESS Capacity */}
           <div style={styles.controlGroup}>
             <div style={styles.sliderValueRow}>
-              <label style={styles.sliderLabel}>Battery Energy Storage Capacity</label>
+              <label htmlFor="bess-capacity" style={styles.sliderLabel}>Battery Energy Storage Capacity</label>
               <span style={styles.sliderValue}>{bessCapacity} kWh</span>
             </div>
             <input
+              id="bess-capacity"
               type="range"
               min="50"
               max="500"
@@ -126,10 +128,11 @@ export default function CostSavingsSimulator() {
           {/* Slider 2: Peak Limit */}
           <div style={styles.controlGroup}>
             <div style={styles.sliderValueRow}>
-              <label style={styles.sliderLabel}>Grid Peak Shaving Limit</label>
+              <label htmlFor="peak-limit" style={styles.sliderLabel}>Grid Peak Shaving Limit</label>
               <span style={{ ...styles.sliderValue, color: 'var(--accent-cyan)' }}>{peakLimit} kW</span>
             </div>
             <input
+              id="peak-limit"
               type="range"
               min="80"
               max="180"
@@ -144,8 +147,9 @@ export default function CostSavingsSimulator() {
           {/* Custom tariff fields (if custom selected) */}
           <div style={{ ...styles.tariffsRow, display: selectedDiscom === 'custom' ? 'grid' : 'none' }}>
             <div style={styles.controlGroup}>
-              <label style={styles.sliderLabel}>Peak Tariff (₹/kWh)</label>
-              <input 
+              <label htmlFor="peak-tariff" style={styles.sliderLabel}>Peak Tariff (₹/kWh)</label>
+              <input
+                id="peak-tariff"
                 type="number" 
                 step="0.5" 
                 value={peakTariff} 
@@ -157,8 +161,9 @@ export default function CostSavingsSimulator() {
               />
             </div>
             <div style={styles.controlGroup}>
-              <label style={styles.sliderLabel}>Off-Peak (₹/kWh)</label>
-              <input 
+              <label htmlFor="off-peak-tariff" style={styles.sliderLabel}>Off-Peak (₹/kWh)</label>
+              <input
+                id="off-peak-tariff"
                 type="number" 
                 step="0.5" 
                 value={offPeakTariff} 
