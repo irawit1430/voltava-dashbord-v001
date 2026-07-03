@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import type { FormEvent } from 'react';
 import './GatewayConfig.css';
 import { 
   Settings, 
@@ -188,7 +189,7 @@ export default function GatewayConfig({
     }, 2000);
   };
 
-  const handleAddGateway = async (e: React.FormEvent) => {
+  const handleAddGateway = async (e: FormEvent) => {
     e.preventDefault();
     try {
       setError(null);
@@ -211,7 +212,7 @@ export default function GatewayConfig({
     }
   };
 
-  const handleEditGateway = async (e: React.FormEvent) => {
+  const handleEditGateway = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedGatewayId) return;
     try {
