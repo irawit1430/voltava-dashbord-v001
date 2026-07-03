@@ -15,8 +15,11 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 // Initialize Firebase Admin (will pick up GOOGLE_APPLICATION_CREDENTIALS automatically)
 try {
-  if (!getApps().length) {
+  const hasCreds = !!process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (hasCreds && !getApps().length) {
     initializeApp();
+  } else if (!hasCreds) {
+    console.warn("GOOGLE_APPLICATION_CREDENTIALS not set. Running with fallback local allowlist.");
   }
 } catch (e) {
   console.warn("Firebase Admin initialization failed. Ensure GOOGLE_APPLICATION_CREDENTIALS is set.");
