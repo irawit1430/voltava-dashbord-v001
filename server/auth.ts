@@ -10,18 +10,19 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { AUTH_CONFIG } from './config.js';
 import type { User, AuthPayload } from './types.js';
-import * as admin from 'firebase-admin';
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 // Initialize Firebase Admin (will pick up GOOGLE_APPLICATION_CREDENTIALS automatically)
 try {
-  if (!admin.apps.length) {
-    admin.initializeApp();
+  if (!getApps().length) {
+    initializeApp();
   }
 } catch (e) {
   console.warn("Firebase Admin initialization failed. Ensure GOOGLE_APPLICATION_CREDENTIALS is set.");
 }
 
-const db = admin.apps.length ? admin.firestore() : null;
+const db = getApps().length ? getFirestore() : null;
 
 let cachedAllowlist: string[] = AUTH_CONFIG.ALLOWED_EMAILS;
 
