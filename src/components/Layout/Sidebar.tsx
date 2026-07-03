@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   LayoutDashboard, 
   Cpu, 
@@ -18,14 +18,24 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
-  const menuItems = [
+  const menuItems = useMemo(() => [
     { id: 'overview', name: 'Overview', icon: LayoutDashboard, category: 'General' },
     { id: 'devices', name: 'Device Registry', icon: Cpu, category: 'General' },
     { id: 'fleet', name: 'Fleet Mobility', icon: Truck, category: 'Modules' },
     { id: 'grid', name: 'Grid & Solar', icon: Zap, category: 'Modules' },
     { id: 'simulator', name: 'BESS Simulator', icon: Calculator, category: 'Optimization' },
     { id: 'ai', name: 'AI Energy Brain', icon: Brain, category: 'Optimization' },
-  ];
+  ], []);
+
+  const groupedMenuItems = useMemo(() => {
+    return menuItems.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    }, {} as Record<string, typeof menuItems>);
+  }, [menuItems]);
 
   return (
     <aside style={styles.sidebar}>
@@ -47,7 +57,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       {/* Navigation Groups */}
       <nav style={styles.nav}>
         {['General', 'Modules', 'Optimization'].map((category) => {
-          const items = menuItems.filter(item => item.category === category);
+          const items = groupedMenuItems[category] || [];
           return (
             <div key={category} style={styles.navGroup}>
               <h2 style={styles.groupHeader}>{category}</h2>
