@@ -4,7 +4,7 @@ import { Users, UserPlus, Trash2, Shield, AlertCircle, CheckCircle2 } from 'luci
 import './AccessControl.css';
 
 export default function AccessControl() {
-  const { token, user: currentUser } = useAuth();
+  const { token, user: currentUser, logout } = useAuth();
   const [emails, setEmails] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +26,10 @@ export default function AccessControl() {
           'Authorization': `Bearer ${token}`
         }
       });
+      if (res.status === 401) {
+        logout();
+        return;
+      }
       if (!res.ok) throw new Error('Failed to load allowed emails');
       const data = await res.json();
       setEmails(data.emails);
@@ -59,7 +63,12 @@ export default function AccessControl() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to add email');
+        if (res.status === 401) {
+          logout();
+          return;
+        }
+        const errorMessage = typeof data.error === 'object' ? data.error.message : data.error;
+        throw new Error(errorMessage || 'Failed to add email');
       }
 
       setEmails(data.emails);
@@ -99,7 +108,12 @@ export default function AccessControl() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to revoke access');
+        if (res.status === 401) {
+          logout();
+          return;
+        }
+        const errorMessage = typeof data.error === 'object' ? data.error.message : data.error;
+        throw new Error(errorMessage || 'Failed to revoke access');
       }
 
       setEmails(data.emails);
