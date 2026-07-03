@@ -36,9 +36,15 @@ export default function Navbar({ activeTab, devices, onSelectDevice }: NavbarPro
   const dropdownRef = useRef<HTMLDivElement>(null);
   const previousDevicesRef = useRef<Device[]>([]);
 
-  const onlineCount = devices.filter(d => d.status === 'online').length;
-  const warningCount = devices.filter(d => d.status === 'warning').length;
-  const faultCount = devices.filter(d => d.status === 'fault').length;
+  const { onlineCount, warningCount, faultCount } = devices.reduce(
+    (acc, d) => {
+      if (d.status === 'online') acc.onlineCount++;
+      else if (d.status === 'warning') acc.warningCount++;
+      else if (d.status === 'fault') acc.faultCount++;
+      return acc;
+    },
+    { onlineCount: 0, warningCount: 0, faultCount: 0 }
+  );
 
   // Sync devices changes to notifications
   useEffect(() => {
