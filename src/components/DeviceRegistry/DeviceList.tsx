@@ -168,18 +168,25 @@ export default function DeviceList({ devices, onSelectDevice }: DeviceListProps)
                 filteredDevices.map((device) => {
                   // Select telemetry summaries based on device type
                   let primaryTelem = '';
-                  if (device.type === 'bms') {
-                    primaryTelem = `SOC: ${device.telemetry.soc}% | ${device.telemetry.temp}°C`;
-                  } else if (device.type === 'solar') {
-                    primaryTelem = `${device.telemetry.activePower || 0} kW Gen`;
-                  } else if (device.type === 'bess') {
-                    primaryTelem = `SOC: ${device.telemetry.soc}% | ${Math.abs(device.telemetry.activePower || 0)} kW ${device.telemetry.activePower && device.telemetry.activePower > 0 ? 'Discharging' : 'Charging'}`;
-                  } else if (device.type === 'meter') {
-                    primaryTelem = `${device.telemetry.activePower || 0} kW Load`;
-                  } else if (device.type === 'charger') {
-                    primaryTelem = `${device.telemetry.activePower || 0} kW Charging`;
-                  } else if (device.type === 'telematics') {
-                    primaryTelem = `Batt: ${device.telemetry.voltage} V`;
+                  switch (device.type) {
+                    case 'bms':
+                      primaryTelem = `SOC: ${device.telemetry.soc}% | ${device.telemetry.temp}°C`;
+                      break;
+                    case 'solar':
+                      primaryTelem = `${device.telemetry.activePower || 0} kW Gen`;
+                      break;
+                    case 'bess':
+                      primaryTelem = `SOC: ${device.telemetry.soc}% | ${Math.abs(device.telemetry.activePower || 0)} kW ${device.telemetry.activePower && device.telemetry.activePower > 0 ? 'Discharging' : 'Charging'}`;
+                      break;
+                    case 'meter':
+                      primaryTelem = `${device.telemetry.activePower || 0} kW Load`;
+                      break;
+                    case 'charger':
+                      primaryTelem = `${device.telemetry.activePower || 0} kW Charging`;
+                      break;
+                    case 'telematics':
+                      primaryTelem = `Batt: ${device.telemetry.voltage} V`;
+                      break;
                   }
 
                   return (
