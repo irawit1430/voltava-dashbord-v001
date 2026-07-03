@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -78,14 +79,27 @@ export function disconnectUserWs(email: string) {
   }
 }
 
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('hex');
+  next();
+});
+
 app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+      scriptSrc: [
+        "'self'",
+        (req, res) => `'nonce-${(res as any).locals.nonce}'`,
+        "https://accounts.google.com"
+      ],
+      styleSrc: [
+        "'self'",
+        (req, res) => `'nonce-${(res as any).locals.nonce}'`,
+        "https://accounts.google.com"
+      ],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'", "wss:", "ws:", "https://accounts.google.com"],
       frameSrc: ["'self'", "https://accounts.google.com"],
@@ -451,11 +465,14 @@ app.post('/api/gateways/:id/scan', (req, res) => {
 // Serve static assets in production if built
 const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, { index: false }));
   app.get('*', (req, res) => {
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
+      let html = fs.readFileSync(indexPath, 'utf8');
+      html = html.replace(/<script /g, `<script nonce="${res.locals.nonce}" `);
+      html = html.replace(/<style /g, `<style nonce="${res.locals.nonce}" `);
+      res.send(html);
     } else {
       res.status(404).send('Not Found');
     }
