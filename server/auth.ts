@@ -10,45 +10,52 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { AUTH_CONFIG } from './config.js';
 import type { User, AuthPayload } from './types.js';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import * as admin from 'firebase-admin';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ALLOWLIST_FILE = path.resolve(__dirname, 'allowlist.json');
+// Initialize Firebase Admin (will pick up GOOGLE_APPLICATION_CREDENTIALS automatically)
+try {
+  if (!admin.apps.length) {
+    admin.initializeApp();
+  }
+} catch (e) {
+  console.warn("Firebase Admin initialization failed. Ensure GOOGLE_APPLICATION_CREDENTIALS is set.");
+}
 
-/**
- * Retrieves the list of allowed emails from the allowlist file.
- * Falls back to the default configuration if the file is missing or unreadable.
- */
-export function getAllowedEmails(): string[] {
+const db = admin.apps.length ? admin.firestore() : null;
+
+let cachedAllowlist: string[] = AUTH_CONFIG.ALLOWED_EMAILS;
+
+export async function syncAllowlistFromFirestore() {
+  if (!db) {
+    console.warn("Firestore not available. Using fallback allowlist.");
+    return;
+  }
   try {
-    if (fs.existsSync(ALLOWLIST_FILE)) {
-      return JSON.parse(fs.readFileSync(ALLOWLIST_FILE, 'utf-8'));
+    const doc = await db.collection('config').doc('allowlist').get();
+    if (doc.exists) {
+      cachedAllowlist = doc.data()?.emails || AUTH_CONFIG.ALLOWED_EMAILS;
+    } else {
+      // Initialize if missing
+      await saveAllowedEmails(AUTH_CONFIG.ALLOWED_EMAILS);
     }
+    console.log("Allowlist synced from Firestore:", cachedAllowlist.length, "users");
   } catch (err) {
-    console.error('Error reading allowlist file:', err);
+    console.error('Error reading allowlist from Firestore:', err);
   }
-  return AUTH_CONFIG.ALLOWED_EMAILS;
 }
 
-/**
- * Saves a new list of allowed emails to the allowlist file.
- * 
- * @param emails The updated list of allowed email addresses
- */
-export function saveAllowedEmails(emails: string[]): void {
+export function getAllowedEmails(): string[] {
+  return cachedAllowlist;
+}
+
+export async function saveAllowedEmails(emails: string[]): Promise<void> {
+  cachedAllowlist = emails;
+  if (!db) return;
   try {
-    fs.writeFileSync(ALLOWLIST_FILE, JSON.stringify(emails, null, 2), 'utf-8');
+    await db.collection('config').doc('allowlist').set({ emails });
   } catch (err) {
-    console.error('Error writing allowlist file:', err);
+    console.error('Error writing allowlist to Firestore:', err);
   }
-}
-
-// Initialise allowlist file if it doesn't exist
-if (!fs.existsSync(ALLOWLIST_FILE)) {
-  saveAllowedEmails(AUTH_CONFIG.ALLOWED_EMAILS);
 }
 
 

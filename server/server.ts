@@ -15,6 +15,7 @@ import {
   authenticateWs,
   getAllowedEmails,
   saveAllowedEmails,
+  syncAllowlistFromFirestore
 } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -235,7 +236,7 @@ app.get('/api/auth/allowlist', requireAuth, (req, res) => {
  * POST /api/auth/allowlist
  * Adds a new email address to the authorized list.
  */
-app.post('/api/auth/allowlist', requireAuth, (req, res) => {
+app.post('/api/auth/allowlist', requireAuth, async (req, res) => {
   const { email } = req.body;
   if (typeof email !== 'string' || !email.includes('@')) {
     return res.status(400).json({ error: 'Invalid email format' });
@@ -246,7 +247,7 @@ app.post('/api/auth/allowlist', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'Email is already authorized' });
   }
   const updatedEmails = [...emails, targetEmail];
-  saveAllowedEmails(updatedEmails);
+  await saveAllowedEmails(updatedEmails);
   res.json({ success: true, emails: updatedEmails });
 });
 
@@ -255,7 +256,7 @@ app.post('/api/auth/allowlist', requireAuth, (req, res) => {
  * Removes an email address from the authorized list.
  * Safe checks: Cannot delete primary admin (anuirawit@gmail.com) or own logged-in email.
  */
-app.delete('/api/auth/allowlist/:email', requireAuth, (req, res) => {
+app.delete('/api/auth/allowlist/:email', requireAuth, async (req, res) => {
   const targetEmail = req.params.email.trim().toLowerCase();
   const emails = getAllowedEmails();
   if (!emails.includes(targetEmail)) {
@@ -268,7 +269,7 @@ app.delete('/api/auth/allowlist/:email', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'Cannot remove your own email while logged in' });
   }
   const updatedEmails = emails.filter(e => e !== targetEmail);
-  saveAllowedEmails(updatedEmails);
+  await saveAllowedEmails(updatedEmails);
 
   disconnectUserWs(targetEmail);
 
@@ -566,8 +567,12 @@ if (process.env.NODE_ENV !== 'test') {
     }
   }, 2000);
 
-  // Boot server
-  server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+  // Sync allowlist and boot server
+  syncAllowlistFromFirestore().then(() => {
+    server.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
+  }).catch(err => {
+    console.error("Failed to start server due to Firestore sync error", err);
   });
 }
