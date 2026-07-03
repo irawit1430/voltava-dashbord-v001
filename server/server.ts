@@ -68,6 +68,8 @@ export const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(helmet({
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
