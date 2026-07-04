@@ -167,7 +167,7 @@ export default function Navbar({ activeTab, devices, onSelectDevice, isMobileMen
     <header className="navbar glass-panel">
       {/* Title */}
       <div className="navbar-left">
-        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+        <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle mobile menu">
           <Menu size={24} color="var(--text-primary)" />
         </button>
         <div>

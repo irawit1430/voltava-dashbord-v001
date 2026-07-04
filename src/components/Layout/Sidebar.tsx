@@ -46,7 +46,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
             <h1 style={styles.logoText}>VOLTAVA</h1>
             <span style={styles.logoSubtitle}>Energy Intelligence</span>
           </div>
-          <button className="mobile-close-btn" onClick={() => setIsOpen(false)}>
+          <button className="mobile-close-btn" onClick={() => setIsOpen(false)} aria-label="Close sidebar">
             <X size={20} />
           </button>
         </div>
