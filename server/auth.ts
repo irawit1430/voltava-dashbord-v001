@@ -219,7 +219,7 @@ export function requireAuth(
  * Authenticates a WebSocket connection by extracting the `token`
  * query parameter from the connection URL.
  *
- * @param url  The raw request URL (e.g. `/ws?token=xxx`).
+ * @param url  The raw request URL (e.g. `/ws?token=abc123xyz`).
  * @returns    The authenticated `User`, or `null` if invalid.
  */
 export function authenticateWs(url: string): User | null {
