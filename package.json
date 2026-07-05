@@ -16,6 +16,7 @@
     "start": "npx tsx server/server.ts"
   },
   "dependencies": {
+    "@google/genai": "^2.10.0",
     "@react-oauth/google": "^0.13.5",
     "@types/jsonwebtoken": "^9.0.10",
     "cors": "^2.8.5",

@@ -12,6 +12,7 @@ import CostSavingsSimulator from './components/Simulator/CostSavingsSimulator';
 import HealthPredictor from './components/AIBrain/HealthPredictor';
 import GatewayConfig from './components/GatewayConfig/GatewayConfig';
 import AccessControl from './components/Auth/AccessControl';
+import { AIAssistant } from './components/ai/AIAssistant';
 import { useTelemetry } from './hooks/useTelemetry';
 import type { Device } from './types';
 
@@ -150,6 +151,9 @@ function App() {
           onPingGateway={pingGateway}
         />
       )}
+
+      {/* AI Assistant Overlay */}
+      <AIAssistant />
     </div>
   );
 }
