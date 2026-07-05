@@ -739,6 +739,15 @@ export function triggerOtaUpdate(id: string) {
   }, 6000);
 }
 
+export function updateDeviceAIPrediction(id: string, prediction: any) {
+  devices = devices.map(d => {
+    if (d.id === id) {
+      return { ...d, aiPredictions: prediction };
+    }
+    return d;
+  });
+}
+
 export function toggleMosfet(id: string) {
   let resultingMosfet: 'on' | 'off' = 'on';
   devices = devices.map(d => {

@@ -28,3 +28,9 @@ coverage/
 .env
 .env.local
 .env.production
+
+# Python virtual environment
+venv/
+.venv/
+__pycache__/
+*.pyc

@@ -15,7 +15,8 @@ import {
   authenticateWs,
   getAllowedEmails,
   saveAllowedEmails,
-  syncAllowlistFromFirestore
+  syncAllowlistFromFirestore,
+  db
 } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -51,6 +52,7 @@ import {
   historyMap, 
   initHistory, 
   simulateStep, 
+  updateDeviceAIPrediction,
   triggerOtaUpdate, 
   toggleMosfet,
   gateways,
@@ -404,15 +406,66 @@ app.get('/api/grid-metrics', (req, res) => {
   res.json(gridMetrics);
 });
 
-// AI Endpoints
-app.post('/api/ai/query', async (req, res) => {
+// AI Endpoints (Protected)
+app.get('/api/ai/anomalies', async (req, res) => {
   try {
-    const { prompt, history } = req.body;
+    const response = await fetch('http://127.0.0.1:8000/anomalies');
+    if (response.ok) {
+      const data = await response.json();
+      res.json(data);
+    } else {
+      res.status(500).json({ error: 'Failed to fetch anomalies' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'AI service unavailable' });
+  }
+});
+
+app.get('/api/ai/history', requireAuth, async (req, res) => {
+  try {
+    if (!db || !req.user) return res.json({ history: [] });
+    
+    const doc = await db.collection('chatHistory').doc(req.user.email).get();
+    if (doc.exists) {
+      res.json({ history: doc.data()?.messages || [] });
+    } else {
+      res.json({ history: [] });
+    }
+  } catch (error) {
+    console.error("AI History fetch error:", error);
+    res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+app.post('/api/ai/query', requireAuth, async (req, res) => {
+  try {
+    const { prompt } = req.body;
     if (!prompt || typeof prompt !== 'string') {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
+    let history: any[] = [];
+    if (db && req.user) {
+      const doc = await db.collection('chatHistory').doc(req.user.email).get();
+      if (doc.exists) {
+        history = doc.data()?.messages || [];
+      }
+    }
+
+    // Append user prompt to history for context
+    history.push({ role: 'user', content: prompt });
+
+    // Generate response
     const answer = await generateAIResponse(prompt, history);
+
+    // Append assistant response
+    history.push({ role: 'assistant', content: answer });
+
+    // Save back to Firestore
+    if (db && req.user) {
+      await db.collection('chatHistory').doc(req.user.email).set({ messages: history }, { merge: true });
+    }
+
     res.json({ answer });
   } catch (error: any) {
     console.error("AI Query Error:", error);
@@ -573,12 +626,40 @@ function broadcastTelemetry() {
 
 // Start simulation loop (every 2 seconds)
 if (process.env.NODE_ENV !== 'test') {
-  setInterval(() => {
+  setInterval(async () => {
     try {
       simulateStep();
     } catch (err) {
       console.error('simulateStep() threw:', err);
     }
+
+    try {
+      for (const device of devices) {
+        if (device.telemetry && device.telemetry.cellVoltages) {
+          const res = await fetch('http://127.0.0.1:8000/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              deviceId: device.id,
+              voltage: device.telemetry.voltage,
+              current: device.telemetry.current,
+              soc: device.telemetry.soc,
+              soh: device.telemetry.soh,
+              temp: device.telemetry.temp,
+              cellVoltages: device.telemetry.cellVoltages,
+              cellTemps: device.telemetry.cellTemps
+            })
+          });
+          if (res.ok) {
+            const prediction = await res.json();
+            updateDeviceAIPrediction(device.id, prediction);
+          }
+        }
+      }
+    } catch (err: any) {
+      // console.error('AI prediction fetch threw:', err.message || err);
+    }
+
     try {
       broadcastTelemetry();
     } catch (err) {

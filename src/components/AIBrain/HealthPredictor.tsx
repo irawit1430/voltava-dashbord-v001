@@ -17,37 +17,24 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
     return 'var(--accent-green)';
   };
 
-  // Mock timeline of recent anomalies detected by AI models
-  const anomaliesTimeline = [
-    {
-      time: '10 mins ago',
-      device: 'NCR Express Loader 03',
-      type: 'Thermal Anomaly',
-      desc: 'BMS Cell #7 temperature rose to 71°C while ambient was 38°C. Delta exceeds 3-sigma thresholds. MOSFET automatically tripped.',
-      severity: 'high',
-    },
-    {
-      time: '1 hour ago',
-      device: 'Bihar Fleet Rickshaw 02',
-      type: 'Impedance Shift',
-      desc: 'Cell #4 internal resistance increased by 8.4% compared to pack baseline. Expected capacity imbalance within 12 charge cycles.',
-      severity: 'medium',
-    },
-    {
-      time: '3 hours ago',
-      device: 'DC Charger Noida Hub',
-      type: 'Connector Wear',
-      desc: 'Connector thermal sensor shows rapid rise delta during charging session (+4.8°C/min). Recommended inspection for pin degradation.',
-      severity: 'medium',
-    },
-    {
-      time: '12 hours ago',
-      device: 'Factory BESS Control 01',
-      type: 'Aging Projection',
-      desc: 'Completed 1200 cycles. Capacity fade model projects RUL of 4,100 cycles before reaching 80% SOH. Balance charging suggested.',
-      severity: 'low',
-    }
-  ];
+  const [anomaliesTimeline, setAnomaliesTimeline] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchAnomalies = async () => {
+      try {
+        const res = await fetch('/api/ai/anomalies');
+        if (res.ok) {
+          const data = await res.json();
+          setAnomaliesTimeline(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch anomalies', err);
+      }
+    };
+    fetchAnomalies();
+    const interval = setInterval(fetchAnomalies, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div style={styles.container}>

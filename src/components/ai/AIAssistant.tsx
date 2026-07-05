@@ -17,6 +17,8 @@ export const AIAssistant: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [isHistoryFetched, setIsHistoryFetched] = useState(false);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -26,6 +28,40 @@ export const AIAssistant: React.FC = () => {
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const token = localStorage.getItem('sessionToken');
+      if (!token || isHistoryFetched) return;
+
+      try {
+        const res = await fetch('/api/ai/history', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.history && data.history.length > 0) {
+            setMessages([
+              { id: '1', role: 'assistant', content: 'Hi there! I am your Voltava AI Assistant. Ask me anything about the current status of your devices.' },
+              ...data.history.map((m: any, i: number) => ({
+                id: `history-${i}`,
+                role: m.role,
+                content: m.content
+              }))
+            ]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch chat history', err);
+      } finally {
+        setIsHistoryFetched(true);
+      }
+    };
+
+    if (isOpen) {
+      fetchHistory();
+    }
+  }, [isOpen, isHistoryFetched]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +80,6 @@ export const AIAssistant: React.FC = () => {
     try {
       // In development, might need full URL if not proxied
       const token = localStorage.getItem('sessionToken');
-      const history = messages.map(m => ({ role: m.role, content: m.content }));
       
       const response = await fetch('/api/ai/query', {
         method: 'POST',
@@ -53,8 +88,7 @@ export const AIAssistant: React.FC = () => {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({ 
-          prompt: userMessage.content,
-          history
+          prompt: userMessage.content
         })
       });
 

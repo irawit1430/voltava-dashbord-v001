@@ -25,7 +25,7 @@ try {
   console.warn("Firebase Admin initialization failed. Ensure GOOGLE_APPLICATION_CREDENTIALS is set.");
 }
 
-const db = getApps().length ? getFirestore() : null;
+export const db = getApps().length ? getFirestore() : null;
 
 let cachedAllowlist: string[] = AUTH_CONFIG.ALLOWED_EMAILS;
 

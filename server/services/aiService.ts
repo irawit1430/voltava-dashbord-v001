@@ -184,7 +184,7 @@ export async function generateAIResponse(
     contents.push({ role: 'user', parts: [{ text: prompt }] });
 
     let response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash',
       contents: contents,
       config: {
         systemInstruction,
@@ -223,7 +223,7 @@ export async function generateAIResponse(
       
       // Call generateContent again
       response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.5-flash',
         contents: contents,
         config: {
           systemInstruction,
