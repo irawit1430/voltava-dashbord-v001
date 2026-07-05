@@ -149,7 +149,8 @@ export default function AccessControl() {
         )}
 
         <form onSubmit={handleAddEmail} className="access-form">
-          <input
+          <label htmlFor="newEmail" className="sr-only">New User Email</label>
+          <input id="newEmail"
             type="email"
             placeholder="new.user@gmail.com"
             value={newEmail}
