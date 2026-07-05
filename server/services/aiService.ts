@@ -113,17 +113,17 @@ async function executeFunction(name: string, args: any): Promise<any> {
   console.log(`Executing tool: ${name}`, args);
   try {
     switch (name) {
-      case 'getAllDevices': return devices;
+      case 'getAllDevices': return { devices };
       case 'getDeviceById': {
         const device = devices.find(d => d.id === args.id);
-        return device ? device : { error: `Device ${args.id} not found` };
+        return device ? { device } : { error: `Device ${args.id} not found` };
       }
-      case 'getGridMetrics': return gridMetrics;
-      case 'getAllGateways': return gateways;
-      case 'getAllDevicesHistory': return historyMap;
+      case 'getGridMetrics': return { gridMetrics };
+      case 'getAllGateways': return { gateways };
+      case 'getAllDevicesHistory': return { historyMap };
       case 'getDeviceHistoryById': {
         const history = historyMap[args.id];
-        return history ? history : { error: `History for device ${args.id} not found` };
+        return history ? { history } : { error: `History for device ${args.id} not found` };
       }
       case 'triggerOtaUpdate': {
         triggerOtaUpdate(args.id);

@@ -67,6 +67,7 @@ import { generateAIResponse } from './services/aiService.js';
 initHistory();
 
 export const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render load balancer)
 const port = process.env.PORT || 5000;
 
 const activeClients = new Map<string, Set<WebSocket>>();
