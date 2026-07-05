@@ -375,9 +375,8 @@ export default function GatewayConfig({
               <form onSubmit={handleAddGateway} className="gw-form">
                 <div className="gw-form-grid">
                   <div className="gw-form-group">
-                    <label className="gw-label">Gateway Name</label>
-                    <input 
-                      type="text" 
+                    <label htmlFor="new-gw-name" className="gw-label">Gateway Name</label>
+                    <input id="new-gw-name" type="text"
                       required
                       placeholder="e.g. Haryana BESS Modbus RTU" 
                       value={newGw.name}
@@ -387,8 +386,8 @@ export default function GatewayConfig({
                   </div>
 
                   <div className="gw-form-group">
-                    <label className="gw-label">Protocol Type</label>
-                    <select
+                    <label htmlFor="new-gw-protocol" className="gw-label">Protocol Type</label>
+                    <select id="new-gw-protocol"
                       value={newGw.protocol}
                       onChange={(e) => setNewGw(prev => ({ ...prev, protocol: e.target.value as GatewayProtocol }))}
                       className="gw-select"
@@ -402,8 +401,8 @@ export default function GatewayConfig({
                   </div>
 
                   <div className="gw-form-group">
-                    <label className="gw-label">Connection Medium</label>
-                    <select
+                    <label htmlFor="new-gw-connection" className="gw-label">Connection Medium</label>
+                    <select id="new-gw-connection"
                       value={newGw.connectionType}
                       onChange={(e) => setNewGw(prev => ({ ...prev, connectionType: e.target.value as 'tcp' | 'serial' }))}
                       className="gw-select"
@@ -414,9 +413,8 @@ export default function GatewayConfig({
                   </div>
 
                   <div className="gw-form-group">
-                    <label className="gw-label">Polling Interval (seconds)</label>
-                    <input 
-                      type="number" 
+                    <label htmlFor="new-gw-polling" className="gw-label">Polling Interval (seconds)</label>
+                    <input id="new-gw-polling" type="number"
                       min="1" 
                       max="300"
                       value={newGw.pollingInterval}
@@ -428,9 +426,8 @@ export default function GatewayConfig({
                   {newGw.connectionType === 'tcp' ? (
                     <>
                       <div className="gw-form-group">
-                        <label className="gw-label">IP Address</label>
-                        <input 
-                          type="text" 
+                        <label htmlFor="new-gw-ip" className="gw-label">IP Address</label>
+                        <input id="new-gw-ip" type="text"
                           placeholder="192.168.1.100" 
                           value={newGw.ipAddress}
                           onChange={(e) => setNewGw(prev => ({ ...prev, ipAddress: e.target.value }))}
@@ -438,9 +435,8 @@ export default function GatewayConfig({
                         />
                       </div>
                       <div className="gw-form-group">
-                        <label className="gw-label">TCP Port</label>
-                        <input 
-                          type="number" 
+                        <label htmlFor="new-gw-port" className="gw-label">TCP Port</label>
+                        <input id="new-gw-port" type="number"
                           placeholder="502" 
                           value={newGw.port}
                           onChange={(e) => setNewGw(prev => ({ ...prev, port: Number(e.target.value) }))}
@@ -451,9 +447,8 @@ export default function GatewayConfig({
                   ) : (
                     <>
                       <div className="gw-form-group">
-                        <label className="gw-label">Serial Port Name</label>
-                        <input 
-                          type="text" 
+                        <label htmlFor="new-gw-serial" className="gw-label">Serial Port Name</label>
+                        <input id="new-gw-serial" type="text"
                           placeholder="COM3 or /dev/ttyUSB0" 
                           value={newGw.serialPort}
                           onChange={(e) => setNewGw(prev => ({ ...prev, serialPort: e.target.value }))}
@@ -461,8 +456,8 @@ export default function GatewayConfig({
                         />
                       </div>
                       <div className="gw-form-group">
-                        <label className="gw-label">Baud Rate</label>
-                        <select
+                        <label htmlFor="new-gw-baud" className="gw-label">Baud Rate</label>
+                        <select id="new-gw-baud"
                           value={newGw.baudRate}
                           onChange={(e) => setNewGw(prev => ({ ...prev, baudRate: Number(e.target.value) }))}
                           className="gw-select"
@@ -486,9 +481,8 @@ export default function GatewayConfig({
                     {(() => {
                       const connectedSet = new Set(newGw.connectedDevices);
                       return devices.filter(d => !d.gatewayId).map(d => (
-                      <label key={d.id} className="gw-check-label">
-                        <input 
-                          type="checkbox"
+                      <label key={d.id} htmlFor={`new-gw-device-${d.id}`} className="gw-check-label">
+                        <input id={`new-gw-device-${d.id}`} type="checkbox"
                           checked={connectedSet.has(d.id)}
                           onChange={(e) => {
                             if (e.target.checked) {
@@ -566,10 +560,8 @@ export default function GatewayConfig({
                   <form onSubmit={handleEditGateway} className="gw-form" style={{ padding: '1rem 0 0 0' }}>
                     <div className="gw-form-grid">
                       <div className="gw-form-group">
-                        <label className="gw-label">Gateway Name</label>
-                        <input 
-                          type="text" 
-                          required
+                        <label htmlFor="edit-gw-name" className="gw-label">Gateway Name</label>
+                        <input id="edit-gw-name" type="text" required
                           value={editGw.name}
                           onChange={(e) => setEditGw(prev => ({ ...prev, name: e.target.value }))}
                           className="gw-input"
@@ -577,11 +569,8 @@ export default function GatewayConfig({
                       </div>
 
                       <div className="gw-form-group">
-                        <label className="gw-label">Polling Interval (seconds)</label>
-                        <input 
-                          type="number" 
-                          min="1" 
-                          max="300"
+                        <label htmlFor="edit-gw-polling" className="gw-label">Polling Interval (seconds)</label>
+                        <input id="edit-gw-polling" type="number" min="1" max="300"
                           value={editGw.pollingInterval}
                           onChange={(e) => setEditGw(prev => ({ ...prev, pollingInterval: Number(e.target.value) }))}
                           className="gw-input"
@@ -591,18 +580,16 @@ export default function GatewayConfig({
                       {selectedGateway.connectionType === 'tcp' ? (
                         <>
                           <div className="gw-form-group">
-                            <label className="gw-label">IP Address</label>
-                            <input 
-                              type="text" 
+                            <label htmlFor="edit-gw-ip" className="gw-label">IP Address</label>
+                            <input id="edit-gw-ip" type="text"
                               value={editGw.ipAddress}
                               onChange={(e) => setEditGw(prev => ({ ...prev, ipAddress: e.target.value }))}
                               className="gw-input"
                             />
                           </div>
                           <div className="gw-form-group">
-                            <label className="gw-label">TCP Port</label>
-                            <input 
-                              type="number" 
+                            <label htmlFor="edit-gw-port" className="gw-label">TCP Port</label>
+                            <input id="edit-gw-port" type="number"
                               value={editGw.port}
                               onChange={(e) => setEditGw(prev => ({ ...prev, port: Number(e.target.value) }))}
                               className="gw-input"
@@ -612,17 +599,16 @@ export default function GatewayConfig({
                       ) : (
                         <>
                           <div className="gw-form-group">
-                            <label className="gw-label">Serial Port Name</label>
-                            <input 
-                              type="text" 
+                            <label htmlFor="edit-gw-serial" className="gw-label">Serial Port Name</label>
+                            <input id="edit-gw-serial" type="text"
                               value={editGw.serialPort}
                               onChange={(e) => setEditGw(prev => ({ ...prev, serialPort: e.target.value }))}
                               className="gw-input"
                             />
                           </div>
                           <div className="gw-form-group">
-                            <label className="gw-label">Baud Rate</label>
-                            <select
+                            <label htmlFor="edit-gw-baud" className="gw-label">Baud Rate</label>
+                            <select id="edit-gw-baud"
                               value={editGw.baudRate}
                               onChange={(e) => setEditGw(prev => ({ ...prev, baudRate: Number(e.target.value) }))}
                               className="gw-select"
@@ -652,9 +638,8 @@ export default function GatewayConfig({
                           if (isLinkedElsewhere) return null; // hide devices already bound to other gateways
                           
                           return (
-                            <label key={d.id} className="gw-check-label">
-                              <input 
-                                type="checkbox"
+                            <label key={d.id} htmlFor={`edit-gw-device-${d.id}`} className="gw-check-label">
+                              <input id={`edit-gw-device-${d.id}`} type="checkbox"
                                 checked={isCurrentlySelected}
                                 onChange={(e) => {
                                   if (e.target.checked) {
