@@ -67,6 +67,20 @@ describe('HealthPredictor Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([
+          {
+            time: '10 mins ago',
+            device: 'NCR Express Loader 03',
+            type: 'Thermal Anomaly',
+            desc: 'BMS Cell #7 temperature rose to 71°C while ambient was 38°C. Delta exceeds 3-sigma thresholds. MOSFET automatically tripped.',
+            severity: 'high',
+          }
+        ])
+      })
+    ) as any;
   });
 
   it('renders the dashboard banner', () => {
@@ -75,11 +89,11 @@ describe('HealthPredictor Component', () => {
     expect(screen.getByText(/Runs continuous neural network inference on raw IoT telemetry packets/i)).toBeInTheDocument();
   });
 
-  it('renders AI inference logs timeline', () => {
+  it('renders AI inference logs timeline', async () => {
     render(<HealthPredictor devices={[]} onInspectDevice={mockOnInspectDevice} />);
     expect(screen.getByText('AI Inference Logs')).toBeInTheDocument();
-    expect(screen.getByText('NCR Express Loader 03')).toBeInTheDocument();
-    expect(screen.getByText('Thermal Anomaly')).toBeInTheDocument();
+    expect(await screen.findByText('NCR Express Loader 03')).toBeInTheDocument();
+    expect(await screen.findByText('Thermal Anomaly')).toBeInTheDocument();
   });
 
   it('only renders devices that have AI predictions', () => {

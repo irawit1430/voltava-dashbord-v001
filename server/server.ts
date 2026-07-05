@@ -452,13 +452,17 @@ app.post('/api/ai/query', requireAuth, async (req, res) => {
       }
     }
 
-    // Append user prompt to history for context
+    // Limit context history to the last 10 messages for token cost optimization
+    const contextHistory = history.slice(-10);
+
+    // Append user prompt to both histories
     history.push({ role: 'user', content: prompt });
+    contextHistory.push({ role: 'user', content: prompt });
 
-    // Generate response
-    const answer = await generateAIResponse(prompt, history);
+    // Generate response using truncated context
+    const answer = await generateAIResponse(prompt, contextHistory);
 
-    // Append assistant response
+    // Append assistant response to full history
     history.push({ role: 'assistant', content: answer });
 
     // Save back to Firestore
@@ -626,13 +630,22 @@ function broadcastTelemetry() {
 
 // Start simulation loop (every 2 seconds)
 if (process.env.NODE_ENV !== 'test') {
-  setInterval(async () => {
+  setInterval(() => {
     try {
       simulateStep();
     } catch (err) {
       console.error('simulateStep() threw:', err);
     }
 
+    try {
+      broadcastTelemetry();
+    } catch (err) {
+      console.error('broadcastTelemetry() threw:', err);
+    }
+  }, 2000);
+
+  // Fetch AI predictions every 30 seconds to be cost-effective
+  setInterval(async () => {
     try {
       for (const device of devices) {
         if (device.telemetry && device.telemetry.cellVoltages) {
@@ -659,13 +672,7 @@ if (process.env.NODE_ENV !== 'test') {
     } catch (err: any) {
       // console.error('AI prediction fetch threw:', err.message || err);
     }
-
-    try {
-      broadcastTelemetry();
-    } catch (err) {
-      console.error('broadcastTelemetry() threw:', err);
-    }
-  }, 2000);
+  }, 30000);
 
   // Sync allowlist and boot server
   syncAllowlistFromFirestore().then(() => {

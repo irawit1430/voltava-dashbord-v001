@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+vi.mock('dotenv', () => ({
+  default: {
+    config: () => ({ parsed: {} })
+  }
+}));
+
 describe('config.ts', () => {
-  const originalEnv = process.env;
+  const originalEnv = { ...process.env };
 
   beforeEach(() => {
     vi.resetModules();
