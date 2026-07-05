@@ -60,7 +60,8 @@ import {
   pingGateway,
   scanGatewayBus,
   addOrUpdateExternalDevice
-} from './simulator';
+} from './simulator.js';
+import { generateAIResponse } from './services/aiService.js';
 
 // Initialize history
 initHistory();
@@ -276,14 +277,6 @@ app.delete('/api/auth/allowlist/:email', requireAuth, async (req, res) => {
   res.json({ success: true, emails: updatedEmails });
 });
 
-// ---------------------------------------------------------
-// Protect all downstream API routes with requireAuth
-// ---------------------------------------------------------
-app.use('/api/devices', requireAuth);
-app.use('/api/gateways', requireAuth);
-app.use('/api/grid-metrics', requireAuth);
-
-
 function isValidPayload(payload: any): boolean {
   if (typeof payload !== 'object' || payload === null) return false;
 
@@ -316,7 +309,7 @@ function isValidPayload(payload: any): boolean {
   return true;
 }
 
-// API Endpoints
+// API Endpoints (Unprotected)
 app.post('/api/devices/ingest', (req, res) => {
   const { id, payload } = req.body;
   if (typeof id !== 'string' || !id || !payload || !isValidPayload(payload)) {
@@ -326,6 +319,15 @@ app.post('/api/devices/ingest', (req, res) => {
   broadcastTelemetry();
   res.json({ success: true, message: `Telemetry updated for device ${id}` });
 });
+
+// ---------------------------------------------------------
+// Protect all downstream API routes with requireAuth
+// ---------------------------------------------------------
+app.use('/api/devices', requireAuth);
+app.use('/api/gateways', requireAuth);
+app.use('/api/grid-metrics', requireAuth);
+
+
 
 app.get('/api/devices', (req, res) => {
   res.json(devices);
@@ -399,6 +401,22 @@ app.post('/api/devices/:id/toggle-mosfet', (req, res) => {
 
 app.get('/api/grid-metrics', (req, res) => {
   res.json(gridMetrics);
+});
+
+// AI Endpoints
+app.post('/api/ai/query', async (req, res) => {
+  try {
+    const { prompt, history } = req.body;
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    const answer = await generateAIResponse(prompt, history);
+    res.json({ answer });
+  } catch (error: any) {
+    console.error("AI Query Error:", error);
+    res.status(500).json({ error: 'Failed to process AI query' });
+  }
 });
 
 // Gateway Endpoints
