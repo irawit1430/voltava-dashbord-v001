@@ -31,7 +31,7 @@ export const AIAssistant: React.FC = () => {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const token = localStorage.getItem('sessionToken');
+      const token = localStorage.getItem('voltava_token');
       if (!token || isHistoryFetched) return;
 
       try {
@@ -79,7 +79,7 @@ export const AIAssistant: React.FC = () => {
 
     try {
       // In development, might need full URL if not proxied
-      const token = localStorage.getItem('sessionToken');
+      const token = localStorage.getItem('voltava_token');
       
       const response = await fetch('/api/ai/query', {
         method: 'POST',

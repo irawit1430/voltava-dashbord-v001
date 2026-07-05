@@ -174,6 +174,7 @@ export function verifySessionToken(token: string): AuthPayload | null {
  * Helper to format standard unauthorized responses.
  */
 function sendUnauthorized(res: Response, message: string): void {
+  console.error(`[Auth] sendUnauthorized triggered: ${message}`);
   res.status(401).json({
     error: { code: 'UNAUTHORIZED', message },
   });

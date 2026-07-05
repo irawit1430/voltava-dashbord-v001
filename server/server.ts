@@ -438,8 +438,10 @@ app.get('/api/ai/history', requireAuth, async (req, res) => {
 });
 
 app.post('/api/ai/query', requireAuth, async (req, res) => {
+  console.log(`[API] /api/ai/query received from ${req.user?.email}`);
   try {
     const { prompt } = req.body;
+    console.log(`[API] Prompt: ${prompt}`);
     if (!prompt || typeof prompt !== 'string') {
       return res.status(400).json({ error: 'Prompt is required' });
     }

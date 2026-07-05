@@ -16,7 +16,12 @@ import {
 
 dotenv.config();
 
-const ai = new GoogleGenAI({});
+const ai = new GoogleGenAI({
+  vertexai: {
+    project: process.env.GOOGLE_CLOUD_PROJECT || 'voltava-501515',
+    location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'
+  }
+});
 
 // Define tools (Phase 1 and Phase 2)
 const toolDeclarations: FunctionDeclaration[] = [
@@ -184,7 +189,7 @@ export async function generateAIResponse(
     contents.push({ role: 'user', parts: [{ text: prompt }] });
 
     let response = await ai.models.generateContent({
-      model: 'gemini-3.1-pro',
+      model: 'gemini-2.5-flash',
       contents: contents,
       config: {
         systemInstruction,
@@ -223,7 +228,7 @@ export async function generateAIResponse(
       
       // Call generateContent again
       response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro',
+        model: 'gemini-2.5-flash',
         contents: contents,
         config: {
           systemInstruction,
@@ -235,8 +240,8 @@ export async function generateAIResponse(
     }
 
     return response.text || "I'm sorry, I couldn't generate a response.";
-  } catch (error) {
-    console.error("Error generating AI response:", error);
+  } catch (error: any) {
+    console.error("Error generating AI response. Status:", error.status, "Message:", error.message, "Full:", JSON.stringify(error, null, 2));
     throw new Error("Failed to communicate with AI provider.");
   }
 }
