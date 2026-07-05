@@ -453,14 +453,19 @@ app.post('/api/ai/query', requireAuth, async (req, res) => {
     }
 
     // Limit context history to the last 10 messages for token cost optimization
-    const contextHistory = history.slice(-10);
+    let contextHistory = history.slice(-10);
 
-    // Append user prompt to both histories
-    history.push({ role: 'user', content: prompt });
-    contextHistory.push({ role: 'user', content: prompt });
+    // Gemini requires the conversation to start with a 'user' turn.
+    // If the slice happens to start with an 'assistant' turn, remove it.
+    if (contextHistory.length > 0 && contextHistory[0].role === 'assistant') {
+      contextHistory.shift();
+    }
 
-    // Generate response using truncated context
+    // Generate response using truncated context (generateAIResponse appends the prompt itself)
     const answer = await generateAIResponse(prompt, contextHistory);
+
+    // Append user prompt and assistant response to full history
+    history.push({ role: 'user', content: prompt });
 
     // Append assistant response to full history
     history.push({ role: 'assistant', content: answer });
