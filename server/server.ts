@@ -644,7 +644,7 @@ if (process.env.NODE_ENV !== 'test') {
     }
   }, 2000);
 
-  // Fetch AI predictions every 30 seconds to be cost-effective
+  // Fetch AI predictions every 1 hour to be highly cost-effective
   setInterval(async () => {
     try {
       for (const device of devices) {
@@ -672,7 +672,7 @@ if (process.env.NODE_ENV !== 'test') {
     } catch (err: any) {
       // console.error('AI prediction fetch threw:', err.message || err);
     }
-  }, 30000);
+  }, 3600000);
 
   // Sync allowlist and boot server
   syncAllowlistFromFirestore().then(() => {
