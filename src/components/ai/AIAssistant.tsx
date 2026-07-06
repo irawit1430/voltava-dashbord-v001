@@ -155,8 +155,8 @@ export const AIAssistant: React.FC = () => {
               placeholder="Ask about your devices..."
               disabled={isLoading}
             />
-            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn">
-              <Send size={18} />
+            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
+              {isLoading ? <Loader2 size={18} className="spinner" /> : <Send size={18} />}
             </button>
           </form>
         </div>
