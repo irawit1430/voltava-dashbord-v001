@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, CSSProperties } from 'react';
 import { 
   HelpCircle, 
   Sparkles 
@@ -241,7 +241,7 @@ export default function CostSavingsSimulator() {
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   container: {
     display: 'flex',
     flexDirection: 'column',
