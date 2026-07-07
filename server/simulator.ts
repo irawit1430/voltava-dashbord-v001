@@ -1066,17 +1066,22 @@ export function addOrUpdateExternalDevice(id: string, payload: ExternalDevicePay
     // Manage gateway links
     const newGatewayId = devices[existingIdx].gatewayId;
     if (newGatewayId !== oldGatewayId) {
-      if (oldGatewayId) {
-        const oldGw = gateways.find(g => g.id === oldGatewayId);
-        if (oldGw) {
-          oldGw.connectedDevices = oldGw.connectedDevices.filter(dId => dId !== id);
-        }
+      let oldGw: Gateway | undefined;
+      let newGw: Gateway | undefined;
+
+      for (let i = 0; i < gateways.length; i++) {
+        const g = gateways[i];
+        if (oldGatewayId && g.id === oldGatewayId) oldGw = g;
+        else if (newGatewayId && g.id === newGatewayId) newGw = g;
+
+        if ((!oldGatewayId || oldGw) && (!newGatewayId || newGw)) break;
       }
-      if (newGatewayId) {
-        const newGw = gateways.find(g => g.id === newGatewayId);
-        if (newGw && !newGw.connectedDevices.includes(id)) {
-          newGw.connectedDevices.push(id);
-        }
+
+      if (oldGw) {
+        oldGw.connectedDevices = oldGw.connectedDevices.filter(dId => dId !== id);
+      }
+      if (newGw && !newGw.connectedDevices.includes(id)) {
+        newGw.connectedDevices.push(id);
       }
     }
   } else {
