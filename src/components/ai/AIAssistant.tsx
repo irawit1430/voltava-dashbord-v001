@@ -150,12 +150,13 @@ export const AIAssistant: React.FC = () => {
           <form onSubmit={handleSubmit} className="ai-chat-input-form">
             <input
               type="text"
+              aria-label="Ask the AI assistant"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your devices..."
               disabled={isLoading}
             />
-            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn">
+            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
               <Send size={18} />
             </button>
           </form>
