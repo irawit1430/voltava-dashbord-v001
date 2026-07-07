@@ -16,14 +16,7 @@ import {
 
 dotenv.config();
 
-const ai = new GoogleGenAI({
-  vertexai: {
-    project: process.env.GOOGLE_CLOUD_PROJECT || 'voltava-501515',
-    location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'
-  }
-});
-
-// Define tools (Phase 1 and Phase 2)
+// Tool declarations (Phase 1 and Phase 2)
 const toolDeclarations: FunctionDeclaration[] = [
   // Read-only tools
   {
@@ -164,7 +157,18 @@ export async function generateAIResponse(
   history: { role: string; content: string }[], 
   context?: string
 ): Promise<string> {
+  const originalCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (process.env.VERTEX_AI_CREDENTIALS) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = process.env.VERTEX_AI_CREDENTIALS;
+  }
   try {
+    const ai = new GoogleGenAI({
+      vertexai: {
+        project: process.env.GOOGLE_CLOUD_PROJECT || 'voltava-501515',
+        location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'
+      }
+    });
+
     let systemInstruction = "You are the Voltava AI Energy Brain Dashboard assistant. " +
       "You have access to tools to query live data, toggle device states, trigger OTA updates, and manage gateways. " +
       "Use your tools whenever the user asks for specific data or requests an action. " +
@@ -243,5 +247,11 @@ export async function generateAIResponse(
   } catch (error: any) {
     console.error("Error generating AI response. Status:", error.status, "Message:", error.message, "Full:", JSON.stringify(error, null, 2));
     throw new Error("Failed to communicate with AI provider.");
+  } finally {
+    if (originalCreds !== undefined) {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = originalCreds;
+    } else {
+      delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    }
   }
 }
