@@ -671,10 +671,24 @@ function simulateDevices() {
   });
 }
 
-function simulateGrid() {
-  const solarCurrent = devices.find(d => d.id === 'SLR-RAJ-01')?.telemetry.activePower || 0;
-  const bessCurrent = devices.find(d => d.id === 'BES-IND-01')?.telemetry.activePower || 0;
-  const factoryMeterCurrent = devices.find(d => d.id === 'MTR-IND-01')?.telemetry.activePower || 168.4;
+let cachedSolarIndex = -1;
+let cachedBessIndex = -1;
+let cachedMeterIndex = -1;
+
+export function simulateGrid() {
+  if (cachedSolarIndex === -1 || devices[cachedSolarIndex]?.id !== 'SLR-RAJ-01') {
+    cachedSolarIndex = devices.findIndex(d => d.id === 'SLR-RAJ-01');
+  }
+  if (cachedBessIndex === -1 || devices[cachedBessIndex]?.id !== 'BES-IND-01') {
+    cachedBessIndex = devices.findIndex(d => d.id === 'BES-IND-01');
+  }
+  if (cachedMeterIndex === -1 || devices[cachedMeterIndex]?.id !== 'MTR-IND-01') {
+    cachedMeterIndex = devices.findIndex(d => d.id === 'MTR-IND-01');
+  }
+
+  const solarCurrent = cachedSolarIndex !== -1 ? (devices[cachedSolarIndex].telemetry.activePower || 0) : 0;
+  const bessCurrent = cachedBessIndex !== -1 ? (devices[cachedBessIndex].telemetry.activePower || 0) : 0;
+  const factoryMeterCurrent = cachedMeterIndex !== -1 ? (devices[cachedMeterIndex].telemetry.activePower || 168.4) : 168.4;
 
   const calculatedGridImport = Math.max(0, Number((factoryMeterCurrent - solarCurrent - bessCurrent).toFixed(1)));
   const savingsSpeed = 0.5 + (solarCurrent > 0 ? solarCurrent * 0.05 : 0) + (bessCurrent > 0 ? 0.8 : 0);
