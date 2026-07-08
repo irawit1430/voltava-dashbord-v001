@@ -17,5 +17,7 @@ COPY --from=builder /app/dist ./dist
 ENV PORT=5000
 EXPOSE 5000
 
+USER node
+
 # The start script uses dist/server/server.js
 CMD ["npm", "run", "start"]

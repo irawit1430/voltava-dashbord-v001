@@ -1,9 +1,9 @@
-
 import type { Device, GridMetrics } from '../../types';
 import DashboardStats from './DashboardStats';
 import EnergyLoadChart from './EnergyLoadChart';
 import LiveAlarms from './LiveAlarms';
 import VerticalModules from './VerticalModules';
+import HealthScoreWidget from './HealthScoreWidget';
 import './DashboardHome.css';
 
 interface DashboardHomeProps {
@@ -38,6 +38,10 @@ export default function DashboardHome({ devices, gridMetrics, setActiveTab }: Da
           activeAlerts={activeAlerts} 
           onAnalyze={() => setActiveTab('devices')} 
         />
+      </div>
+
+      <div className="mt-6 mb-6">
+        <HealthScoreWidget />
       </div>
 
       {/* India Vision 2031 Progress & Pilot Modules */}

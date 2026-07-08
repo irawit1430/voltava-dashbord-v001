@@ -21,23 +21,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // On mount: check localStorage for saved token and validate it
+  // On mount: check backend for valid session cookie
   useEffect(() => {
-    const savedToken = localStorage.getItem('voltava_token');
-    if (!savedToken) {
-      setIsLoading(false);
-      return;
-    }
+    // Just try fetching /me, if the cookie is valid it will return the user
 
     fetch('/api/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${savedToken}`,
-      },
+      credentials: 'include',
     })
       .then(res => {
         if (res.status === 401) {
           // Token expired or invalid
-          localStorage.removeItem('voltava_token');
           setToken(null);
           setUser(null);
           return null;
@@ -48,12 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(data => {
         if (data) {
           setUser(data.user);
-          setToken(savedToken);
+          // Set a dummy token string so components know auth is present
+          setToken('cookie-auth');
         }
       })
       .catch(err => {
         console.error('Auth validation error:', err);
-        localStorage.removeItem('voltava_token');
         setToken(null);
         setUser(null);
       })
@@ -87,8 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const data = await res.json();
-      localStorage.setItem('voltava_token', data.token);
-      setToken(data.token);
+      setToken('cookie-auth');
       setUser(data.user);
     } catch (err) {
       console.error('Login error:', err);
@@ -112,8 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Bypass login failed');
       }
       const data = await res.json();
-      localStorage.setItem('voltava_token', data.token);
-      setToken(data.token);
+      setToken('cookie-auth');
       setUser(data.user);
     } catch (err) {
       console.error('Bypass login error:', err);
@@ -125,23 +116,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      if (token) {
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-      }
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      localStorage.removeItem('voltava_token');
       setToken(null);
       setUser(null);
       setError(null);
     }
-  }, [token]);
+  }, []);
 
   const clearError = useCallback(() => {
     setError(null);

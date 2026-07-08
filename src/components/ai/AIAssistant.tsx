@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Plus } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import './AIAssistant.css';
 
 interface Message {
@@ -31,12 +32,10 @@ export const AIAssistant: React.FC = () => {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const token = localStorage.getItem('voltava_token');
-      if (!token || isHistoryFetched) return;
-
+      if (isHistoryFetched) return;
       try {
         const res = await fetch('/api/ai/history', {
-          headers: { 'Authorization': `Bearer ${token}` }
+          credentials: 'include'
         });
         if (res.ok) {
           const data = await res.json();
@@ -63,6 +62,18 @@ export const AIAssistant: React.FC = () => {
     }
   }, [isOpen, isHistoryFetched]);
 
+  const handleNewChat = async () => {
+    setMessages([{ id: '1', role: 'assistant', content: 'Hi there! I am your Voltava AI Assistant. Ask me anything about the current status of your devices.' }]);
+    try {
+      await fetch('/api/ai/history', {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+    } catch (err) {
+      console.error('Failed to clear chat history', err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -78,14 +89,11 @@ export const AIAssistant: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // In development, might need full URL if not proxied
-      const token = localStorage.getItem('voltava_token');
-      
       const response = await fetch('/api/ai/query', {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
           prompt: userMessage.content
@@ -124,16 +132,21 @@ export const AIAssistant: React.FC = () => {
         <div className="ai-chat-window">
           <div className="ai-chat-header">
             <h3>Voltava AI Assistant</h3>
-            <button onClick={() => setIsOpen(false)} className="close-btn" aria-label="Close chat">
-              <X size={20} />
-            </button>
+            <div className="header-actions">
+              <button onClick={handleNewChat} className="new-chat-btn" aria-label="New chat">
+                <Plus size={20} />
+              </button>
+              <button onClick={() => setIsOpen(false)} className="close-btn" aria-label="Close chat">
+                <X size={20} />
+              </button>
+            </div>
           </div>
           
           <div className="ai-chat-messages">
             {messages.map(msg => (
               <div key={msg.id} className={`message-wrapper ${msg.role}`}>
                 <div className="message-content">
-                  {msg.content}
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
               </div>
             ))}

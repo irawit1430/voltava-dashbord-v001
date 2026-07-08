@@ -17,8 +17,7 @@ import {
 dotenv.config();
 
 // Tool declarations (Phase 1 and Phase 2)
-const toolDeclarations: FunctionDeclaration[] = [
-  // Read-only tools
+const readOnlyTools: FunctionDeclaration[] = [
   {
     name: 'getAllDevices',
     description: 'Retrieves the current state, telemetry, and details of all devices in the simulation.',
@@ -56,9 +55,10 @@ const toolDeclarations: FunctionDeclaration[] = [
       properties: { id: { type: Type.STRING, description: 'The device ID' } },
       required: ['id']
     }
-  },
-  
-  // Action tools
+  }
+];
+
+const actionTools: FunctionDeclaration[] = [
   {
     name: 'triggerOtaUpdate',
     description: 'Initiates an Over-The-Air (OTA) firmware update for the specified device.',
@@ -199,7 +199,7 @@ export async function generateAIResponse(
         systemInstruction,
         temperature: 0.2,
         maxOutputTokens: 250,
-        tools: [{ functionDeclarations: toolDeclarations }]
+        tools: [{ functionDeclarations: readOnlyTools }]
       }
     });
 
@@ -238,7 +238,7 @@ export async function generateAIResponse(
           systemInstruction,
           temperature: 0.2,
           maxOutputTokens: 250,
-          tools: [{ functionDeclarations: toolDeclarations }]
+          tools: [{ functionDeclarations: readOnlyTools }]
         }
       });
     }
@@ -247,6 +247,116 @@ export async function generateAIResponse(
   } catch (error: any) {
     console.error("Error generating AI response. Status:", error.status, "Message:", error.message, "Full:", JSON.stringify(error, null, 2));
     throw new Error("Failed to communicate with AI provider.");
+  } finally {
+    if (originalCreds !== undefined) {
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = originalCreds;
+    } else {
+      delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    }
+  }
+}
+
+/**
+ * Generate a structured health score assessment of the entire system.
+ */
+export async function generateHealthScore(): Promise<any> {
+  const originalCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (process.env.VERTEX_AI_CREDENTIALS) {
+    process.env.GOOGLE_APPLICATION_CREDENTIALS = process.env.VERTEX_AI_CREDENTIALS;
+  }
+  try {
+    const ai = new GoogleGenAI({
+      vertexai: {
+        project: process.env.GOOGLE_CLOUD_PROJECT || 'voltava-501515',
+        location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'
+      }
+    });
+
+    const systemInstruction = "You are a diagnostic engine for the Voltava AI Energy Brain Dashboard. " +
+      "You must evaluate the overall system health based on the telemetry data from all devices and grid metrics. " +
+      "Compute a health score between 0 and 100, where 100 is perfectly healthy. " +
+      "Output the result as a JSON object with strictly these fields: " +
+      "'score' (number), 'status' (string, one of: Healthy, Warning, Critical), " +
+      "'reasoning' (string explaining the score), and 'actionable_recommendations' (array of strings).";
+
+    const prompt = "Please run a system audit and provide the health score JSON. Use your tools to fetch all devices and grid metrics to form your analysis.";
+    
+    const contents: Content[] = [{ role: 'user', parts: [{ text: prompt }] }];
+
+    const schema = {
+      type: Type.OBJECT,
+      properties: {
+        score: { type: Type.INTEGER, description: "System health score from 0 to 100" },
+        status: { type: Type.STRING, description: "Healthy, Warning, or Critical" },
+        reasoning: { type: Type.STRING, description: "Explanation of the score" },
+        actionable_recommendations: { 
+          type: Type.ARRAY, 
+          items: { type: Type.STRING },
+          description: "List of recommended actions" 
+        }
+      },
+      required: ["score", "status", "reasoning", "actionable_recommendations"]
+    };
+
+    let response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: contents,
+      config: {
+        systemInstruction,
+        temperature: 0.1,
+        maxOutputTokens: 500,
+        tools: [{ functionDeclarations: readOnlyTools }],
+        responseMimeType: "application/json",
+        responseSchema: schema
+      }
+    });
+
+    let turns = 0;
+    while (response.functionCalls && response.functionCalls.length > 0 && turns < 3) {
+      turns++;
+      const call = response.functionCalls[0];
+      const fnName = call.name;
+      const fnArgs = call.args;
+      
+      const functionResponse = await executeFunction(fnName, fnArgs);
+      
+      contents.push({
+        role: 'model',
+        parts: [{ functionCall: { name: fnName, args: fnArgs } }]
+      });
+      
+      contents.push({
+        role: 'user',
+        parts: [{
+          functionResponse: {
+            name: fnName,
+            response: functionResponse
+          }
+        }]
+      });
+      
+      response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: contents,
+        config: {
+          systemInstruction,
+          temperature: 0.1,
+          maxOutputTokens: 500,
+          tools: [{ functionDeclarations: readOnlyTools }],
+          responseMimeType: "application/json",
+          responseSchema: schema
+        }
+      });
+    }
+
+    if (response.text) {
+      return JSON.parse(response.text);
+    } else {
+      throw new Error("Empty response from AI");
+    }
+  } catch (error: any) {
+    console.error("Error generating health score:", error);
+    throw new Error("Failed to compute health score.");
   } finally {
     if (originalCreds !== undefined) {
       process.env.GOOGLE_APPLICATION_CREDENTIALS = originalCreds;

@@ -8,6 +8,7 @@
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { IncomingMessage } from 'http';
 import { AUTH_CONFIG } from './config.js';
 import type { User, AuthPayload } from './types.js';
 import { initializeApp, getApps } from 'firebase-admin/app';
@@ -192,12 +193,17 @@ export function requireAuth(
   res: Response,
   next: NextFunction,
 ): void {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return sendUnauthorized(res, 'Missing or malformed Authorization header');
+  let token = req.cookies?.voltava_token;
+  
+  // Fallback to Bearer token for backwards compatibility during migration
+  if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.slice(7);
   }
 
-  const token = authHeader.slice(7); // strip "Bearer "
+  if (!token) {
+    return sendUnauthorized(res, 'Missing session token');
+  }
+
   const payload = verifySessionToken(token);
 
   if (!payload) {
@@ -217,16 +223,30 @@ export function requireAuth(
 // 6. WebSocket authentication helper
 // ---------------------------------------------------------
 /**
- * Authenticates a WebSocket connection by extracting the `token`
- * query parameter from the connection URL.
+ * Authenticates a WebSocket connection by extracting the `voltava_token`
+ * from the Cookie header.
  *
- * @param url  The raw request URL (e.g. `/ws?token=abc123xyz`).
- * @returns    The authenticated `User`, or `null` if invalid.
+ * @param request  The raw HTTP IncomingMessage request.
+ * @returns        The authenticated `User`, or `null` if invalid.
  */
-export function authenticateWs(url: string): User | null {
+export function authenticateWs(request: IncomingMessage): User | null {
   try {
-    const parsed = new URL(url, 'http://localhost');
-    const token = parsed.searchParams.get('token');
+    const cookieHeader = request.headers.cookie;
+    let token: string | null = null;
+    
+    if (cookieHeader) {
+      const cookies = cookieHeader.split(';').map(c => c.trim());
+      const tokenCookie = cookies.find(c => c.startsWith('voltava_token='));
+      if (tokenCookie) {
+        token = tokenCookie.split('=')[1];
+      }
+    }
+    
+    // Fallback to query param if cookie is missing (e.g. for development or legacy)
+    if (!token && request.url) {
+      const parsed = new URL(request.url, 'http://localhost');
+      token = parsed.searchParams.get('token');
+    }
 
     if (!token) return null;
 
@@ -237,7 +257,8 @@ export function authenticateWs(url: string): User | null {
     if (!isEmailAllowed(payload.email)) return null;
 
     return extractUser(payload);
-  } catch {
+  } catch (err) {
+    console.error("WS auth error", err);
     return null;
   }
 }

@@ -24,16 +24,9 @@ export function useTelemetry() {
   const historyRef = useRef<Record<string, TelemetryHistoryPoint[]>>({});
   const wsRef = useRef<WebSocket | null>(null);
 
-  // Authenticated fetch helper — adds Bearer token and handles 401
+  // Authenticated fetch helper — relies on HttpOnly cookie being sent
   const authFetch = (url: string, options?: RequestInit): Promise<Response> => {
-    const headers: Record<string, string> = {
-      ...(options?.headers as Record<string, string> || {}),
-    };
-    if (authContext?.token) {
-      headers['Authorization'] = `Bearer ${authContext.token}`;
-    }
-
-    return fetch(url, { ...options, headers }).then(res => {
+    return fetch(url, { ...options, credentials: 'include' }).then(res => {
       if (res.status === 401) {
         authContext?.logout();
       }
@@ -103,7 +96,7 @@ export function useTelemetry() {
       const wsBase = window.location.port !== '' && window.location.port !== '5000'
         ? `${wsProtocol}//${window.location.hostname}:5000/ws`
         : `${wsProtocol}//${window.location.host}/ws`;
-      const wsUrl = `${wsBase}?token=${authContext?.token}`;
+      const wsUrl = wsBase;
       console.log(`Connecting to WebSocket at: ${wsUrl}`);
       
       const ws = new WebSocket(wsUrl);
@@ -379,6 +372,21 @@ export function useTelemetry() {
       });
   };
 
+  const getSystemHealthScore = (): Promise<any> => {
+    return authFetch(`/api/ai/health-score`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch system health score');
+        return res.json();
+      })
+      .catch(err => {
+        console.error('Error fetching system health score:', err);
+        throw err;
+      });
+  };
+
   return {
     devices,
     gateways,
@@ -391,6 +399,7 @@ export function useTelemetry() {
     updateGatewayConfig,
     addGateway,
     pingGateway,
-    scanGatewayBus
+    scanGatewayBus,
+    getSystemHealthScore
   };
 }

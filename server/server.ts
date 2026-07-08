@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import path from 'path';
@@ -63,7 +64,7 @@ import {
   scanGatewayBus,
   addOrUpdateExternalDevice
 } from './simulator.js';
-import { generateAIResponse } from './services/aiService.js';
+import { generateAIResponse, generateHealthScore } from './services/aiService.js';
 
 // Initialize history
 initHistory();
@@ -124,6 +125,7 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -176,6 +178,13 @@ app.post('/api/auth/google', async (req, res) => {
     const user = { ...googleUser, role: 'admin' as const };
     const token = generateSessionToken(user);
 
+    res.cookie('voltava_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     return res.json({ user, token });
   } catch (err: any) {
     console.error('[auth] Google sign-in failed:', err.message);
@@ -193,10 +202,10 @@ app.post('/api/auth/google', async (req, res) => {
  * Development-only bypass endpoint to sign in a mock user without Google OAuth.
  */
 app.post('/api/auth/bypass', (req, res) => {
-  // Only allow bypass in non-production environments
-  if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test') {
+  // Only allow bypass if explicitly enabled via environment variable
+  if (process.env.ENABLE_DEV_BYPASS !== 'true') {
     return res.status(403).json({
-      error: { code: 'FORBIDDEN', message: 'Bypass only allowed in development or test environments' },
+      error: { code: 'FORBIDDEN', message: 'Bypass is disabled' },
     });
   }
 
@@ -207,6 +216,14 @@ app.post('/api/auth/bypass', (req, res) => {
     role: 'admin' as const,
   };
   const token = generateSessionToken(user);
+  
+  res.cookie('voltava_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  });
+
   return res.json({ user, token });
 });
 
@@ -221,10 +238,10 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 
 /**
  * POST /api/auth/logout
- * Stateless JWT — the client simply discards its token.
- * This endpoint exists for semantic completeness & audit hooks.
+ * Clears the session cookie.
  */
 app.post('/api/auth/logout', requireAuth, (req, res) => {
+  res.clearCookie('voltava_token');
   res.json({ success: true, message: 'Logged out successfully' });
 });
 
@@ -313,7 +330,7 @@ function isValidPayload(payload: any): boolean {
 }
 
 // API Endpoints (Unprotected)
-app.post('/api/devices/ingest', (req, res) => {
+app.post('/api/devices/ingest', requireAuth, (req, res) => {
   const { id, payload } = req.body;
   if (typeof id !== 'string' || !id || !payload || !isValidPayload(payload)) {
     return res.status(400).json({ error: 'Invalid or missing device id or payload' });
@@ -407,7 +424,7 @@ app.get('/api/grid-metrics', (req, res) => {
 });
 
 // AI Endpoints (Protected)
-app.get('/api/ai/anomalies', async (req, res) => {
+app.get('/api/ai/anomalies', requireAuth, async (req, res) => {
   try {
     const response = await fetch('http://127.0.0.1:8000/anomalies');
     if (response.ok) {
@@ -434,6 +451,29 @@ app.get('/api/ai/history', requireAuth, async (req, res) => {
   } catch (error) {
     console.error("AI History fetch error:", error);
     res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+app.delete('/api/ai/history', requireAuth, async (req, res) => {
+  try {
+    if (!db || !req.user) return res.json({ success: false });
+    
+    await db.collection('chatHistory').doc(req.user.email).delete();
+    res.json({ success: true });
+  } catch (error) {
+    console.error("AI History delete error:", error);
+    res.status(500).json({ error: 'Failed to delete history' });
+  }
+});
+
+app.get('/api/ai/health-score', requireAuth, async (req, res) => {
+  console.log(`[API] /api/ai/health-score received from ${req.user?.email}`);
+  try {
+    const healthScore = await generateHealthScore();
+    res.json(healthScore);
+  } catch (error: any) {
+    console.error("AI Health Score Error:", error);
+    res.status(500).json({ error: 'Failed to process AI health score' });
   }
 });
 
@@ -489,8 +529,15 @@ app.get('/api/gateways', (req, res) => {
   res.json(gateways);
 });
 
-app.post('/api/gateways', (req, res) => {
+app.post('/api/gateways', requireAuth, (req, res) => {
   try {
+    const { name, ipAddress, port, protocol } = req.body;
+    if (!name || typeof name !== 'string' || name.length > 100) throw new Error('Invalid or missing name');
+    if (!ipAddress || typeof ipAddress !== 'string' || ipAddress.length > 45) throw new Error('Invalid or missing ipAddress');
+    if (typeof port !== 'number' || port < 1 || port > 65535) throw new Error('Invalid or missing port');
+    const validProtocols = ['modbus-tcp', 'modbus-rtu', 'dlms', 'ocpp', 'can'];
+    if (!validProtocols.includes(protocol)) throw new Error('Invalid or unsupported protocol');
+
     const newGw = addGateway(req.body);
     broadcastTelemetry();
     res.status(201).json(newGw);
@@ -568,8 +615,8 @@ wss.on('connection', (ws, request) => {
     return;
   }
 
-  // Authenticate WebSocket connection via query-param token
-  const wsUser = authenticateWs(reqUrl);
+  // Authenticate WebSocket connection via Cookie or query-param token
+  const wsUser = authenticateWs(request);
   if (!wsUser) {
     console.log('WS connection rejected — invalid or missing token');
     ws.close(1008, 'Unauthorized');
