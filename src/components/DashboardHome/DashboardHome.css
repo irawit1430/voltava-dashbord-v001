@@ -6,8 +6,13 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+}
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-card {
@@ -24,7 +29,7 @@
 }
 
 .stat-label {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -70,7 +75,7 @@
 }
 
 .stat-trend-up {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--accent-green);
   display: flex;
   align-items: center;
@@ -79,14 +84,14 @@
 }
 
 .stat-trend-down {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--accent-red);
   font-weight: 600;
 }
 
 .stat-sub-text {
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }
 
 .chart-panel {
@@ -189,13 +194,13 @@
 }
 
 .alarm-device {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .alarm-badge {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   padding: 0.1rem 0.4rem;
 }
 
@@ -261,7 +266,7 @@
 }
 
 .module-status {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(255, 255, 255, 0.03);
   padding: 0.1rem 0.4rem;
@@ -286,7 +291,7 @@
 .progress-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
@@ -360,6 +365,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+@media (max-width: 480px) {
+  .chart-kpi-summary {
+    grid-template-columns: 1fr;
+  }
+}
 
 .kpi-card {
   background: rgba(255, 255, 255, 0.01);
@@ -393,7 +403,7 @@
 }
 
 .kpi-label {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;

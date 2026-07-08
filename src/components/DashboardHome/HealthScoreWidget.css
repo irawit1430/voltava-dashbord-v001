@@ -7,7 +7,7 @@
 
 .run-audit-btn {
   background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  color: var(--accent-green);
   border: 1px solid rgba(16, 185, 129, 0.3);
   padding: 6px 12px;
   border-radius: 6px;
@@ -38,27 +38,27 @@
 }
 
 .score-circle.healthy {
-  border-color: #34d399;
-  box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
 }
 
 .score-circle.warning {
-  border-color: #fbbf24;
-  box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
 }
 
 .score-circle.critical {
-  border-color: #f87171;
-  box-shadow: 0 0 15px rgba(248, 113, 113, 0.3);
+  border-color: var(--accent-red);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
 }
 
-.status-text-healthy { color: #34d399; }
-.status-text-warning { color: #fbbf24; }
-.status-text-critical { color: #f87171; }
+.status-text-healthy { color: var(--accent-green); }
+.status-text-warning { color: var(--accent-orange); }
+.status-text-critical { color: var(--accent-red); }
 
 .recommendations-box {
   background: rgba(0, 0, 0, 0.2);
   padding: 12px;
   border-radius: 8px;
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--accent-blue);
 }

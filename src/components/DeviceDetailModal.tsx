@@ -71,16 +71,16 @@ export default function DeviceDetailModal({
   const isBess = device.type === 'bess';
   
   const getCellColor = (volts: number) => {
-    if (volts < 2.95) return '#ef4444'; // critical low (red)
-    if (volts < 3.1) return '#f59e0b'; // low (orange)
-    if (volts > 3.8) return '#ef4444'; // overcharged (red)
-    return '#10b981'; // healthy (green)
+    if (volts < 2.95) return 'var(--accent-red)'; // critical low (red)
+    if (volts < 3.1) return 'var(--accent-orange)'; // low (orange)
+    if (volts > 3.8) return 'var(--accent-red)'; // overcharged (red)
+    return 'var(--accent-green)'; // healthy (green)
   };
 
   const getCellTempColor = (temp: number) => {
-    if (temp > 65) return '#ef4444'; // thermal hazard
-    if (temp > 45) return '#f59e0b'; // elevated
-    return '#3b82f6'; // normal
+    if (temp > 65) return 'var(--accent-red)'; // thermal hazard
+    if (temp > 45) return 'var(--accent-orange)'; // elevated
+    return 'var(--accent-blue)'; // normal
   };
 
   return (

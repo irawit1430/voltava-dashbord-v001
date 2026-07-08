@@ -27,7 +27,7 @@
   }
 
 .gw-stat-label {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
@@ -265,7 +265,7 @@
   }
 
 .gw-meta-label {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   text-transform: uppercase;
   font-weight: 600;

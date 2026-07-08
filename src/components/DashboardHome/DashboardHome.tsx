@@ -40,7 +40,7 @@ export default function DashboardHome({ devices, gridMetrics, setActiveTab }: Da
         />
       </div>
 
-      <div className="mt-6 mb-6">
+      <div style={{ margin: '1.5rem 0' }}>
         <HealthScoreWidget />
       </div>
 

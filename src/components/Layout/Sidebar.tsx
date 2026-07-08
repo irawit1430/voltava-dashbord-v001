@@ -53,7 +53,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
 
       {/* Subscription Status Pin */}
       <div style={styles.subBanner}>
-        <ShieldCheck size={14} color="#10b981" />
+        <ShieldCheck size={14} color="var(--accent-green)" />
         <span style={styles.subText}>EIP Enterprise v1.2</span>
       </div>
 
@@ -79,7 +79,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
                       >
                         <Icon 
                           size={18} 
-                          color={isActive ? '#10b981' : '#9ca3af'} 
+                          color={isActive ? 'var(--accent-green)' : 'var(--text-secondary)'} 
                           style={styles.buttonIcon} 
                         />
                         <span style={isActive ? styles.textActive : styles.textInactive}>
@@ -117,7 +117,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
             transition: 'all 0.15s ease',
           }}
         >
-          <Settings size={14} color={activeTab === 'gateway-config' ? '#10b981' : '#9ca3af'} />
+          <Settings size={14} color={activeTab === 'gateway-config' ? 'var(--accent-green)' : 'var(--text-secondary)'} />
           <span style={{ fontWeight: activeTab === 'gateway-config' ? 600 : 500 }}>Gateway Config</span>
         </button>
         <button 
@@ -136,7 +136,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
             marginTop: '0.25rem'
           }}
         >
-          <Users size={14} color={activeTab === 'access-control' ? '#10b981' : '#9ca3af'} />
+          <Users size={14} color={activeTab === 'access-control' ? 'var(--accent-green)' : 'var(--text-secondary)'} />
           <span style={{ fontWeight: activeTab === 'access-control' ? 600 : 500 }}>Access Control</span>
         </button>
       </div>
@@ -186,7 +186,7 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: '1.1',
   },
   logoSubtitle: {
-    fontSize: '0.65rem',
+    fontSize: '0.75rem',
     color: 'var(--accent-green)',
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
@@ -205,7 +205,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginRight: '0.5rem',
   },
   subText: {
-    fontSize: '0.7rem',
+    fontSize: '0.75rem',
     color: 'var(--accent-green)',
     fontWeight: 600,
   },
@@ -221,7 +221,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '0.4rem',
   },
   groupHeader: {
-    fontSize: '0.65rem',
+    fontSize: '0.75rem',
     textTransform: 'uppercase',
     color: 'var(--text-muted)',
     letterSpacing: '0.1em',

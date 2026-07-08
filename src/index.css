@@ -16,7 +16,7 @@
   
   --text-primary: #f3f4f6;
   --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-muted: #9ca3af;
 
   /* Accents */
   --accent-green: #10b981;      /* Online, BMS, Energy savings */
@@ -142,7 +142,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.375rem;
   padding: 0.25rem 0.625rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -291,6 +291,11 @@ h1, h2, h3, h4, h5, h6 {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+}
+@media (min-width: 1024px) {
+  .grid-main-layout {
+    grid-template-columns: 1.5fr 1fr;
+  }
 }
 @media (min-width: 1280px) {
   .grid-main-layout {

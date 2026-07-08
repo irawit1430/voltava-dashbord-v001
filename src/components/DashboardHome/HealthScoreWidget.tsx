@@ -30,54 +30,55 @@ export default function HealthScoreWidget() {
   };
 
   return (
-    <div className="health-score-widget glass-panel p-6">
-      <div className="widget-header flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold flex items-center gap-2">
-          <Activity className="text-emerald-400" />
+    <div className="health-score-widget glass-panel" style={{ padding: '1.5rem' }}>
+      <div className="panel-header">
+        <h3 className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}>
+          <Activity style={{ color: 'var(--accent-green)' }} />
           Agentic System Health
         </h3>
         <button 
           onClick={runAudit} 
           disabled={loading}
-          className="run-audit-btn flex items-center gap-2"
+          className="run-audit-btn"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
-          {loading ? <Loader2 className="animate-spin" size={16} /> : <ShieldAlert size={16} />}
+          {loading ? <Loader2 className="animate-spin-slow" size={16} /> : <ShieldAlert size={16} />}
           {loading ? 'Auditing...' : 'Run Audit'}
         </button>
       </div>
 
       {error && (
-        <div className="error-message text-red-400 mb-4 text-sm">
+        <div className="error-message" style={{ color: 'var(--accent-red)', marginBottom: '1rem', fontSize: '0.875rem' }}>
           {error}
         </div>
       )}
 
       {data && !loading && (
-        <div className="health-data-container mt-4">
-          <div className="score-overview flex items-center gap-6 mb-6">
+        <div className="health-data-container" style={{ marginTop: '1rem' }}>
+          <div className="score-overview" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.5rem' }}>
             <div className={`score-circle ${data.status.toLowerCase()}`}>
-              <span className="text-4xl font-bold">{data.score}</span>
-              <span className="text-xs opacity-70">/100</span>
+              <span style={{ fontSize: '2.25rem', fontWeight: 700 }}>{data.score}</span>
+              <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>/100</span>
             </div>
             <div className="status-details">
-              <div className="flex items-center gap-2 mb-1">
-                {data.status === 'Healthy' && <CheckCircle className="text-emerald-400" />}
-                {data.status === 'Warning' && <AlertTriangle className="text-amber-400" />}
-                {data.status === 'Critical' && <ShieldAlert className="text-red-400" />}
-                <span className={`text-lg font-semibold status-text-${data.status.toLowerCase()}`}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                {data.status === 'Healthy' && <CheckCircle style={{ color: 'var(--accent-green)' }} />}
+                {data.status === 'Warning' && <AlertTriangle style={{ color: 'var(--accent-orange)' }} />}
+                {data.status === 'Critical' && <ShieldAlert style={{ color: 'var(--accent-red)' }} />}
+                <span className={`status-text-${data.status.toLowerCase()}`} style={{ fontSize: '1.125rem', fontWeight: 600 }}>
                   {data.status}
                 </span>
               </div>
-              <p className="text-sm opacity-80 mt-2">{data.reasoning}</p>
+              <p style={{ fontSize: '0.875rem', opacity: 0.8, marginTop: '0.5rem' }}>{data.reasoning}</p>
             </div>
           </div>
           
           {data.actionable_recommendations && data.actionable_recommendations.length > 0 && (
             <div className="recommendations-box">
-              <h4 className="text-sm font-semibold mb-2 opacity-90">AI Recommendations:</h4>
-              <ul className="text-sm space-y-2 opacity-80 list-disc pl-4">
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem', opacity: 0.9 }}>AI Recommendations:</h4>
+              <ul style={{ fontSize: '0.875rem', opacity: 0.8, paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {data.actionable_recommendations.map((rec, i) => (
-                  <li key={i}>{rec}</li>
+                  <li style={{ listStyleType: 'disc' }} key={i}>{rec}</li>
                 ))}
               </ul>
             </div>
@@ -86,7 +87,7 @@ export default function HealthScoreWidget() {
       )}
 
       {!data && !loading && !error && (
-        <div className="empty-state text-center opacity-60 text-sm mt-8 mb-4">
+        <div className="empty-state" style={{ textAlign: 'center', opacity: 0.6, fontSize: '0.875rem', marginTop: '2rem', marginBottom: '1rem' }}>
           Click "Run Audit" to analyze the current system state using Gemini AI.
         </div>
       )}

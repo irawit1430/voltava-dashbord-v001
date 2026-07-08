@@ -204,7 +204,7 @@ export default function Navbar({ activeTab, devices, onSelectDevice, isMobileMen
         <div className="divider" />
 
         <div className="mqtt-status">
-          <Wifi size={14} color="#10b981" />
+          <Wifi size={14} color="var(--accent-green)" />
           <span className="mqtt-label">MQTT: Connected</span>
         </div>
       </div>
