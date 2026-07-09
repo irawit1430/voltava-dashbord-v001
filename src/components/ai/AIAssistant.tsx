@@ -161,14 +161,14 @@ export const AIAssistant: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="ai-chat-input-form">
-            <input
+             <input aria-label="Ask about your devices..."
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your devices..."
               disabled={isLoading}
             />
-            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn">
+            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
               <Send size={18} />
             </button>
           </form>
