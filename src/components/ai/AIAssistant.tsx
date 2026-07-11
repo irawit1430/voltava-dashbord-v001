@@ -142,7 +142,7 @@ export const AIAssistant: React.FC = () => {
             </div>
           </div>
           
-          <div className="ai-chat-messages">
+          <div className="ai-chat-messages" aria-live="polite" role="log">
             {messages.map(msg => (
               <div key={msg.id} className={`message-wrapper ${msg.role}`}>
                 <div className="message-content">
@@ -161,14 +161,16 @@ export const AIAssistant: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="ai-chat-input-form">
+            <label htmlFor="ai-chat-input" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', borderWidth: 0 }}>Ask about your devices</label>
             <input
+              id="ai-chat-input"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your devices..."
               disabled={isLoading}
             />
-            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn">
+            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
               <Send size={18} />
             </button>
           </form>
