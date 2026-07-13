@@ -167,8 +167,9 @@ export const AIAssistant: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your devices..."
               disabled={isLoading}
+              aria-label="Message the AI assistant"
             />
-            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn">
+            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
               <Send size={18} />
             </button>
           </form>
