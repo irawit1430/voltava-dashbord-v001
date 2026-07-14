@@ -1,6 +1,5 @@
-🧹 [Code Health] Remove explicit any cast in addOrUpdateExternalDevice
+🎨 Palette: [UX improvement] Add ARIA label to AI Assistant Send Button
 
-🎯 What: Replaced the explicit `any` type for the `payload` parameter when pushing to devices array in `addOrUpdateExternalDevice` by explicitly typing the object as `Device`. Added missing optional fields to `ExternalDevicePayload` in `server/types.ts` to satisfy compiler.
-💡 Why: Explicit `any` casts defeat the purpose of TypeScript and hide potential typing issues. Typing it strictly via `Device` ensures safety and consistency.
-✅ Verification: Ran `npm run lint` and `npm run test` successfully. Verified types work.
-✨ Result: Improved static typing in simulator service.
+💡 What: Added `aria-label="Send message"` to the icon-only send button inside the AI Assistant chat interface.
+🎯 Why: Without an explicit ARIA label, screen readers will not announce the button's purpose since it lacks visible text (it only contains an icon), making the chat functionality inaccessible.
+♿ Accessibility: Ensures the primary action for the chat component is keyboard and screen-reader navigable.
