@@ -142,7 +142,7 @@ export const AIAssistant: React.FC = () => {
             </div>
           </div>
           
-          <div className="ai-chat-messages">
+          <div className="ai-chat-messages" aria-live="polite" role="log">
             {messages.map(msg => (
               <div key={msg.id} className={`message-wrapper ${msg.role}`}>
                 <div className="message-content">
@@ -167,8 +167,9 @@ export const AIAssistant: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your devices..."
               disabled={isLoading}
+              aria-label="Message AI assistant"
             />
-            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn">
+            <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
               <Send size={18} />
             </button>
           </form>
