@@ -87,24 +87,28 @@ const EnergyLoadChart = React.memo(function EnergyLoadChart() {
         <div className="chart-filters">
           <button 
             className={`filter-pill ${activeFilter === 'all' ? 'active' : ''}`}
+            aria-pressed={activeFilter === 'all'}
             onClick={() => setActiveFilter('all')}
           >
             All Assets
           </button>
           <button 
             className={`filter-pill ${activeFilter === 'solar' ? 'active' : ''}`}
+            aria-pressed={activeFilter === 'solar'}
             onClick={() => setActiveFilter('solar')}
           >
             <Sun size={12} className="pill-icon" /> Solar
           </button>
           <button 
             className={`filter-pill ${activeFilter === 'load-grid' ? 'active' : ''}`}
+            aria-pressed={activeFilter === 'load-grid'}
             onClick={() => setActiveFilter('load-grid')}
           >
             <Zap size={12} className="pill-icon" /> Load & Grid
           </button>
           <button 
             className={`filter-pill ${activeFilter === 'battery' ? 'active' : ''}`}
+            aria-pressed={activeFilter === 'battery'}
             onClick={() => setActiveFilter('battery')}
           >
             <BatteryCharging size={12} className="pill-icon" /> Battery SoC
