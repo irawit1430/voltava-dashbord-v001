@@ -84,30 +84,34 @@ const EnergyLoadChart = React.memo(function EnergyLoadChart() {
         </div>
         
         {/* Toggle Filters */}
-        <div className="chart-filters">
+        <div className="chart-filters" role="group" aria-label="Chart data filters">
           <button 
             className={`filter-pill ${activeFilter === 'all' ? 'active' : ''}`}
             onClick={() => setActiveFilter('all')}
+            aria-pressed={activeFilter === 'all'}
           >
             All Assets
           </button>
           <button 
             className={`filter-pill ${activeFilter === 'solar' ? 'active' : ''}`}
             onClick={() => setActiveFilter('solar')}
+            aria-pressed={activeFilter === 'solar'}
           >
-            <Sun size={12} className="pill-icon" /> Solar
+            <Sun size={12} className="pill-icon" aria-hidden="true" /> Solar
           </button>
           <button 
             className={`filter-pill ${activeFilter === 'load-grid' ? 'active' : ''}`}
             onClick={() => setActiveFilter('load-grid')}
+            aria-pressed={activeFilter === 'load-grid'}
           >
-            <Zap size={12} className="pill-icon" /> Load & Grid
+            <Zap size={12} className="pill-icon" aria-hidden="true" /> Load & Grid
           </button>
           <button 
             className={`filter-pill ${activeFilter === 'battery' ? 'active' : ''}`}
             onClick={() => setActiveFilter('battery')}
+            aria-pressed={activeFilter === 'battery'}
           >
-            <BatteryCharging size={12} className="pill-icon" /> Battery SoC
+            <BatteryCharging size={12} className="pill-icon" aria-hidden="true" /> Battery SoC
           </button>
         </div>
       </div>
