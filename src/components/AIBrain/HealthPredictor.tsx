@@ -108,7 +108,7 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
                       )}
                     </div>
 
-                    <button 
+                    <button aria-label={`Open BMS Inspector for ${d.name}`}
                       onClick={() => onInspectDevice(d)}
                       className="btn btn-outline"
                       style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem' }}
