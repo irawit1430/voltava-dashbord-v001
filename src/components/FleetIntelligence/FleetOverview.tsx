@@ -100,10 +100,11 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
               <h3 style={styles.panelTitle}>GPS Fleet Tracking</h3>
             </div>
             
-            <div style={styles.filterBtnGroup}>
+            <div role="group" aria-label="Filter fleet by city" style={styles.filterBtnGroup}>
               <button 
                 aria-label="Filter by all pilots"
                 onClick={() => setSelectedCityFilter('all')}
+                aria-pressed={selectedCityFilter === 'all'}
                 style={{ ...styles.filterBtn, ...(selectedCityFilter === 'all' ? styles.filterBtnActive : {}) }}
               >
                 All Pilots
@@ -111,6 +112,7 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
               <button 
                 aria-label="Filter by Delhi-NCR"
                 onClick={() => setSelectedCityFilter('Delhi-NCR')}
+                aria-pressed={selectedCityFilter === 'Delhi-NCR'}
                 style={{ ...styles.filterBtn, ...(selectedCityFilter === 'Delhi-NCR' ? styles.filterBtnActive : {}) }}
               >
                 Delhi-NCR
@@ -118,6 +120,7 @@ export default function FleetOverview({ devices, onInspectDevice }: FleetOvervie
               <button 
                 aria-label="Filter by Patna"
                 onClick={() => setSelectedCityFilter('Patna, Bihar')}
+                aria-pressed={selectedCityFilter === 'Patna, Bihar'}
                 style={{ ...styles.filterBtn, ...(selectedCityFilter === 'Patna, Bihar' ? styles.filterBtnActive : {}) }}
               >
                 Patna
