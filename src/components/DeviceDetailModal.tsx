@@ -186,7 +186,7 @@ export default function DeviceDetailModal({
 
               {/* Historical Charting */}
               <div style={styles.chartSection}>
-                <div style={styles.chartTabs}>
+                <div style={styles.chartTabs} role="group" aria-label="Chart metric views">
                   {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
                     if ((tab === 'soc') && !isBms && !isBess) return null;
                     return (
@@ -197,6 +197,7 @@ export default function DeviceDetailModal({
                           ...styles.chartTabBtn,
                           ...(activeChart === tab ? styles.chartTabBtnActive : {})
                         }}
+                        aria-pressed={activeChart === tab}
                       >
                         {tab.toUpperCase()}
                       </button>

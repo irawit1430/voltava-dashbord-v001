@@ -1,3 +1,3 @@
-## 2025-05-19 - Form Input Accessibility
-**Learning:** Found multiple form inputs in components (like CostSavingsSimulator) lacking programmatic association with their labels using `htmlFor` and `id` attributes. This is a crucial accessibility gap for screen readers to navigate forms.
-**Action:** When adding or updating forms, always ensure explicit `id` bindings on inputs and matching `htmlFor` attributes on corresponding `<label>` tags. Do not rely solely on nested `<label><input /></label>` structures if standalone `<label>` and `<input>` are used.
+## 2024-08-06 - [A11y Pattern] View Switchers as ARIA Groups
+**Learning:** When using horizontal button lists to toggle charts or terminal views (like in `DeviceDetailModal.tsx` and `GatewayConfig.tsx`), simply adding `className` and `onClick` handlers isn't enough for screen readers to understand the relationship between the buttons and their state.
+**Action:** Always wrap these button lists in a `<div role="group" aria-label="[descriptive name]">` and use `aria-pressed={isActive}` on the individual buttons to communicate their toggle state. Ensure decorative icons inside these buttons use `aria-hidden="true"`.
