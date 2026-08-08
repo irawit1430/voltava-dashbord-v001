@@ -130,7 +130,7 @@ export default function DeviceDetailModal({
             </div>
           </div>
           <button onClick={onClose} style={styles.closeBtn} aria-label="Close Inspector">
-            <X size={20} color="var(--text-secondary)" />
+            <X size={20} color="var(--text-secondary)" aria-hidden="true" />
           </button>
         </div>
 
@@ -186,13 +186,14 @@ export default function DeviceDetailModal({
 
               {/* Historical Charting */}
               <div style={styles.chartSection}>
-                <div style={styles.chartTabs}>
+                <div style={styles.chartTabs} role="group" aria-label="Chart metrics">
                   {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
                     if ((tab === 'soc') && !isBms && !isBess) return null;
                     return (
                       <button
                         key={tab}
                         onClick={() => setActiveChart(tab)}
+                        aria-pressed={activeChart === tab}
                         style={{
                           ...styles.chartTabBtn,
                           ...(activeChart === tab ? styles.chartTabBtnActive : {})
@@ -351,7 +352,7 @@ export default function DeviceDetailModal({
                   </button>
 
                   {pingLog !== null && (
-                    <div style={styles.inlineTerminal}>
+                    <div style={styles.inlineTerminal} role="log" aria-live="polite">
                       <div style={styles.inlineTerminalHeader}>
                         <span>Diagnostics: CAN Ping Terminal</span>
                         <button 
