@@ -1,3 +1,3 @@
-## 2025-05-19 - Form Input Accessibility
-**Learning:** Found multiple form inputs in components (like CostSavingsSimulator) lacking programmatic association with their labels using `htmlFor` and `id` attributes. This is a crucial accessibility gap for screen readers to navigate forms.
-**Action:** When adding or updating forms, always ensure explicit `id` bindings on inputs and matching `htmlFor` attributes on corresponding `<label>` tags. Do not rely solely on nested `<label><input /></label>` structures if standalone `<label>` and `<input>` are used.
+## 2023-10-27 - [Device Detail Modal Accessibility]
+**Learning:** Recharts component interactions in `DeviceDetailModal.tsx` were missing standard ARIA tablist/tab structures, and remote control buttons lacked loading state feedback for asynchronous telematics ping operations. Decorative icons within control buttons were also creating screen reader noise.
+**Action:** Applied `role="tablist"` and `role="tab"` (with dynamic `aria-selected` mapping) for tab interfaces. Introduced `lucide-react` `Loader2` with `animate-spin-slow` class for async loading states, and explicitly added `aria-hidden="true"` to non-interactive decorative icons inside buttons.

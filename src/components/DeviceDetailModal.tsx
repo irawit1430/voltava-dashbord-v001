@@ -10,7 +10,8 @@ import {
   Thermometer, 
   ZapOff,
   RefreshCw,
-  PlayCircle
+  PlayCircle,
+  Loader2
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -186,12 +187,14 @@ export default function DeviceDetailModal({
 
               {/* Historical Charting */}
               <div style={styles.chartSection}>
-                <div style={styles.chartTabs}>
+                <div style={styles.chartTabs} role="tablist" aria-label="Telemetry Chart Tabs">
                   {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
                     if ((tab === 'soc') && !isBms && !isBess) return null;
                     return (
                       <button
                         key={tab}
+                        role="tab"
+                        aria-selected={activeChart === tab}
                         onClick={() => setActiveChart(tab)}
                         style={{
                           ...styles.chartTabBtn,
@@ -322,7 +325,7 @@ export default function DeviceDetailModal({
                     className="btn btn-outline"
                     style={styles.controlBtn}
                   >
-                    <RefreshCw size={14} /> Trigger OTA Update
+                    <RefreshCw size={14} aria-hidden="true" /> Trigger OTA Update
                   </button>
 
                   {isBms && (
@@ -336,7 +339,7 @@ export default function DeviceDetailModal({
                         borderColor: device.telemetry.mosfetStatus === 'on' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)',
                       }}
                     >
-                      <ZapOff size={14} /> 
+                      <ZapOff size={14} aria-hidden="true" />
                       {device.telemetry.mosfetStatus === 'on' ? 'Forced MOSFET Cutoff' : 'Re-enable MOSFET'}
                     </button>
                   )}
@@ -347,7 +350,7 @@ export default function DeviceDetailModal({
                     className="btn btn-outline"
                     style={styles.controlBtn}
                   >
-                    <PlayCircle size={14} /> {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
+                    {isPinging ? <Loader2 size={14} className="animate-spin-slow" aria-hidden="true" /> : <PlayCircle size={14} aria-hidden="true" />} {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
                   </button>
 
                   {pingLog !== null && (
