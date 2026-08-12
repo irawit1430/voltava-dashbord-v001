@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, UserPlus, Trash2, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Users, UserPlus, Trash2, Shield, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import './AccessControl.css';
 
 export default function AccessControl() {
@@ -166,8 +166,17 @@ export default function AccessControl() {
             className="btn btn-primary"
             style={styles.addButton}
           >
-            <UserPlus size={16} />
-            <span>Add User</span>
+            {isSubmitting ? (
+              <>
+                <Loader2 size={16} className="animate-spin-slow" aria-hidden="true" />
+                <span>Adding...</span>
+              </>
+            ) : (
+              <>
+                <UserPlus size={16} aria-hidden="true" />
+                <span>Add User</span>
+              </>
+            )}
           </button>
         </form>
 
