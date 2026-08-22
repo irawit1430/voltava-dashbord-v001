@@ -749,10 +749,12 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Console Tabs">
                   <button 
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'ping'}
                   >
                     <Terminal size={14} style={{ marginRight: 4 }} />
                     Ping Test
@@ -761,6 +763,8 @@ export default function GatewayConfig({
                   <button 
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'scan'}
                   >
                     <Search size={14} style={{ marginRight: 4 }} />
                     Bus Scanner
@@ -769,6 +773,8 @@ export default function GatewayConfig({
                   <button 
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'packets'}
                   >
                     <Activity size={14} style={{ marginRight: 4 }} />
                     Packet Analyzer
@@ -818,7 +824,7 @@ export default function GatewayConfig({
 
                 {/* Terminal Display Screen */}
                 <div className="gw-terminal-screen">
-                  <div className="gw-terminal-content">
+                  <div className="gw-terminal-content" role="tabpanel" aria-label={`${activeDiagnosticTab} diagnostic results`}>
                     {activeDiagnosticTab === 'ping' && (
                       <pre className="gw-pre">{pingLog}</pre>
                     )}
