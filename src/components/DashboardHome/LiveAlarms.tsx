@@ -55,7 +55,7 @@ export default function LiveAlarms({ activeAlerts, onAnalyze }: LiveAlarmsProps)
                     className="action-btn"
                     aria-label={`Analyze BMS cells for ${alert.device}`}
                   >
-                    Analyze BMS Cells ➔
+                    Analyze BMS Cells <span aria-hidden="true">➔</span>
                   </button>
                 </div>
               </div>

@@ -41,8 +41,9 @@ export default function HealthScoreWidget() {
           disabled={loading}
           className="run-audit-btn"
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          aria-label={loading ? "Auditing system health" : "Run automated health audit"}
         >
-          {loading ? <Loader2 className="animate-spin-slow" size={16} /> : <ShieldAlert size={16} />}
+          {loading ? <Loader2 className="animate-spin-slow" size={16} aria-hidden="true" /> : <ShieldAlert size={16} aria-hidden="true" />}
           {loading ? 'Auditing...' : 'Run Audit'}
         </button>
       </div>

@@ -112,8 +112,9 @@ export default function HealthPredictor({ devices, onInspectDevice }: HealthPred
                       onClick={() => onInspectDevice(d)}
                       className="btn btn-outline"
                       style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem' }}
+                      aria-label={`Inspect device ${d.name}`}
                     >
-                      Inspect ➔
+                      Inspect <span aria-hidden="true">➔</span>
                     </button>
                   </div>
                 </div>
