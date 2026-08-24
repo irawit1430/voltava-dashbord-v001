@@ -129,8 +129,8 @@ export default function DeviceDetailModal({
               </p>
             </div>
           </div>
-          <button onClick={onClose} style={styles.closeBtn} aria-label="Close Inspector">
-            <X size={20} color="var(--text-secondary)" />
+          <button onClick={onClose} style={styles.closeBtn} aria-label="Close Inspector" title="Close Inspector">
+            <X size={20} color="var(--text-secondary)" aria-hidden="true" />
           </button>
         </div>
 
@@ -186,12 +186,16 @@ export default function DeviceDetailModal({
 
               {/* Historical Charting */}
               <div style={styles.chartSection}>
-                <div style={styles.chartTabs}>
+                <div style={styles.chartTabs} role="tablist" aria-label="Chart metrics">
                   {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
                     if ((tab === 'soc') && !isBms && !isBess) return null;
                     return (
                       <button
                         key={tab}
+                        role="tab"
+                        aria-selected={activeChart === tab}
+                        aria-controls={`chart-panel-${tab}`}
+                        id={`chart-tab-${tab}`}
                         onClick={() => setActiveChart(tab)}
                         style={{
                           ...styles.chartTabBtn,
@@ -204,7 +208,7 @@ export default function DeviceDetailModal({
                   })}
                 </div>
 
-                <div style={styles.chartWrapper}>
+                <div style={styles.chartWrapper} role="tabpanel" id={`chart-panel-${activeChart}`} aria-labelledby={`chart-tab-${activeChart}`}>
                   <ResponsiveContainer width="100%" height={200}>
                     <LineChart data={history} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -322,7 +326,7 @@ export default function DeviceDetailModal({
                     className="btn btn-outline"
                     style={styles.controlBtn}
                   >
-                    <RefreshCw size={14} /> Trigger OTA Update
+                    <RefreshCw size={14} aria-hidden="true" /> Trigger OTA Update
                   </button>
 
                   {isBms && (
@@ -336,7 +340,7 @@ export default function DeviceDetailModal({
                         borderColor: device.telemetry.mosfetStatus === 'on' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)',
                       }}
                     >
-                      <ZapOff size={14} /> 
+                      <ZapOff size={14} aria-hidden="true" />
                       {device.telemetry.mosfetStatus === 'on' ? 'Forced MOSFET Cutoff' : 'Re-enable MOSFET'}
                     </button>
                   )}
@@ -347,7 +351,7 @@ export default function DeviceDetailModal({
                     className="btn btn-outline"
                     style={styles.controlBtn}
                   >
-                    <PlayCircle size={14} /> {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
+                    <PlayCircle size={14} aria-hidden="true" /> {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
                   </button>
 
                   {pingLog !== null && (
@@ -357,10 +361,10 @@ export default function DeviceDetailModal({
                         <button 
                           onClick={() => setPingLog(null)} 
                           style={styles.inlineTerminalClose}
-                          title="Clear Output"
+                          title="Clear terminal output"
                           aria-label="Clear terminal output"
                         >
-                          ×
+                          <X size={14} aria-hidden="true" />
                         </button>
                       </div>
                       <pre style={styles.inlineTerminalPre}>{pingLog}</pre>
