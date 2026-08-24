@@ -1,3 +1,6 @@
 ## 2025-05-19 - Form Input Accessibility
 **Learning:** Found multiple form inputs in components (like CostSavingsSimulator) lacking programmatic association with their labels using `htmlFor` and `id` attributes. This is a crucial accessibility gap for screen readers to navigate forms.
 **Action:** When adding or updating forms, always ensure explicit `id` bindings on inputs and matching `htmlFor` attributes on corresponding `<label>` tags. Do not rely solely on nested `<label><input /></label>` structures if standalone `<label>` and `<input>` are used.
+## 2024-05-18 - Missing ARIA attributes in tabbed interfaces
+**Learning:** Found that custom tab interfaces (like in GatewayConfig diagnostic terminal) were missing ARIA roles (`role="tablist"`, `role="tab"`) and state attributes (`aria-selected`). This is a common pattern in custom UI components built without dedicated accessible component libraries.
+**Action:** When implementing or reviewing custom tabbed interfaces, always ensure the container has `role="tablist"` (and ideally an `aria-label`) and that individual tabs have `role="tab"` and correctly mapped `aria-selected` boolean states to properly communicate their structure and active state to assistive technologies.
