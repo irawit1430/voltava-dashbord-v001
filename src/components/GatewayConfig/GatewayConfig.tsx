@@ -749,9 +749,11 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Tools">
                   <button 
                     onClick={() => setActiveDiagnosticTab('ping')}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'ping'}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
                     <Terminal size={14} style={{ marginRight: 4 }} />
@@ -760,6 +762,8 @@ export default function GatewayConfig({
                   
                   <button 
                     onClick={() => setActiveDiagnosticTab('scan')}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'scan'}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
                     <Search size={14} style={{ marginRight: 4 }} />
@@ -768,6 +772,8 @@ export default function GatewayConfig({
                   
                   <button 
                     onClick={() => setActiveDiagnosticTab('packets')}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'packets'}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
                     <Activity size={14} style={{ marginRight: 4 }} />
