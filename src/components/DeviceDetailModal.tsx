@@ -186,12 +186,16 @@ export default function DeviceDetailModal({
 
               {/* Historical Charting */}
               <div style={styles.chartSection}>
-                <div style={styles.chartTabs}>
+                <div style={styles.chartTabs} role="tablist" aria-label="Historical Chart Options">
                   {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
                     if ((tab === 'soc') && !isBms && !isBess) return null;
                     return (
                       <button
                         key={tab}
+                        role="tab"
+                        aria-selected={activeChart === tab}
+                        aria-controls="chart-panel"
+                        id={`tab-${tab}`}
                         onClick={() => setActiveChart(tab)}
                         style={{
                           ...styles.chartTabBtn,
@@ -204,7 +208,7 @@ export default function DeviceDetailModal({
                   })}
                 </div>
 
-                <div style={styles.chartWrapper}>
+                <div style={styles.chartWrapper} id="chart-panel" role="tabpanel" aria-labelledby={`tab-${activeChart}`}>
                   <ResponsiveContainer width="100%" height={200}>
                     <LineChart data={history} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
