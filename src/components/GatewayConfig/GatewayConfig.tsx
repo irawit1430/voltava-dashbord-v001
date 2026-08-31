@@ -749,28 +749,37 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Tools">
                   <button 
+                    role="tab"
+                    aria-controls="gw-terminal-panel"
+                    aria-selected={activeDiagnosticTab === 'ping'}
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
-                    <Terminal size={14} style={{ marginRight: 4 }} />
+                    <Terminal size={14} style={{ marginRight: 4 }} aria-hidden="true" />
                     Ping Test
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-controls="gw-terminal-panel"
+                    aria-selected={activeDiagnosticTab === 'scan'}
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
-                    <Search size={14} style={{ marginRight: 4 }} />
+                    <Search size={14} style={{ marginRight: 4 }} aria-hidden="true" />
                     Bus Scanner
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-controls="gw-terminal-panel"
+                    aria-selected={activeDiagnosticTab === 'packets'}
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
-                    <Activity size={14} style={{ marginRight: 4 }} />
+                    <Activity size={14} style={{ marginRight: 4 }} aria-hidden="true" />
                     Packet Analyzer
                   </button>
                 </div>
@@ -817,7 +826,7 @@ export default function GatewayConfig({
                 </div>
 
                 {/* Terminal Display Screen */}
-                <div className="gw-terminal-screen">
+                <div id="gw-terminal-panel" className="gw-terminal-screen" aria-live="polite" role="tabpanel">
                   <div className="gw-terminal-content">
                     {activeDiagnosticTab === 'ping' && (
                       <pre className="gw-pre">{pingLog}</pre>
