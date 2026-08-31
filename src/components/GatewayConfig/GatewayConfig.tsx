@@ -749,8 +749,12 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Tools">
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'ping'}
+                    aria-controls="panel-ping"
+                    id="tab-ping"
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -759,6 +763,10 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'scan'}
+                    aria-controls="panel-scan"
+                    id="tab-scan"
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -767,6 +775,10 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'packets'}
+                    aria-controls="panel-packets"
+                    id="tab-packets"
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -820,15 +832,19 @@ export default function GatewayConfig({
                 <div className="gw-terminal-screen">
                   <div className="gw-terminal-content">
                     {activeDiagnosticTab === 'ping' && (
-                      <pre className="gw-pre">{pingLog}</pre>
+                      <div role="tabpanel" id="panel-ping" aria-labelledby="tab-ping">
+                        <pre className="gw-pre">{pingLog}</pre>
+                      </div>
                     )}
                     
                     {activeDiagnosticTab === 'scan' && (
-                      <pre className="gw-pre">{scanLog}</pre>
+                      <div role="tabpanel" id="panel-scan" aria-labelledby="tab-scan">
+                        <pre className="gw-pre">{scanLog}</pre>
+                      </div>
                     )}
                     
                     {activeDiagnosticTab === 'packets' && (
-                      <div className="gw-packets-wrapper">
+                      <div role="tabpanel" id="panel-packets" aria-labelledby="tab-packets" className="gw-packets-wrapper">
                         {packetLog.map((pkt, i) => (
                           <div key={i} className="gw-packet-row">
                             {pkt}
