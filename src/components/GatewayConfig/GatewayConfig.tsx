@@ -749,10 +749,14 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Tools">
                   <button 
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'ping'}
+                    aria-controls="panel-ping"
+                    id="tab-ping"
                   >
                     <Terminal size={14} style={{ marginRight: 4 }} />
                     Ping Test
@@ -761,6 +765,10 @@ export default function GatewayConfig({
                   <button 
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'scan'}
+                    aria-controls="panel-scan"
+                    id="tab-scan"
                   >
                     <Search size={14} style={{ marginRight: 4 }} />
                     Bus Scanner
@@ -769,6 +777,10 @@ export default function GatewayConfig({
                   <button 
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'packets'}
+                    aria-controls="panel-packets"
+                    id="tab-packets"
                   >
                     <Activity size={14} style={{ marginRight: 4 }} />
                     Packet Analyzer
@@ -817,7 +829,12 @@ export default function GatewayConfig({
                 </div>
 
                 {/* Terminal Display Screen */}
-                <div className="gw-terminal-screen">
+                <div
+                  className="gw-terminal-screen"
+                  role="tabpanel"
+                  id={`panel-${activeDiagnosticTab}`}
+                  aria-labelledby={`tab-${activeDiagnosticTab}`}
+                >
                   <div className="gw-terminal-content">
                     {activeDiagnosticTab === 'ping' && (
                       <pre className="gw-pre">{pingLog}</pre>
