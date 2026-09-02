@@ -12,7 +12,8 @@ import {
   Activity, 
   AlertTriangle, 
   Edit, 
-  Search
+  Search,
+  Loader2
 } from 'lucide-react';
 import type { Gateway, GatewayProtocol, Device } from '../../types';
 
@@ -37,6 +38,7 @@ export default function GatewayConfig({
 }: GatewayConfigProps) {
   const [selectedGatewayId, setSelectedGatewayId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeDiagnosticTab, setActiveDiagnosticTab] = useState<'ping' | 'scan' | 'packets'>('ping');
@@ -193,9 +195,11 @@ export default function GatewayConfig({
     e.preventDefault();
     try {
       setError(null);
+      setIsSubmitting(true);
       const added = await addGateway(newGw);
       setIsAdding(false);
       setSelectedGatewayId(added.id);
+      setIsSubmitting(false);
       setNewGw({
         name: '',
         protocol: 'modbus-tcp',
@@ -209,6 +213,8 @@ export default function GatewayConfig({
       });
     } catch (err: any) {
       setError(err.message || 'Failed to add gateway');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -217,10 +223,13 @@ export default function GatewayConfig({
     if (!selectedGatewayId) return;
     try {
       setError(null);
+      setIsSubmitting(true);
       await updateGatewayConfig(selectedGatewayId, editGw);
       setIsEditing(false);
     } catch (err: any) {
       setError(err.message || 'Failed to update config');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -505,7 +514,10 @@ export default function GatewayConfig({
 
                 <div className="gw-form-actions">
                   <button type="button" onClick={() => setIsAdding(false)} className="gw-cancel-btn">Cancel</button>
-                  <button type="submit" className="gw-submit-btn">Create Node</button>
+                  <button type="submit" className="gw-submit-btn" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 size={16} className="animate-spin-slow" style={{ marginRight: '8px', display: 'inline-block', verticalAlign: 'middle' }} /> : null}
+                    {isSubmitting ? 'Creating...' : 'Create Node'}
+                  </button>
                 </div>
                 {error && <div style={{ color: 'var(--accent-red)', fontSize: '0.8rem', marginTop: '0.5rem', textAlign: 'right' }}>{error}</div>}
               </form>
@@ -660,7 +672,10 @@ export default function GatewayConfig({
 
                     <div className="gw-form-actions">
                       <button type="button" onClick={() => setIsEditing(false)} className="gw-cancel-btn">Cancel</button>
-                      <button type="submit" className="gw-submit-btn">Save Configuration</button>
+                      <button type="submit" className="gw-submit-btn" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 size={16} className="animate-spin-slow" style={{ marginRight: '8px', display: 'inline-block', verticalAlign: 'middle' }} /> : null}
+                        {isSubmitting ? 'Saving...' : 'Save Configuration'}
+                      </button>
                     </div>
                       {error && <div style={{ color: 'var(--accent-red)', fontSize: '0.8rem', marginTop: '0.5rem', textAlign: 'right' }}>{error}</div>}
                   </form>
