@@ -47,7 +47,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
             <span style={styles.logoSubtitle}>Energy Intelligence</span>
           </div>
           <button className="mobile-close-btn" onClick={() => setIsOpen(false)} aria-label="Close sidebar">
-            <X size={20} />
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -58,7 +58,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
       </div>
 
       {/* Navigation Groups */}
-      <nav style={styles.nav}>
+      <nav style={styles.nav} aria-label="Main Navigation">
         {['General', 'Modules', 'Optimization'].map((category) => {
           const items = menuItems.filter(item => item.category === category);
           return (
@@ -72,6 +72,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
                     <li key={item.id}>
                       <button
                         onClick={() => setActiveTab(item.id)}
+                        aria-current={isActive ? "page" : undefined}
                         style={{
                           ...styles.navButton,
                           ...(isActive ? styles.navButtonActive : {}),
@@ -81,6 +82,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
                           size={18} 
                           color={isActive ? 'var(--accent-green)' : 'var(--text-secondary)'} 
                           style={styles.buttonIcon} 
+                          aria-hidden="true"
                         />
                         <span style={isActive ? styles.textActive : styles.textInactive}>
                           {item.name}
@@ -104,6 +106,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
         </div>
         <button 
           onClick={() => setActiveTab('gateway-config')}
+          aria-current={activeTab === 'gateway-config' ? "page" : undefined}
           style={{
             ...styles.footerLink,
             background: 'none',
@@ -117,11 +120,12 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
             transition: 'all 0.15s ease',
           }}
         >
-          <Settings size={14} color={activeTab === 'gateway-config' ? 'var(--accent-green)' : 'var(--text-secondary)'} />
+          <Settings size={14} color={activeTab === 'gateway-config' ? 'var(--accent-green)' : 'var(--text-secondary)'} aria-hidden="true" />
           <span style={{ fontWeight: activeTab === 'gateway-config' ? 600 : 500 }}>Gateway Config</span>
         </button>
         <button 
           onClick={() => setActiveTab('access-control')}
+          aria-current={activeTab === 'access-control' ? "page" : undefined}
           style={{
             ...styles.footerLink,
             background: 'none',
@@ -136,7 +140,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen }: 
             marginTop: '0.25rem'
           }}
         >
-          <Users size={14} color={activeTab === 'access-control' ? 'var(--accent-green)' : 'var(--text-secondary)'} />
+          <Users size={14} color={activeTab === 'access-control' ? 'var(--accent-green)' : 'var(--text-secondary)'} aria-hidden="true" />
           <span style={{ fontWeight: activeTab === 'access-control' ? 600 : 500 }}>Access Control</span>
         </button>
       </div>
