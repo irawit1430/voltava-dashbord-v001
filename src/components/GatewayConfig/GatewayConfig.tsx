@@ -749,8 +749,25 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Tools" onKeyDown={(e) => {
+                  const tabs = ['ping', 'scan', 'packets'];
+                  const currentIndex = tabs.indexOf(activeDiagnosticTab);
+                  if (e.key === 'ArrowRight') {
+                    const nextTab = tabs[(currentIndex + 1) % tabs.length];
+                    setActiveDiagnosticTab(nextTab);
+                    document.getElementById(`tab-${nextTab}`)?.focus();
+                  } else if (e.key === 'ArrowLeft') {
+                    const prevTab = tabs[(currentIndex - 1 + tabs.length) % tabs.length];
+                    setActiveDiagnosticTab(prevTab);
+                    document.getElementById(`tab-${prevTab}`)?.focus();
+                  }
+                }}>
                   <button 
+                    role="tab"
+                    tabIndex={activeDiagnosticTab === 'ping' ? 0 : -1}
+                    aria-selected={activeDiagnosticTab === 'ping'}
+                    aria-controls="panel-ping"
+                    id="tab-ping"
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -759,6 +776,11 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    tabIndex={activeDiagnosticTab === 'scan' ? 0 : -1}
+                    aria-selected={activeDiagnosticTab === 'scan'}
+                    aria-controls="panel-scan"
+                    id="tab-scan"
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -767,6 +789,11 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    tabIndex={activeDiagnosticTab === 'packets' ? 0 : -1}
+                    aria-selected={activeDiagnosticTab === 'packets'}
+                    aria-controls="panel-packets"
+                    id="tab-packets"
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -820,15 +847,19 @@ export default function GatewayConfig({
                 <div className="gw-terminal-screen">
                   <div className="gw-terminal-content">
                     {activeDiagnosticTab === 'ping' && (
-                      <pre className="gw-pre">{pingLog}</pre>
+                      <div id="panel-ping" role="tabpanel" aria-labelledby="tab-ping">
+                        <pre className="gw-pre">{pingLog}</pre>
+                      </div>
                     )}
                     
                     {activeDiagnosticTab === 'scan' && (
-                      <pre className="gw-pre">{scanLog}</pre>
+                      <div id="panel-scan" role="tabpanel" aria-labelledby="tab-scan">
+                        <pre className="gw-pre">{scanLog}</pre>
+                      </div>
                     )}
                     
                     {activeDiagnosticTab === 'packets' && (
-                      <div className="gw-packets-wrapper">
+                      <div id="panel-packets" role="tabpanel" aria-labelledby="tab-packets" className="gw-packets-wrapper">
                         {packetLog.map((pkt, i) => (
                           <div key={i} className="gw-packet-row">
                             {pkt}
