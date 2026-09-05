@@ -10,7 +10,8 @@ import {
   Thermometer, 
   ZapOff,
   RefreshCw,
-  PlayCircle
+  PlayCircle,
+  Loader2
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -347,11 +348,11 @@ export default function DeviceDetailModal({
                     className="btn btn-outline"
                     style={styles.controlBtn}
                   >
-                    <PlayCircle size={14} /> {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
+                    {isPinging ? <Loader2 size={14} className="animate-spin-slow" /> : <PlayCircle size={14} />} {isPinging ? 'Pinging CAN...' : 'Ping Telematics CAN'}
                   </button>
 
                   {pingLog !== null && (
-                    <div style={styles.inlineTerminal}>
+                    <div style={styles.inlineTerminal} role="log" aria-live="polite">
                       <div style={styles.inlineTerminalHeader}>
                         <span>Diagnostics: CAN Ping Terminal</span>
                         <button 

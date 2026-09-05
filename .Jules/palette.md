@@ -1,3 +1,7 @@
 ## 2025-05-19 - Form Input Accessibility
 **Learning:** Found multiple form inputs in components (like CostSavingsSimulator) lacking programmatic association with their labels using `htmlFor` and `id` attributes. This is a crucial accessibility gap for screen readers to navigate forms.
 **Action:** When adding or updating forms, always ensure explicit `id` bindings on inputs and matching `htmlFor` attributes on corresponding `<label>` tags. Do not rely solely on nested `<label><input /></label>` structures if standalone `<label>` and `<input>` are used.
+
+## 2025-05-19 - Async Action Feedback & Live Regions
+**Learning:** Discovered that diagnostic features (Gateway Ping, Bus Scan, Device CAN Ping) relied purely on text updates in inline terminal windows without visual loading indicators on the triggering buttons. Additionally, the inline terminal windows dynamically added logs but were missing WAI-ARIA live region attributes, making the updates invisible to screen readers until focus was manually moved.
+**Action:** Always add visual loading spinners (e.g., using `lucide-react`'s `Loader2` with `animate-spin-slow`) to buttons that trigger asynchronous operations to provide immediate visual feedback. Concurrently, attach `role="log"` and `aria-live="polite"` to the container elements where dynamic text or logs are appended so that screen readers automatically announce these asynchronous updates.
