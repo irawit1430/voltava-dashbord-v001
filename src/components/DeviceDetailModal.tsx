@@ -186,12 +186,14 @@ export default function DeviceDetailModal({
 
               {/* Historical Charting */}
               <div style={styles.chartSection}>
-                <div style={styles.chartTabs}>
+                <div style={styles.chartTabs} role="tablist" aria-label="Historical chart data types">
                   {(['soc', 'voltage', 'current', 'temp'] as const).map((tab) => {
                     if ((tab === 'soc') && !isBms && !isBess) return null;
                     return (
                       <button
                         key={tab}
+                        role="tab"
+                        aria-selected={activeChart === tab}
                         onClick={() => setActiveChart(tab)}
                         style={{
                           ...styles.chartTabBtn,
