@@ -1,3 +1,6 @@
 ## 2025-05-19 - Form Input Accessibility
 **Learning:** Found multiple form inputs in components (like CostSavingsSimulator) lacking programmatic association with their labels using `htmlFor` and `id` attributes. This is a crucial accessibility gap for screen readers to navigate forms.
 **Action:** When adding or updating forms, always ensure explicit `id` bindings on inputs and matching `htmlFor` attributes on corresponding `<label>` tags. Do not rely solely on nested `<label><input /></label>` structures if standalone `<label>` and `<input>` are used.
+## 2025-05-19 - ARIA Tab Implementation Strategy
+**Learning:** When implementing WAI-ARIA tabbed interfaces in React (like the diagnostics terminal in GatewayConfig), if the `tabpanel` dynamically changes content rather than maintaining separate elements for each tab, assign a single static `id` (e.g., `id="diagnostic-tabpanel"`) to the content container. All tab buttons should then use `aria-controls="diagnostic-tabpanel"`. This prevents referencing non-existent DOM elements for inactive tabs.
+**Action:** When adding ARIA tabs, first analyze if the content panels are conditionally rendered or toggled via CSS. If conditionally rendered within a single container, point all `aria-controls` to that container's ID.
