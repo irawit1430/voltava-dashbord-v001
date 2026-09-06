@@ -749,8 +749,11 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Tabs">
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'ping'}
+                    aria-controls="diagnostic-tabpanel"
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -759,6 +762,9 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'scan'}
+                    aria-controls="diagnostic-tabpanel"
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -767,6 +773,9 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'packets'}
+                    aria-controls="diagnostic-tabpanel"
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -817,7 +826,7 @@ export default function GatewayConfig({
                 </div>
 
                 {/* Terminal Display Screen */}
-                <div className="gw-terminal-screen">
+                <div className="gw-terminal-screen" id="diagnostic-tabpanel" role="tabpanel">
                   <div className="gw-terminal-content">
                     {activeDiagnosticTab === 'ping' && (
                       <pre className="gw-pre">{pingLog}</pre>
