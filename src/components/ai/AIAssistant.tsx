@@ -170,7 +170,11 @@ export const AIAssistant: React.FC = () => {
               disabled={isLoading}
             />
             <button type="submit" disabled={!input.trim() || isLoading} className="send-btn" aria-label="Send message">
-              <Send size={18} />
+              {isLoading ? (
+                <Loader2 size={18} className="animate-spin-slow" aria-hidden="true" />
+              ) : (
+                <Send size={18} aria-hidden="true" />
+              )}
             </button>
           </form>
         </div>
