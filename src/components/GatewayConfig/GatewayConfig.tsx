@@ -12,7 +12,8 @@ import {
   Activity, 
   AlertTriangle, 
   Edit, 
-  Search
+  Search,
+  Loader2
 } from 'lucide-react';
 import type { Gateway, GatewayProtocol, Device } from '../../types';
 
@@ -789,8 +790,17 @@ export default function GatewayConfig({
                       disabled={isPinging}
                       className="gw-run-btn"
                     >
-                      <Play size={12} style={{ marginRight: 4 }} />
-                      {isPinging ? 'Pinging...' : 'Run Ping Test'}
+                      {isPinging ? (
+                        <>
+                          <Loader2 size={12} style={{ marginRight: 4 }} className="animate-spin-slow" aria-hidden="true" />
+                          Pinging...
+                        </>
+                      ) : (
+                        <>
+                          <Play size={12} style={{ marginRight: 4 }} aria-hidden="true" />
+                          Run Ping Test
+                        </>
+                      )}
                     </button>
                   )}
 
@@ -800,8 +810,17 @@ export default function GatewayConfig({
                       disabled={isScanning}
                       className="gw-run-btn"
                     >
-                      <Search size={12} style={{ marginRight: 4 }} />
-                      {isScanning ? 'Scanning...' : 'Scan Bus'}
+                      {isScanning ? (
+                        <>
+                          <Loader2 size={12} style={{ marginRight: 4 }} className="animate-spin-slow" aria-hidden="true" />
+                          Scanning...
+                        </>
+                      ) : (
+                        <>
+                          <Search size={12} style={{ marginRight: 4 }} aria-hidden="true" />
+                          Scan Bus
+                        </>
+                      )}
                     </button>
                   )}
                   
