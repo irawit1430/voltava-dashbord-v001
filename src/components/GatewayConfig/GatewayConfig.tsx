@@ -749,8 +749,11 @@ export default function GatewayConfig({
               <div className="glass-panel gw-terminal-panel">
                 
                 {/* Terminal Tabs */}
-                <div className="gw-terminal-tabs">
+                <div className="gw-terminal-tabs" role="tablist" aria-label="Diagnostic Console Tabs">
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'ping'}
+                    aria-controls="gw-terminal-panel"
                     onClick={() => setActiveDiagnosticTab('ping')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'ping' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -759,6 +762,9 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'scan'}
+                    aria-controls="gw-terminal-panel"
                     onClick={() => setActiveDiagnosticTab('scan')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'scan' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -767,6 +773,9 @@ export default function GatewayConfig({
                   </button>
                   
                   <button 
+                    role="tab"
+                    aria-selected={activeDiagnosticTab === 'packets'}
+                    aria-controls="gw-terminal-panel"
                     onClick={() => setActiveDiagnosticTab('packets')}
                     className={`gw-terminal-tab-btn ${activeDiagnosticTab === 'packets' ? 'gw-terminal-tab-btn-active' : ''}`}
                   >
@@ -776,7 +785,7 @@ export default function GatewayConfig({
                 </div>
 
                 {/* Terminal Actions Bar */}
-                <div className="gw-terminal-action-bar">
+                <div className="gw-terminal-action-bar" id="gw-terminal-panel" role="tabpanel">
                   <span className="gw-terminal-title">
                     {activeDiagnosticTab === 'ping' && 'Gateway Ping Utility'}
                     {activeDiagnosticTab === 'scan' && 'Industrial Bus Address Scan'}
